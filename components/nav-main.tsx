@@ -1,5 +1,6 @@
 "use client"
 
+import { usePathname } from 'next/navigation'; 
 import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
 
 import { Button } from "@/components/ui/button"
@@ -20,10 +21,11 @@ export function NavMain({
     icon?: Icon
   }[]
 }) {
+  const pathname = usePathname();
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
+        {/* <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
               tooltip="Quick Create"
@@ -41,11 +43,11 @@ export function NavMain({
               <span className="sr-only">Inbox</span>
             </Button>
           </SidebarMenuItem>
-        </SidebarMenu>
+        </SidebarMenu> */}
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
+              <SidebarMenuButton tooltip={item.title} isActive={pathname === item.url} className='data-[active=true]:bg-primary data-[active=true]:text-primary-foreground'>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
               </SidebarMenuButton>
