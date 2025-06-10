@@ -15,6 +15,7 @@ import {
   IconListDetails,
   IconReport,
   IconSearch,
+  IconSend,
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react"
@@ -47,14 +48,14 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Lifecycle",
-      url: "#",
+      title: "Resources",
+      url: "/resources",
       icon: IconListDetails,
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
+      title: "Requests",
+      url: "/requests",
+      icon: IconSend,
     },
     {
       title: "Repositories",
