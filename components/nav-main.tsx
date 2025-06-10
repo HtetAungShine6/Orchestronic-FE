@@ -51,9 +51,12 @@ export function NavMain({
                 tooltip={item.title}
                 isActive={pathname === item.url}
                 className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
+                asChild
               >
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
+                <a href={item.url}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
