@@ -32,6 +32,7 @@ import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
+import OrchestronicLogo from "./orchestronic-logo"
 
 const data = {
   user: {
@@ -161,8 +162,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                {/* <IconInnerShadowTop className="!size-5" /> */}
+                <OrchestronicLogo size={20} />
+                <span className="text-base font-semibold">Orchestronic</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
