@@ -11,7 +11,8 @@ function getTitleFromPath(pathname: string): string {
   const allNavItems = [
     ...navData.navMain,
     ...navData.navSecondary,
-    ...navData.navClouds,
+    ...navData.collaborations,
+    ...navData.operations,
   ]
 
   for (const item of allNavItems) {
