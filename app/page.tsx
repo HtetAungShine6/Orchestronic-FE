@@ -21,9 +21,7 @@ export default async function Home() {
             <span className="text-3xl font-semibold">Orchestronic</span>
           </Link>
 
-          <div className="flex justify-end">
-            <AuthButton />
-          </div>
+          <AuthButton />
         </div>
       </main>
 
