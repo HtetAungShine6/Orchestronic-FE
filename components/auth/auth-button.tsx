@@ -9,6 +9,10 @@ export default function AuthButton() {
   if (session) {
     return <Button onClick={() => signOut()}>Sign Out</Button>
   } else {
-    return <Button onClick={() => signIn("azure-ad")}>Sign In</Button>
+    return (
+      <Button onClick={() => signIn("azure-ad", { callbackUrl: "/dashboard" })}>
+        Sign In
+      </Button>
+    )
   }
 }
