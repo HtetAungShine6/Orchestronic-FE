@@ -39,16 +39,19 @@ export const statuses = [
     value: "in progress",
     label: "In Progress",
     icon: Timer,
+    color: "text-yellow-500",
   },
   {
     value: "done",
     label: "Done",
     icon: CheckCircle,
+    color: "text-green-500",
   },
   {
     value: "canceled",
     label: "Canceled",
     icon: CircleOff,
+    color: "text-red-500",
   },
 ]
 
