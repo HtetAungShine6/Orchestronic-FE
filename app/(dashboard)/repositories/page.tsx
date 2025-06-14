@@ -25,7 +25,7 @@ export default async function Page() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Repositories</h2>
           <p className="text-muted-foreground">
-            Here&apos;s a list of your GitLab repositories
+            Here&apos;s a list of your GitLab repositories!
           </p>
         </div>
       </div>

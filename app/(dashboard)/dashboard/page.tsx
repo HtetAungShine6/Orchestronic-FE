@@ -6,10 +6,10 @@ import path from "path"
 import { z } from "zod"
 
 import { columns } from "./components/columns"
-import { columnsRequests } from "./components/columns-requests"
+import { columnsRepositories } from "./components/columns-repository"
 import { DataTable } from "@/components/data-table/components/data-table"
 import { taskSchema } from "./data/schema"
-import { requestSchema } from "./data/schema-requests"
+import { repositorySchema } from "./data/schema-repository"
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",
@@ -27,19 +27,19 @@ async function getTasks() {
   return z.array(taskSchema).parse(tasks)
 }
 
-async function getRequests() {
+async function getRepositories() {
   const data = await fs.readFile(
-    path.join(process.cwd(), "app/(dashboard)/dashboard/data/requests.json")
+    path.join(process.cwd(), "app/(dashboard)/dashboard/data/repositories.json")
   )
 
-  const requests = JSON.parse(data.toString())
+  const Repositories = JSON.parse(data.toString())
 
-  return z.array(requestSchema).parse(requests)
+  return z.array(repositorySchema).parse(Repositories)
 }
 
 export default async function Page() {
   const tasks = await getTasks()
-  const requests = await getRequests()
+  const repositories = await getRepositories()
 
   return (
     <>
@@ -65,8 +65,8 @@ export default async function Page() {
           </div>
         </div>
         <DataTable
-          data={requests}
-          columns={columnsRequests}
+          data={repositories}
+          columns={columnsRepositories}
           filterColumn="repository"
         />
       </div>

@@ -24,7 +24,7 @@ export default async function Page() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Resources</h2>
           <p className="text-muted-foreground">
-            Here&apos;s a list of your resources
+            Here&apos;s a list of your resources!
           </p>
         </div>
       </div>

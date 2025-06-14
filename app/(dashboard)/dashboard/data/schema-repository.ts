@@ -2,7 +2,7 @@ import { z } from "zod"
 
 // We're keeping a simple non-relational schema here.
 // IRL, you will have a schema for your data models.
-export const requestSchema = z.object({
+export const repositorySchema = z.object({
   // id: z.string(),
   description: z.string(),
   // status: z.string(),
@@ -13,4 +13,4 @@ export const requestSchema = z.object({
   // priority: z.string(),
 })
 
-export type Request = z.infer<typeof requestSchema>
+export type Repository = z.infer<typeof repositorySchema>
