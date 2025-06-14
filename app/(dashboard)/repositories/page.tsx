@@ -33,6 +33,7 @@ export default async function Page() {
         data={requests}
         columns={columnsRequests}
         filterColumn="repository"
+        pageSize={10}
       />
     </div>
   )

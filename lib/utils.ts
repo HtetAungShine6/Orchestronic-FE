@@ -39,3 +39,8 @@ export function generateRepoName() {
   const noun = faker.word.noun() // e.g., "engine"
   return `${adjective}-${noun}`.toLowerCase() // e.g., "fast-engine"
 }
+
+export function getRepoPrefix(repoName: string): string {
+  const firstPart = repoName.split("-")[0]
+  return firstPart.slice(0, 2)
+}

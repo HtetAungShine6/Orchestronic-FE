@@ -27,18 +27,19 @@ import {
 
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
-import { Task } from "../data/schema"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   filterColumn: keyof TData
+  pageSize?: number
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filterColumn,
+  pageSize = 5,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
@@ -59,7 +60,7 @@ export function DataTable<TData, TValue>({
     },
     initialState: {
       pagination: {
-        pageSize: 5,
+        pageSize: pageSize,
       },
     },
     enableRowSelection: true,
@@ -77,7 +78,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4 min-h-[390px]">
-      <DataTableToolbar table={table} filterColumn={filterColumn} />
+      <DataTableToolbar table={table} filterColumn={filterColumn as string} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

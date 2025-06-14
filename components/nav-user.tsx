@@ -26,6 +26,12 @@ import {
 } from "@/components/ui/sidebar"
 import { signOut } from "next-auth/react"
 import { getInitials } from "@/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export function NavUser({
   user,
@@ -77,7 +83,16 @@ export function NavUser({
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="truncate font-medium">
+                          {user.name}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>{user.name}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <span className="text-muted-foreground truncate text-xs">
                     {user.email}
                   </span>

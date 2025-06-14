@@ -12,11 +12,10 @@ const requests = Array.from({ length: 100 }, () => ({
     .replace(/^./, (letter) => letter.toUpperCase()),
   // status: faker.helpers.arrayElement(statuses).value,
   // date: faker.date.anytime(),
-  developers: [
-    `${faker.person.fullName()}`,
-    `${faker.person.fullName()}`,
-    `${faker.person.fullName()}`,
-  ],
+    developers: Array.from(
+      { length: faker.number.int({ min: 3, max: 5 }) },
+      () => faker.person.fullName()
+    ),
   repository: generateRepoName(),
   // label: faker.helpers.arrayElement(labels).value,
   // priority: faker.helpers.arrayElement(priorities).value,
