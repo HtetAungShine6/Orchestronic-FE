@@ -1,20 +1,39 @@
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
-import { ChartAreaInteractive } from "@/components/chart-area-interactive"
-import { DataTable } from "@/components/data-table"
-import { SectionCards } from "@/components/section-cards"
-import { SiteHeader } from "@/components/site-header"
+import { DataTable } from "@/components/data-table/components/data-table"
+import { promises as fs } from "fs"
+import path from "path"
+import { requestSchema } from "./data/schema-requests"
+import { z } from "zod"
 
-import data from "./data.json"
+import { columnsRequests } from "./components/columns-requests"
 
-export default function Page() {
+async function getRequests() {
+  const data = await fs.readFile(
+    path.join(process.cwd(), "app/(dashboard)/repositories/data/requests.json")
+  )
+
+  const requests = JSON.parse(data.toString())
+
+  return z.array(requestSchema).parse(requests)
+}
+
+export default async function Page() {
+  const requests = await getRequests()
+
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-      {/* <SectionCards />
-      <div className="px-4 lg:px-6">
-        <ChartAreaInteractive />
+    <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
+      <div className="flex items-center justify-between space-y-2">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Repositories</h2>
+          <p className="text-muted-foreground">
+            Here&apos;s a list of your GitLab repositories
+          </p>
+        </div>
       </div>
-      <DataTable data={data} /> */}
+      <DataTable
+        data={requests}
+        columns={columnsRequests}
+        filterColumn="repository"
+      />
     </div>
   )
 }
