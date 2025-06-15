@@ -1,23 +1,26 @@
-import { DataTable } from "@/components/data-table/components/data-table"
 import { promises as fs } from "fs"
 import path from "path"
-import { requestSchema } from "./data/schema-requests"
+import { repositorySchema } from "./data/schema-repository"
 import { z } from "zod"
 
-import { columnsRequests } from "./components/columns-requests"
+import { columnsRepositories } from "./components/columns-repository"
+import RepositoriesTable from "./components/repositories-table"
 
 async function getRequests() {
   const data = await fs.readFile(
-    path.join(process.cwd(), "app/(dashboard)/repositories/data/requests.json")
+    path.join(
+      process.cwd(),
+      "app/(dashboard)/repositories/data/repositories.json"
+    )
   )
 
-  const requests = JSON.parse(data.toString())
+  const repositories = JSON.parse(data.toString())
 
-  return z.array(requestSchema).parse(requests)
+  return z.array(repositorySchema).parse(repositories)
 }
 
 export default async function Page() {
-  const requests = await getRequests()
+  const repositories = await getRequests()
 
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
@@ -29,12 +32,7 @@ export default async function Page() {
           </p>
         </div>
       </div>
-      <DataTable
-        data={requests}
-        columns={columnsRequests}
-        filterColumn="repository"
-        pageSize={10}
-      />
+      <RepositoriesTable data={repositories} />
     </div>
   )
 }

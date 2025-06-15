@@ -3,9 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table"
 
 import { DataTableColumnHeader } from "@/components/data-table/components/data-table-column-header"
-import { cn, getInitials } from "@/lib/utils"
+import { getInitials } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Request } from "../data/schema-requests"
+import { Repository } from "../data/schema-repository"
 import {
   Tooltip,
   TooltipContent,
@@ -13,7 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-export const columnsRequests: ColumnDef<Request>[] = [
+export const columnsRepositories: ColumnDef<Repository>[] = [
   // {
   //   id: "select",
   //   header: ({ table }) => (
