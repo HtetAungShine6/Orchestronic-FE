@@ -3,7 +3,7 @@ import path from "path"
 import { repositorySchema } from "./data/schema-repository"
 import { z } from "zod"
 
-import { columnsRepositories } from "./components/columns-repository"
+import { columnsRepositories } from "./components/columns-repositories"
 import RepositoriesTable from "./components/repositories-table"
 
 async function getRequests() {

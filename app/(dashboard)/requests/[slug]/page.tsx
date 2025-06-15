@@ -20,9 +20,7 @@ export default async function Page({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/repositories">
-                  Repositories
-                </BreadcrumbLink>
+                <BreadcrumbLink href="/requests">Requests</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

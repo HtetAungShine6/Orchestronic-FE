@@ -3,11 +3,11 @@
 import { ColumnDef } from "@tanstack/react-table"
 
 import { statuses } from "../data/data"
-import { Task } from "../data/schema"
+import { Request } from "../data/schema-request"
 import { DataTableColumnHeader } from "@/components/data-table/components/data-table-column-header"
 import { cn } from "@/lib/utils"
 
-export const columns: ColumnDef<Task>[] = [
+export const columnsRequests: ColumnDef<Request>[] = [
   // {
   //   id: "select",
   //   header: ({ table }) => (

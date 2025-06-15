@@ -5,10 +5,8 @@ import path from "path"
 // import { Metadata } from "next"
 import { z } from "zod"
 
-import { columns } from "./components/columns"
-import { columnsRequests } from "./components/columns-requests"
-import { DataTable } from "@/components/data-table/components/data-table"
-import { taskSchema } from "./data/schema"
+import { requestSchema } from "./data/schema-request"
+import RequestsTable from "./components/requests-table"
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",
@@ -16,18 +14,18 @@ import { taskSchema } from "./data/schema"
 // }
 
 // Simulate a database read for tasks.
-async function getTasks() {
+async function getRequests() {
   const data = await fs.readFile(
-    path.join(process.cwd(), "app/(dashboard)/dashboard/data/tasks.json")
+    path.join(process.cwd(), "app/(dashboard)/requests/data/requests.json")
   )
 
-  const tasks = JSON.parse(data.toString())
+  const requests = JSON.parse(data.toString())
 
-  return z.array(taskSchema).parse(tasks)
+  return z.array(requestSchema).parse(requests)
 }
 
 export default async function Page() {
-  const tasks = await getTasks()
+  const requests = await getRequests()
 
   return (
     <>
@@ -40,12 +38,7 @@ export default async function Page() {
             </p>
           </div>
         </div>
-        <DataTable
-          data={tasks}
-          columns={columns}
-          filterColumn="id"
-          pageSize={10}
-        />
+        <RequestsTable data={requests} />
       </div>
     </>
   )

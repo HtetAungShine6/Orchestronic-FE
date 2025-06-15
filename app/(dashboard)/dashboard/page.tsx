@@ -5,11 +5,11 @@ import path from "path"
 // import { Metadata } from "next"
 import { z } from "zod"
 
-import { columns } from "./components/columns"
-import { columnsRepositories } from "./components/columns-repository"
-import { DataTable } from "@/components/data-table/components/data-table"
-import { taskSchema } from "./data/schema"
-import { repositorySchema } from "./data/schema-repository"
+import { repositorySchema } from "@/app/(dashboard)/repositories/data/schema-repository"
+import { requestSchema } from "@/app/(dashboard)/requests/data/schema-request"
+import { columnsRequests } from "@/app/(dashboard)/requests/components/columns-requests"
+import RepositoriesTable from "@/app/(dashboard)/repositories/components/repositories-table"
+import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",
@@ -17,19 +17,22 @@ import { repositorySchema } from "./data/schema-repository"
 // }
 
 // Simulate a database read for tasks.
-async function getTasks() {
+async function getRequests() {
   const data = await fs.readFile(
-    path.join(process.cwd(), "app/(dashboard)/dashboard/data/tasks.json")
+    path.join(process.cwd(), "app/(dashboard)/requests/data/requests.json")
   )
 
-  const tasks = JSON.parse(data.toString())
+  const requests = JSON.parse(data.toString())
 
-  return z.array(taskSchema).parse(tasks)
+  return z.array(requestSchema).parse(requests)
 }
 
 async function getRepositories() {
   const data = await fs.readFile(
-    path.join(process.cwd(), "app/(dashboard)/dashboard/data/repositories.json")
+    path.join(
+      process.cwd(),
+      "app/(dashboard)/repositories/data/repositories.json"
+    )
   )
 
   const Repositories = JSON.parse(data.toString())
@@ -38,7 +41,7 @@ async function getRepositories() {
 }
 
 export default async function Page() {
-  const tasks = await getTasks()
+  const requests = await getRequests()
   const repositories = await getRepositories()
 
   return (
@@ -52,7 +55,7 @@ export default async function Page() {
             </p>
           </div>
         </div>
-        <DataTable data={tasks} columns={columns} filterColumn="id" />
+        <RequestsTable data={requests} />
       </div>
 
       <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
@@ -64,11 +67,7 @@ export default async function Page() {
             </p>
           </div>
         </div>
-        <DataTable
-          data={repositories}
-          columns={columnsRepositories}
-          filterColumn="repository"
-        />
+        <RepositoriesTable data={repositories} />
       </div>
     </>
   )

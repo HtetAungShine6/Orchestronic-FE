@@ -5,7 +5,7 @@ import { faker } from "@faker-js/faker"
 import { labels, priorities, statuses } from "./data"
 import { generateRepoName, generateResources } from "@/lib/utils"
 
-const tasks = Array.from({ length: 100 }, () => ({
+const requests = Array.from({ length: 100 }, () => ({
   id: `R-${faker.number.int({ min: 1000, max: 9999 })}`,
   title: faker.hacker.phrase().replace(/^./, (letter) => letter.toUpperCase()),
   status: faker.helpers.arrayElement(statuses).value,
@@ -17,8 +17,8 @@ const tasks = Array.from({ length: 100 }, () => ({
 }))
 
 fs.writeFileSync(
-  path.join(__dirname, "tasks.json"),
-  JSON.stringify(tasks, null, 2)
+  path.join(__dirname, "requests.json"),
+  JSON.stringify(requests, null, 2)
 )
 
-console.log("✅ Tasks data generated.")
+console.log("✅ Requests data generated.")
