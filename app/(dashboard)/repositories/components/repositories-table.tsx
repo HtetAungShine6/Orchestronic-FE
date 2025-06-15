@@ -7,16 +7,20 @@ import { columnsRepositories } from "./columns-repositories"
 
 interface RepositoriesTableProps {
   data: Repository[]
+  pageSize?: number
 }
 
-export default function RepositoriesTable({ data }: RepositoriesTableProps) {
+export default function RepositoriesTable({
+  data,
+  pageSize = 10,
+}: RepositoriesTableProps) {
   const router = useRouter()
   return (
     <DataTable
       data={data}
       columns={columnsRepositories}
       filterColumn="repository"
-      pageSize={10}
+      pageSize={pageSize}
       onRowClick={(row) => router.push(`/repositories/${row.repository}`)}
     />
   )

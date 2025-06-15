@@ -1,5 +1,3 @@
-import Image from "next/image"
-
 import { promises as fs } from "fs"
 import path from "path"
 // import { Metadata } from "next"

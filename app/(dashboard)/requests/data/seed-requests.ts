@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 import { faker } from "@faker-js/faker"
 
-import { labels, priorities, statuses } from "./data"
+import { statuses } from "./data"
 import { generateRepoName, generateResources } from "@/lib/utils"
 
 const requests = Array.from({ length: 100 }, () => ({

@@ -1,5 +1,3 @@
-import Image from "next/image"
-
 import { promises as fs } from "fs"
 import path from "path"
 // import { Metadata } from "next"
@@ -7,7 +5,6 @@ import { z } from "zod"
 
 import { repositorySchema } from "@/app/(dashboard)/repositories/data/schema-repository"
 import { requestSchema } from "@/app/(dashboard)/requests/data/schema-request"
-import { columnsRequests } from "@/app/(dashboard)/requests/components/columns-requests"
 import RepositoriesTable from "@/app/(dashboard)/repositories/components/repositories-table"
 import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
 
@@ -55,7 +52,7 @@ export default async function Page() {
             </p>
           </div>
         </div>
-        <RequestsTable data={requests} />
+        <RequestsTable data={requests} pageSize={5} />
       </div>
 
       <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
@@ -67,7 +64,7 @@ export default async function Page() {
             </p>
           </div>
         </div>
-        <RepositoriesTable data={repositories} />
+        <RepositoriesTable data={repositories} pageSize={5} />
       </div>
     </>
   )
