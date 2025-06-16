@@ -9,6 +9,7 @@ import RepositoriesTable from "@/app/(dashboard)/repositories/components/reposit
 import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
 import { Button } from "@/components/ui/button"
 import { IconPlus } from "@tabler/icons-react"
+import Link from "next/link"
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",
@@ -53,8 +54,10 @@ export default async function Page() {
               Here&apos;s a list of your requests!
             </p>
           </div>
-          <Button>
-            <IconPlus /> Request
+          <Button asChild>
+            <Link href="/requests/create">
+              <IconPlus /> Request
+            </Link>
           </Button>
         </div>
         <RequestsTable data={requests} pageSize={5} />
