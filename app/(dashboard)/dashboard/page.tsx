@@ -7,6 +7,8 @@ import { repositorySchema } from "@/app/(dashboard)/repositories/data/schema-rep
 import { requestSchema } from "@/app/(dashboard)/requests/data/schema-request"
 import RepositoriesTable from "@/app/(dashboard)/repositories/components/repositories-table"
 import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
+import { Button } from "@/components/ui/button"
+import { IconPlus } from "@tabler/icons-react"
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",
@@ -51,6 +53,9 @@ export default async function Page() {
               Here&apos;s a list of your requests!
             </p>
           </div>
+          <Button>
+            <IconPlus /> Request
+          </Button>
         </div>
         <RequestsTable data={requests} pageSize={5} />
       </div>
