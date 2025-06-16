@@ -4,9 +4,11 @@ import { JSX, useEffect } from "react"
 
 export function ReactScan(): JSX.Element {
   useEffect(() => {
-    scan({
-      enabled: true,
-    })
+    if (process.env.NODE_ENV !== "production") {
+      scan({
+        enabled: true,
+      })
+    }
   }, [])
 
   return <></>
