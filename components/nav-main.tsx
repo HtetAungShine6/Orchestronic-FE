@@ -48,7 +48,7 @@ export function NavMain({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 tooltip={item.title}
-                isActive={pathname === item.url}
+                isActive={pathname.startsWith(item.url)}
                 className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
                 asChild
               >

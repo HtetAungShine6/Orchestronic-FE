@@ -31,7 +31,7 @@ export function NavSecondary({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 asChild
-                isActive={pathname === item.url}
+                isActive={pathname.startsWith(item.url)}
                 className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
               >
                 <a href={item.url}>
