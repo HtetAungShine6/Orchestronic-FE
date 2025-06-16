@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 
 import { DataTableColumnHeader } from "@/components/data-table/components/data-table-column-header"
 import { getInitials } from "@/lib/utils"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Repository } from "../data/schema-repository"
 import {
   Tooltip,
@@ -141,7 +141,7 @@ export const columnsRepositories: ColumnDef<Repository>[] = [
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="/avatars/03.png" alt={initial} />
+                    {/* <AvatarImage src="/avatars/03.png" alt={initial} /> */}
                     <AvatarFallback>{getInitials(initial)}</AvatarFallback>
                   </Avatar>
                 </TooltipTrigger>
