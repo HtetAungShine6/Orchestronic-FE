@@ -44,3 +44,19 @@ export function getRepoPrefix(repoName: string): string {
   const firstPart = repoName.split("-")[0]
   return firstPart.slice(0, 2)
 }
+
+export function validateFormat(name: string) {
+  return /^[a-z]+(-[a-z]+)*$/.test(name)
+}
+
+export function formatRepoName(input: string): string {
+  return input
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric sequences with hyphen
+    .replace(/^-+|-+$/g, "") // Remove leading/trailing hyphens
+}
+
+export function checkBlank(name: string) {
+  return name.trim() === ""
+}
