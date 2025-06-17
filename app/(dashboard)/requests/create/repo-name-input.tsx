@@ -1,9 +1,10 @@
 "use client"
 
-import { memo, useState } from "react"
+import { memo, useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { checkBlank, formatRepoName, validateFormat } from "@/lib/utils"
+import { useDebounce } from "@/hooks/useDebounce"
 
 interface RepoNameInputProps {
   suggestedName: string
@@ -15,71 +16,72 @@ export function RepoNameInput({
   ownerName,
 }: RepoNameInputProps) {
   const [repoName, setRepoName] = useState<string>("")
-  const [available, setAvailable] = useState<null | boolean>(null)
-  const [error, setError] = useState<string | React.ReactNode>()
-  const [checking, setChecking] = useState(false)
+  const debouncedRepoName = useDebounce(repoName, 500)
 
-  async function checkRepoAvailability(e: React.ChangeEvent<HTMLInputElement>) {
-    const name = e.target.value
+  const [message, setMessage] = useState<React.ReactNode>()
+  const [checking, setChecking] = useState<boolean>(false)
+  const [hasTyped, setHasTyped] = useState<boolean>(false)
 
-    setRepoName(name)
-    setChecking(true)
-    setError("")
+  useEffect(() => {
+    async function checkAvailability(name: string) {
+      if (!hasTyped) return
 
-    if (checkBlank(name)) {
-      setError(
-        <span className="text-muted-foreground text-xs">
-          ❌ Name cannot be blank
-        </span>
-      )
-      setAvailable(false)
-      setChecking(false)
-      return
-    }
-
-    if (!validateFormat(name)) {
-      setError(
-        <div className="text-muted-foreground text-xs">
-          <span className="text-green-700 font-bold">
-            ✅ Your new repository will be created as {formatRepoName(name)}.
+      if (checkBlank(name)) {
+        setMessage(
+          <span className="text-muted-foreground text-xs">
+            ❌ Name cannot be blank
           </span>
-          <br />
-          <span>
-            The repository name can only contain ASCII letters, digits, and the
-            characters ., -, and _.
+        )
+        setChecking(false)
+        return
+      }
+
+      if (!validateFormat(name)) {
+        setMessage(
+          <div className="text-muted-foreground text-xs">
+            <span className="text-green-700 font-bold">
+              ✅ Your new repository will be created as {formatRepoName(name)}.
+            </span>
+            <br />
+            <span>
+              The repository name can only contain ASCII letters, digits, and
+              the characters ., -, and _.
+            </span>
+          </div>
+        )
+        setChecking(false)
+        return
+      }
+
+      const fakeUnavailableList = ["test-repo", "my-project"]
+      await new Promise((res) => setTimeout(res, 300)) // fake API delay
+      const exists = fakeUnavailableList.includes(name)
+
+      if (exists) {
+        setMessage(
+          <span className="text-red-700 text-xs font-bold">
+            ❌ The repository {name} already exists on this account.
           </span>
-        </div>
-      )
-      setAvailable(false)
+        )
+      } else {
+        setMessage(
+          <span className="text-green-700 font-bold text-xs">
+            ✅ {name} is available.
+          </span>
+        )
+      }
+
       setChecking(false)
-      return
     }
 
-    const fakeUnavailableList = ["test-repo", "my-project"]
-    await new Promise((res) => setTimeout(res, 500))
-
-    const exists = fakeUnavailableList.includes(name)
-    if (exists) {
-      setError(
-        <span className="text-muted-foreground text-xs">
-          ❌ The repository ${name} already exists on this account.
-        </span>
-      )
-      setAvailable(false)
-    } else {
-      setError("")
-      setAvailable(true)
-    }
-
-    setChecking(false)
-  }
+    checkAvailability(debouncedRepoName)
+  }, [debouncedRepoName])
 
   function handleGenerate(event: React.MouseEvent<HTMLButtonElement>) {
     const name = event.currentTarget.value
+    setHasTyped(true)
+    setChecking(true)
     setRepoName(name)
-    checkRepoAvailability({
-      target: { value: name },
-    } as React.ChangeEvent<HTMLInputElement>)
   }
 
   return (
@@ -95,20 +97,20 @@ export function RepoNameInput({
           <label className="block font-medium">Repository name *</label>
           <Input
             value={repoName}
-            onChange={(e) => checkRepoAvailability(e)}
+            onChange={(e) => {
+              setHasTyped(true)
+              setChecking(true)
+              setRepoName(e.target.value)
+            }}
             className="w-58"
           />
           {checking ? (
             <span className="text-muted-foreground text-xs">
               Checking availability...
             </span>
-          ) : error ? (
-            error
-          ) : available ? (
-            <span className="text-green-700 font-semibold text-xs">
-              ✅ {repoName} is available.
-            </span>
-          ) : null}
+          ) : (
+            message
+          )}
         </div>
       </div>
       <p className="text-muted-foreground text-sm">
@@ -118,7 +120,7 @@ export function RepoNameInput({
           variant="ghost"
           onClick={handleGenerate}
           value={suggestedName}
-          className="text-green-700 cursor-pointer font-bold px-0 py-0"
+          className="text-green-700 cursor-pointer font-bold px-0 py-0 hover:text-green-800 hover:bg-transparent"
         >
           {suggestedName}
         </Button>{" "}
