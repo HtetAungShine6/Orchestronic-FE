@@ -11,6 +11,8 @@ interface RepoNameInputProps {
   ownerName: string
 }
 
+const fakeUnavailableList = ["test-repo", "my-project"]
+
 export function RepoNameInput({
   suggestedName,
   ownerName,
@@ -23,9 +25,9 @@ export function RepoNameInput({
   const [hasTyped, setHasTyped] = useState<boolean>(false)
 
   useEffect(() => {
-    async function checkAvailability(name: string) {
-      if (!hasTyped) return
+    if (!hasTyped) return
 
+    async function checkAvailability(name: string) {
       if (checkBlank(name)) {
         setMessage(
           <span className="text-muted-foreground text-xs">
@@ -36,7 +38,7 @@ export function RepoNameInput({
         return
       }
 
-      if (!validateFormat(name)) {
+      if (!validateFormat(name) && !fakeUnavailableList.includes(formatRepoName(name))) {
         setMessage(
           <div className="text-muted-foreground text-xs">
             <span className="text-green-700 font-bold">
@@ -53,14 +55,13 @@ export function RepoNameInput({
         return
       }
 
-      const fakeUnavailableList = ["test-repo", "my-project"]
       await new Promise((res) => setTimeout(res, 300)) // fake API delay
-      const exists = fakeUnavailableList.includes(name)
+      const exists = fakeUnavailableList.includes(formatRepoName(name))
 
       if (exists) {
         setMessage(
           <span className="text-red-700 text-xs font-bold">
-            ❌ The repository {name} already exists on this account.
+            ❌ The repository {formatRepoName(name)} already exists on this account.
           </span>
         )
       } else {
@@ -79,6 +80,7 @@ export function RepoNameInput({
 
   function handleGenerate(event: React.MouseEvent<HTMLButtonElement>) {
     const name = event.currentTarget.value
+    if (repoName === name) return
     setHasTyped(true)
     setChecking(true)
     setRepoName(name)
@@ -94,7 +96,7 @@ export function RepoNameInput({
         </div>
 
         <div className="h-full">
-          <label className="block font-medium">Repository name *</label>
+          <label htmlFor="repo-name" className="block font-medium">Repository name *</label>
           <Input
             value={repoName}
             onChange={(e) => {
@@ -140,7 +142,7 @@ const OwnerSection = memo(function OwnerSection({
 }: OwnerSectionProps) {
   return (
     <div {...props}>
-      <label className="block font-medium">Owner *</label>
+      <label htmlFor="owner" className="block font-medium">Owner *</label>
       <Button variant="outline">{name}</Button>
     </div>
   )
