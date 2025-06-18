@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { checkBlank, formatRepoName, validateFormat } from "@/lib/utils"
 import { useDebounce } from "@/hooks/useDebounce"
+import { Label } from "@/components/ui/label"
 
 interface RepoNameInputProps {
   suggestedName: string
@@ -38,7 +39,10 @@ export function RepoNameInput({
         return
       }
 
-      if (!validateFormat(name) && !fakeUnavailableList.includes(formatRepoName(name))) {
+      if (
+        !validateFormat(name) &&
+        !fakeUnavailableList.includes(formatRepoName(name))
+      ) {
         setMessage(
           <div className="text-muted-foreground text-xs">
             <span className="text-green-700 font-bold">
@@ -61,7 +65,8 @@ export function RepoNameInput({
       if (exists) {
         setMessage(
           <span className="text-red-700 text-xs font-bold">
-            ❌ The repository {formatRepoName(name)} already exists on this account.
+            ❌ The repository {formatRepoName(name)} already exists on this
+            account.
           </span>
         )
       } else {
@@ -89,30 +94,33 @@ export function RepoNameInput({
   return (
     <>
       <div className="flex">
-        <OwnerSection className="h-full" name={ownerName} />
+        <OwnerSection className="h-full grid gap-3" name={ownerName} />
 
         <div className="px-2 mt-6">
           <p className="font-semibold text-2xl">/</p>
         </div>
 
         <div className="h-full">
-          <label htmlFor="repo-name" className="block font-medium">Repository name *</label>
-          <Input
-            value={repoName}
-            onChange={(e) => {
-              setHasTyped(true)
-              setChecking(true)
-              setRepoName(e.target.value)
-            }}
-            className="w-58"
-          />
-          {checking ? (
-            <span className="text-muted-foreground text-xs">
-              Checking availability...
-            </span>
-          ) : (
-            message
-          )}
+          <div className="grid gap-3">
+            <Label htmlFor="repo-name" className="block font-medium">
+              Repository name *
+            </Label>
+            <Input
+              value={repoName}
+              onChange={(e) => {
+                setHasTyped(true)
+                setChecking(true)
+                setRepoName(e.target.value)
+              }}
+            />
+            {checking ? (
+              <span className="text-muted-foreground text-xs">
+                Checking availability...
+              </span>
+            ) : (
+              message
+            )}
+          </div>
         </div>
       </div>
       <p className="text-muted-foreground text-sm">
@@ -122,7 +130,7 @@ export function RepoNameInput({
           variant="ghost"
           onClick={handleGenerate}
           value={suggestedName}
-          className="text-green-700 cursor-pointer font-bold px-0 py-0 hover:text-green-800 hover:bg-transparent"
+          className="text-green-700 font-bold px-0 py-0 hover:text-green-800 hover:bg-transparent"
         >
           {suggestedName}
         </Button>{" "}
@@ -142,7 +150,9 @@ const OwnerSection = memo(function OwnerSection({
 }: OwnerSectionProps) {
   return (
     <div {...props}>
-      <label htmlFor="owner" className="block font-medium">Owner *</label>
+      <Label htmlFor="owner" className="block font-medium">
+        Owner *
+      </Label>
       <Button variant="outline">{name}</Button>
     </div>
   )

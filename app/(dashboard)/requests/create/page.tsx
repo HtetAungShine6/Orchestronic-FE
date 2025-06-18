@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -19,6 +20,10 @@ import { generateRepoName } from "@/lib/utils"
 import { Metadata } from "next"
 import { RepoNameInput } from "./repo-name-input"
 import { getServerSession } from "next-auth"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { RepoVisibility } from "./repo-visibility"
+import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
   title: "New request",
@@ -51,8 +56,8 @@ export default async function Page() {
             </h2>
           </div>
         </div>
-        <div>
-          <Card>
+        <div className="flex justify-center">
+          <Card className="lg:w-[50%]">
             <CardHeader>
               <CardTitle>Create a new repository</CardTitle>
               <CardDescription>
@@ -69,9 +74,24 @@ export default async function Page() {
                 suggestedName={suggestedName}
                 ownerName={session?.user?.name || "unknown"}
               />
+              <div className="grid w-full gap-3">
+                <Label className="gap-1" htmlFor="email">
+                  Description
+                  <span className="text-muted-foreground text-sm">
+                    (optional)
+                  </span>
+                </Label>
+                <Input />
+              </div>
+              <Separator className="my-3" />
+              <RepoVisibility />
             </CardContent>
-            <CardFooter>
-              <p>Card Footer</p>
+            <CardFooter className="ml-auto">
+              <CardAction>
+                <Button className="bg-green-700 hover:bg-green-800">
+                  Create repository
+                </Button>
+              </CardAction>
             </CardFooter>
           </Card>
         </div>
