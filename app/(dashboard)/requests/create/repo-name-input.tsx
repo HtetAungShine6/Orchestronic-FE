@@ -94,7 +94,7 @@ export function RepoNameInput({
   return (
     <>
       <div className="flex">
-        <OwnerSection className="h-full grid gap-3" name={ownerName} />
+        <OwnerSection className="h-full grid gap-4" name={ownerName} />
 
         <div className="px-2 mt-6">
           <p className="font-semibold text-2xl">/</p>
@@ -102,9 +102,7 @@ export function RepoNameInput({
 
         <div className="h-full">
           <div className="grid gap-3">
-            <Label htmlFor="repo-name" className="block font-medium">
-              Repository name *
-            </Label>
+            <Label htmlFor="repo-name">Repository name *</Label>
             <Input
               value={repoName}
               onChange={(e) => {
@@ -150,10 +148,8 @@ const OwnerSection = memo(function OwnerSection({
 }: OwnerSectionProps) {
   return (
     <div {...props}>
-      <Label htmlFor="owner" className="block font-medium">
-        Owner *
-      </Label>
-      <Button variant="outline">{name}</Button>
+      <Label htmlFor="owner">Owner *</Label>
+      <p className="font-medium">{name}</p>
     </div>
   )
 })

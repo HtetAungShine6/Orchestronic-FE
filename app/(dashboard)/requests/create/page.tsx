@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RepoVisibility } from "./repo-visibility"
 import { Button } from "@/components/ui/button"
+import Collaborators from "./collaborators"
 
 export const metadata: Metadata = {
   title: "New request",
@@ -56,8 +57,8 @@ export default async function Page() {
             </h2>
           </div>
         </div>
-        <div className="flex justify-center">
-          <Card className="lg:w-[50%]">
+        <div className="grid gap-6">
+          <Card>
             <CardHeader>
               <CardTitle>Create a new repository</CardTitle>
               <CardDescription>
@@ -86,14 +87,8 @@ export default async function Page() {
               <Separator className="my-3" />
               <RepoVisibility />
             </CardContent>
-            <CardFooter className="ml-auto">
-              <CardAction>
-                <Button className="bg-green-700 hover:bg-green-800">
-                  Create repository
-                </Button>
-              </CardAction>
-            </CardFooter>
           </Card>
+          <Collaborators />
         </div>
       </div>
     </>
