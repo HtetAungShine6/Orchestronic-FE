@@ -1,3 +1,5 @@
+import { Role } from "@/types/role"
+
 // Extend the session user with custom fields
 declare module "next-auth" {
   interface User {

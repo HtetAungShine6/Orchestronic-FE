@@ -1,7 +1,8 @@
-import { Session, User, AuthOptions } from "next-auth"
 import AzureADProvider from "next-auth/providers/azure-ad"
 import { JWT } from "next-auth/jwt"
 import { createUser, getUserByEmail } from "@/app/api/user/api"
+import type { Session, User } from "next-auth"
+import type { AuthOptions } from "next-auth"
 
 export const authOptions: AuthOptions = {
   providers: [

@@ -1,7 +1,7 @@
 import NavBar from "@/components/landing-page/nav-bar"
 import { Button } from "@/components/ui/button"
 import { authOptions } from "@/lib/auth-options"
-import { getServerSession } from "next-auth"
+import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
 import Image from "next/image"
 

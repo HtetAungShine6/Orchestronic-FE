@@ -4,7 +4,7 @@ import { ReactScan } from "@/components/react-scan-component"
 
 import "./globals.css"
 import SessionProvider from "@/components/provider/session-provider"
-import { getServerSession } from "next-auth"
+import { getServerSession } from "next-auth/next"
 import ReactQueryProvider from "@/components/provider/react-query-provider"
 
 const geistSans = Geist({

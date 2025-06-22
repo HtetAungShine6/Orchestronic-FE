@@ -1,9 +1,5 @@
-import { promises as fs } from "fs"
-import path from "path"
 // import { Metadata } from "next"
-import { z } from "zod"
 
-import { requestSchema } from "./data/schema-request"
 import RequestsTable from "./components/requests-table"
 
 // export const metadata: Metadata = {
@@ -11,20 +7,7 @@ import RequestsTable from "./components/requests-table"
 //   description: "A task and issue tracker build using Tanstack Table.",
 // }
 
-// Simulate a database read for tasks.
-async function getRequests() {
-  const data = await fs.readFile(
-    path.join(process.cwd(), "app/(dashboard)/requests/data/requests.json")
-  )
-
-  const requests = JSON.parse(data.toString())
-
-  return z.array(requestSchema).parse(requests)
-}
-
 export default async function Page() {
-  const requests = await getRequests()
-
   return (
     <>
       <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
@@ -36,7 +19,7 @@ export default async function Page() {
             </p>
           </div>
         </div>
-        <RequestsTable data={requests} />
+        <RequestsTable />
       </div>
     </>
   )

@@ -2,7 +2,6 @@
 
 import { DataTable } from "@/components/data-table/components/data-table"
 import { useRouter } from "next/navigation"
-import { Request } from "../data/schema-request"
 import { columnsRequests } from "./columns-requests"
 import { getRequests } from "@/app/api/requests/api"
 import { useQuery } from "@tanstack/react-query"

@@ -81,7 +81,7 @@ export function RepoNameInput({
     }
 
     checkAvailability(debouncedRepoName)
-  }, [debouncedRepoName])
+  }, [debouncedRepoName, hasTyped])
 
   function handleGenerate(event: React.MouseEvent<HTMLButtonElement>) {
     const name = event.currentTarget.value

@@ -61,9 +61,9 @@ export function checkBlank(name: string) {
   return name.trim() === ""
 }
 
-export function formatResourceCounts(resource: Record<string, any>): string {
+export function formatResourceCounts(resource: Record<string, number>): string {
   // Remove id key
-  const { id, ...counts } = resource
+  const { ...counts } = resource
 
   return Object.entries(counts)
     .map(([type, count]) => `${count} ${type}${count > 1 ? "s" : ""}`)

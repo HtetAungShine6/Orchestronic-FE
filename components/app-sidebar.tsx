@@ -24,7 +24,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = {
     name: session?.user?.name ?? "Unknown User",
     email: session?.user?.email ?? "unknown@example.com",
-    avatar: session?.user?.image ?? "/default-avatar.png",
+    avatar: "/default-avatar.png",
   }
 
   return (

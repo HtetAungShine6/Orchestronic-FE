@@ -4,7 +4,6 @@ import path from "path"
 import { z } from "zod"
 
 import { repositorySchema } from "@/app/(dashboard)/repositories/data/schema-repository"
-import { requestSchema } from "@/app/(dashboard)/requests/data/schema-request"
 import RepositoriesTable from "@/app/(dashboard)/repositories/components/repositories-table"
 import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
 import { Button } from "@/components/ui/button"
