@@ -8,10 +8,8 @@ import {
 } from "@/components/ui/breadcrumb"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -19,11 +17,9 @@ import { Separator } from "@/components/ui/separator"
 import { generateRepoName } from "@/lib/utils"
 import { Metadata } from "next"
 import { RepoNameInput } from "../../../../components/requests/repo-name-input"
-import { getServerSession } from "next-auth"
+import { getServerSession } from "next-auth/next"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RepoVisibility } from "../../../../components/requests/repo-visibility"
-import { Button } from "@/components/ui/button"
 import Collaborators from "../../../../components/requests/collaborators"
 
 export const metadata: Metadata = {
@@ -84,8 +80,6 @@ export default async function Page() {
                 </Label>
                 <Input />
               </div>
-              {/* <Separator className="my-3" /> */}
-              {/* <RepoVisibility /> */}
             </CardContent>
           </Card>
 

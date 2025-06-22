@@ -25,8 +25,9 @@ export const authOptions: AuthOptions = {
           existingUser = await createUser(user)
         }
 
-        // Attach role to user for jwt callback
-        user.role = existingUser.role
+        if (existingUser) {
+          user.role = existingUser.role
+        }
 
         return true
       } catch (error) {

@@ -19,8 +19,6 @@ export default function RequestsTable({ pageSize = 10 }: RequestsTableProps) {
     queryFn: getRequests,
   })
 
-  console.log(data)
-
   if (isLoading) return <p>Loading...</p>
   if (error) return <p>Error loading table</p>
 
