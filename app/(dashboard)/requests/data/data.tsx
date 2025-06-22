@@ -27,19 +27,19 @@ export const statuses = [
   //   icon: Circle,
   // },
   {
-    value: "in progress",
+    value: "Pending",
     label: "In Progress",
     icon: Timer,
     color: "text-yellow-500",
   },
   {
-    value: "done",
+    value: "Approved",
     label: "Done",
     icon: CheckCircle,
     color: "text-green-500",
   },
   {
-    value: "canceled",
+    value: "Rejected",
     label: "Canceled",
     icon: CircleOff,
     color: "text-red-500",

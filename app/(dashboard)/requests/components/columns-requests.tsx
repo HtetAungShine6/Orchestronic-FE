@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { statuses } from "../data/data"
 import { Request } from "../data/schema-request"
 import { DataTableColumnHeader } from "@/components/data-table/components/data-table-column-header"
-import { cn } from "@/lib/utils"
+import { cn, formatResourceCounts } from "@/lib/utils"
 
 export const columnsRequests: ColumnDef<Request>[] = [
   // {
@@ -35,9 +35,11 @@ export const columnsRequests: ColumnDef<Request>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Task" />
+      <DataTableColumnHeader column={column} title="Request" />
     ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
+    cell: ({ row }) => (
+      <div className="w-[80px] truncate">{row.getValue("id")}</div>
+    ),
     enableSorting: false,
     enableHiding: false,
   },
@@ -95,7 +97,9 @@ export const columnsRequests: ColumnDef<Request>[] = [
       return (
         <div className="flex space-x-2">
           {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
-          <span className="">{row.getValue("resources")}</span>
+          <span className="">
+            {formatResourceCounts(row.getValue("resources"))}
+          </span>
         </div>
       )
     },

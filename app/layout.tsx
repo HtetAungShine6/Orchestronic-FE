@@ -5,6 +5,7 @@ import { ReactScan } from "@/components/react-scan-component"
 import "./globals.css"
 import SessionProvider from "@/components/provider/session-provider"
 import { getServerSession } from "next-auth"
+import ReactQueryProvider from "@/components/provider/react-query-provider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionProvider session={session}>{children}</SessionProvider>
+        <SessionProvider session={session}>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
+        </SessionProvider>
       </body>
     </html>
   )

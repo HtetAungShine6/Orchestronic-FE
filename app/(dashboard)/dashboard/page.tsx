@@ -10,6 +10,12 @@ import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
 import { Button } from "@/components/ui/button"
 import { IconPlus } from "@tabler/icons-react"
 import Link from "next/link"
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query"
+import { getRequests } from "@/app/api/requests/api"
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",
@@ -17,15 +23,15 @@ import Link from "next/link"
 // }
 
 // Simulate a database read for tasks.
-async function getRequests() {
-  const data = await fs.readFile(
-    path.join(process.cwd(), "app/(dashboard)/requests/data/requests.json")
-  )
+// async function getRequests() {
+//   const data = await fs.readFile(
+//     path.join(process.cwd(), "app/(dashboard)/requests/data/requests.json")
+//   )
 
-  const requests = JSON.parse(data.toString())
+//   const requests = JSON.parse(data.toString())
 
-  return z.array(requestSchema).parse(requests)
-}
+//   return z.array(requestSchema).parse(requests)
+// }
 
 async function getRepositories() {
   const data = await fs.readFile(
@@ -41,7 +47,14 @@ async function getRepositories() {
 }
 
 export default async function Page() {
-  const requests = await getRequests()
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: ["requests"],
+    queryFn: getRequests,
+  })
+
+  // const requests = await getRequests()
   const repositories = await getRepositories()
 
   return (
@@ -60,7 +73,9 @@ export default async function Page() {
             </Link>
           </Button>
         </div>
-        <RequestsTable data={requests} pageSize={5} />
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <RequestsTable pageSize={5} />
+        </HydrationBoundary>
       </div>
 
       <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">

@@ -18,13 +18,13 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { generateRepoName } from "@/lib/utils"
 import { Metadata } from "next"
-import { RepoNameInput } from "./repo-name-input"
+import { RepoNameInput } from "../../../../components/requests/repo-name-input"
 import { getServerSession } from "next-auth"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RepoVisibility } from "./repo-visibility"
+import { RepoVisibility } from "../../../../components/requests/repo-visibility"
 import { Button } from "@/components/ui/button"
-import Collaborators from "./collaborators"
+import Collaborators from "../../../../components/requests/collaborators"
 
 export const metadata: Metadata = {
   title: "New request",
@@ -84,10 +84,11 @@ export default async function Page() {
                 </Label>
                 <Input />
               </div>
-              <Separator className="my-3" />
-              <RepoVisibility />
+              {/* <Separator className="my-3" /> */}
+              {/* <RepoVisibility /> */}
             </CardContent>
           </Card>
+
           <Collaborators />
         </div>
       </div>

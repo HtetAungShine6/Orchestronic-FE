@@ -60,3 +60,12 @@ export function formatRepoName(input: string): string {
 export function checkBlank(name: string) {
   return name.trim() === ""
 }
+
+export function formatResourceCounts(resource: Record<string, any>): string {
+  // Remove id key
+  const { id, ...counts } = resource
+
+  return Object.entries(counts)
+    .map(([type, count]) => `${count} ${type}${count > 1 ? "s" : ""}`)
+    .join(", ")
+}

@@ -15,6 +15,7 @@ export default function AuthButton() {
         variant="outline"
         onClick={() => signIn("azure-ad", { callbackUrl: "/dashboard" })}
       >
+        {/*
         <Image
           src="https://img.icons8.com/?size=100&id=22984&format=png&color=1A1A1A"
           alt="Microsoft icon"
@@ -22,6 +23,8 @@ export default function AuthButton() {
           height={20}
         />
         Login with Microsoft
+        */}
+        Login
       </Button>
     )
   }

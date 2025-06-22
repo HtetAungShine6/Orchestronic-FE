@@ -1,5 +1,7 @@
-import { type AuthOptions } from "next-auth"
+import { Session, User, AuthOptions } from "next-auth"
 import AzureADProvider from "next-auth/providers/azure-ad"
+import { JWT } from "next-auth/jwt"
+import { createUser, getUserByEmail } from "@/app/api/user/api"
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -11,5 +13,42 @@ export const authOptions: AuthOptions = {
   ],
   session: {
     strategy: "jwt",
+  },
+  callbacks: {
+    async signIn({ user }: { user: User }) {
+      if (!user?.email) return false
+
+      try {
+        let existingUser = await getUserByEmail(user.email)
+
+        if (!existingUser) {
+          existingUser = await createUser(user)
+        }
+
+        // Attach role to user for jwt callback
+        user.role = existingUser.role
+
+        return true
+      } catch (error) {
+        console.error("Error during signIn user check/create:", error)
+        return false
+      }
+    },
+    async jwt({ token, user }: { token: JWT; user?: User }) {
+      if (user) {
+        token.name = user.name ?? undefined
+        token.email = user.email ?? undefined
+        token.role = user.role ?? undefined
+      }
+      return token
+    },
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if (token) {
+        session.user.name = token.name
+        session.user.email = token.email
+        session.user.role = token.role
+      }
+      return session
+    },
   },
 }
