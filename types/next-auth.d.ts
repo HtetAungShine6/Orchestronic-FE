@@ -4,8 +4,8 @@ import { Role } from "@/types/role"
 declare module "next-auth" {
   interface User {
     id: string
-    name?: string
-    email?: string
+    name: string
+    email: string
     role: Role
   }
 

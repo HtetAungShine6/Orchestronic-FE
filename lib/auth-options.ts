@@ -3,6 +3,7 @@ import { JWT } from "next-auth/jwt"
 import { createUser, getUserByEmail } from "@/app/api/user/api"
 import type { Session, User } from "next-auth"
 import type { AuthOptions } from "next-auth"
+import { isApiError } from "@/types/error"
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -17,13 +18,19 @@ export const authOptions: AuthOptions = {
   },
   callbacks: {
     async signIn({ user }: { user: User }) {
-      if (!user?.email) return false
+      if (!user.email) return false
 
       try {
-        let existingUser = await getUserByEmail(user.email)
+        let existingUser: User
 
-        if (!existingUser) {
-          existingUser = await createUser(user)
+        try {
+          existingUser = await getUserByEmail(user.email)
+        } catch (error) {
+          if (isApiError(error) && error.statusCode === 404) {
+            existingUser = await createUser(user)
+          } else {
+            throw error
+          }
         }
 
         if (existingUser) {
@@ -36,6 +43,7 @@ export const authOptions: AuthOptions = {
         return false
       }
     },
+
     async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
         token.name = user.name ?? undefined
