@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useQuery } from "@tanstack/react-query"
-import { getUserByEmail } from "@/app/api/user/api"
+import { fuzzyFindUsersByEmail } from "@/app/api/user/api"
 import { User } from "@/types/api"
 
 export default function Collaborators() {
@@ -33,7 +33,7 @@ export default function Collaborators() {
     error,
   } = useQuery({
     queryKey: ["userByEmail", searchEmail],
-    queryFn: () => getUserByEmail(searchEmail),
+    queryFn: () => fuzzyFindUsersByEmail(searchEmail),
     enabled: !!searchEmail,
   })
 

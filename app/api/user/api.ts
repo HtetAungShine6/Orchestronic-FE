@@ -18,6 +18,22 @@ export async function getUserByEmail(email: string): Promise<User> {
   return res.json()
 }
 
+export async function fuzzyFindUsersByEmail(email: string): Promise<User[]> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/user/by-email?email=${encodeURIComponent(email)}`
+  )
+
+  if (!res.ok) {
+    const err = await res.json()
+    throw new ApiError(
+      err.statusCode || res.status,
+      err.message || "Unknown error"
+    )
+  }
+
+  return res.json()
+}
+
 export async function createUser(user: User) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
     method: "POST",
