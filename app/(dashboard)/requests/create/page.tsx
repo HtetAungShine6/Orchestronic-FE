@@ -21,6 +21,7 @@ import { getServerSession } from "next-auth/next"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Collaborators from "../../../../components/requests/collaborators"
+import ResourceGroup from "@/components/requests/resource-group"
 
 export const metadata: Metadata = {
   title: "New request",
@@ -84,6 +85,8 @@ export default async function Page() {
           </Card>
 
           <Collaborators />
+
+          <ResourceGroup />
         </div>
       </div>
     </>

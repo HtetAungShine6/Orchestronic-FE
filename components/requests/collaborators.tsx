@@ -66,7 +66,7 @@ export default function Collaborators() {
       <Card>
         <CardHeader>
           <CardTitle>Collaborators</CardTitle>
-          <CardDescription className="text-sm">
+          <CardDescription>
             Invite teammates to contribute to this repository.
           </CardDescription>
           <CardAction>
