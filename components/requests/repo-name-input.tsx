@@ -1,18 +1,19 @@
 "use client"
 
-import { memo, useState, useEffect } from "react"
+import { memo, useState, useEffect, ReactNode } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { checkBlank, formatRepoName, validateFormat } from "@/lib/utils"
 import { useDebounce } from "@/hooks/useDebounce"
 import { Label } from "@/components/ui/label"
+import checkRepositoryAvailablity from "@/app/api/repository/api"
+import { useQuery } from "@tanstack/react-query"
+
 
 interface RepoNameInputProps {
   suggestedName: string
   ownerName: string
 }
-
-const fakeUnavailableList = ["test-repo", "my-project"]
 
 export function RepoNameInput({
   suggestedName,
@@ -21,9 +22,15 @@ export function RepoNameInput({
   const [repoName, setRepoName] = useState<string>("")
   const debouncedRepoName = useDebounce(repoName, 500)
 
-  const [message, setMessage] = useState<React.ReactNode>()
+  const [message, setMessage] = useState<ReactNode>(null)
   const [checking, setChecking] = useState<boolean>(false)
   const [hasTyped, setHasTyped] = useState<boolean>(false)
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["repoName", debouncedRepoName],
+    queryFn: () => checkRepositoryAvailablity(debouncedRepoName),
+    enabled: !!debouncedRepoName,
+  })
 
   useEffect(() => {
     if (!hasTyped) return
@@ -41,7 +48,7 @@ export function RepoNameInput({
 
       if (
         !validateFormat(name) &&
-        !fakeUnavailableList.includes(formatRepoName(name))
+        !data?.exists
       ) {
         setMessage(
           <div className="text-muted-foreground text-xs">
@@ -59,8 +66,7 @@ export function RepoNameInput({
         return
       }
 
-      await new Promise((res) => setTimeout(res, 300)) // fake API delay
-      const exists = fakeUnavailableList.includes(formatRepoName(name))
+      const exists: boolean = data?.exists
 
       if (exists) {
         setMessage(
@@ -81,7 +87,7 @@ export function RepoNameInput({
     }
 
     checkAvailability(debouncedRepoName)
-  }, [debouncedRepoName, hasTyped])
+  }, [data?.exists, debouncedRepoName, hasTyped])
 
   function handleGenerate(event: React.MouseEvent<HTMLButtonElement>) {
     const name = event.currentTarget.value
