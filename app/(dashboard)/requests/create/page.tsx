@@ -71,16 +71,19 @@ export default async function Page() {
             <CardContent>
               <RepoNameInput
                 suggestedName={suggestedName}
-                ownerName={session?.user?.name || "unknown"}
+                ownerName={session?.user?.name || "Your Account"}
               />
               <div className="grid w-full gap-3">
-                <Label className="gap-1" htmlFor="email">
+                <Label className="gap-1" htmlFor="repo-description">
                   Description
                   <span className="text-muted-foreground text-sm">
                     (optional)
                   </span>
                 </Label>
-                <Input placeholder="Briefly describe your repository" />
+                <Input
+                  id="repo-description"
+                  placeholder="Briefly describe your repository"
+                />
               </div>
             </CardContent>
           </Card>
@@ -89,9 +92,12 @@ export default async function Page() {
           <ResourceGroup />
           <div className="grid w-full gap-3">
             <Label className="gap-1" htmlFor="request-description">
-              Request description
+              Request Description
             </Label>
-            <Textarea placeholder="Type your message here" />
+            <Textarea
+              id="request-description"
+              placeholder="Provide any additional context or details for your request"
+            />
           </div>
         </div>
       </div>
