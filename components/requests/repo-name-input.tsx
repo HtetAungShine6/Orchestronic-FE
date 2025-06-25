@@ -8,15 +8,35 @@ import { useDebounce } from "@/hooks/useDebounce"
 import { Label } from "@/components/ui/label"
 import checkRepositoryAvailability from "@/app/api/repository/api"
 import { useQuery } from "@tanstack/react-query"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { UseFormReturn } from "react-hook-form"
+import { requestFormSchema } from "@/components/requests/client-request-form"
+import z from "zod"
 
 interface RepoNameInputProps {
   suggestedName: string
   ownerName: string
+  form: UseFormReturn<z.infer<typeof requestFormSchema>>
 }
 
 export function RepoNameInput({
   suggestedName,
   ownerName,
+  form,
 }: RepoNameInputProps) {
   const [repoName, setRepoName] = useState<string>("")
   const debouncedRepoName = useDebounce(repoName, 500)
@@ -100,52 +120,98 @@ export function RepoNameInput({
   }
 
   return (
-    <>
-      <div className="flex">
-        <div className="h-full grid gap-4">
-          <Label htmlFor="owner">Owner *</Label>
-          <p className="font-medium">{ownerName}</p>
-        </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Create a new repository</CardTitle>
+        <CardDescription>
+          A repository contains all project files, including the revision
+          history.
+        </CardDescription>
+        <Separator />
+        <CardDescription>
+          Required fields are marked with an asterisk (*).
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex">
+          <div className="h-full grid gap-4">
+            <Label htmlFor="owner">Owner *</Label>
+            <p className="font-medium">{ownerName}</p>
+          </div>
 
-        <div className="px-2 mt-6">
-          <p className="font-semibold text-2xl">/</p>
-        </div>
+          <div className="px-2 mt-6">
+            <p className="font-semibold text-2xl">/</p>
+          </div>
 
-        <div className="h-full">
-          <div className="grid gap-3">
-            <Label htmlFor="repo-name">Repository name *</Label>
-            <Input
-              id="repo-name"
-              value={repoName}
-              onChange={(e) => {
-                setIsTyping(true)
-                setHasTyped(true)
-                setRepoName(e.target.value)
-              }}
+          <div className="h-full">
+            <FormField
+              control={form.control}
+              name="repository_description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="gap-1">Repository name *</FormLabel>
+                  <FormControl>
+                    <div className="grid gap-1">
+                      <Input
+                        {...field}
+                        className="w-50"
+                        value={repoName}
+                        onChange={(e) => {
+                          setIsTyping(true)
+                          setHasTyped(true)
+                          setRepoName(e.target.value)
+                        }}
+                      />
+                      {isTyping || isLoading ? (
+                        <span className="text-muted-foreground text-xs">
+                          Checking availability...
+                        </span>
+                      ) : (
+                        message
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {isTyping || isLoading ? (
-              <span className="text-muted-foreground text-xs">
-                Checking availability...
-              </span>
-            ) : (
-              message
-            )}
           </div>
         </div>
-      </div>
-      <p className="text-muted-foreground text-sm">
-        Great repository names are short and memorable. Need inspiration? How
-        about{" "}
-        <Button
-          variant="ghost"
-          onClick={handleGenerate}
-          value={suggestedName}
-          className="text-green-700 font-bold px-0 py-0 hover:text-green-800 hover:bg-transparent"
-        >
-          {suggestedName}
-        </Button>{" "}
-        ?
-      </p>
-    </>
+        <p className="text-muted-foreground text-sm">
+          Great repository names are short and memorable. Need inspiration? How
+          about{" "}
+          <Button
+            variant="ghost"
+            onClick={handleGenerate}
+            value={suggestedName}
+            className="text-green-700 font-bold px-0 py-0 hover:text-green-800 hover:bg-transparent"
+          >
+            {suggestedName}
+          </Button>{" "}
+          ?
+        </p>
+        <FormField
+          control={form.control}
+          name="repository_description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="gap-1">
+                Description
+                <span className="text-muted-foreground text-sm">
+                  (optional)
+                </span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Briefly describe your repository"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </CardContent>
+    </Card>
   )
 }

@@ -6,23 +6,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
 import { generateRepoName } from "@/lib/utils"
 import { Metadata } from "next"
-import { RepoNameInput } from "../../../../components/requests/repo-name-input"
 import { getServerSession } from "next-auth/next"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Collaborators from "../../../../components/requests/collaborators"
-import ResourceGroup from "@/components/requests/resource-group"
-import { Textarea } from "@/components/ui/textarea"
+
+import ClientRequestForm from "@/components/requests/client-request-form"
 
 export const metadata: Metadata = {
   title: "New request",
@@ -56,49 +44,7 @@ export default async function Page() {
           </div>
         </div>
         <div className="grid gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Create a new repository</CardTitle>
-              <CardDescription>
-                A repository contains all project files, including the revision
-                history.
-              </CardDescription>
-              <Separator />
-              <CardDescription>
-                Required fields are marked with an asterisk (*).
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RepoNameInput
-                suggestedName={suggestedName}
-                ownerName={session?.user?.name || "Your Account"}
-              />
-              <div className="grid w-full gap-3">
-                <Label className="gap-1" htmlFor="repo-description">
-                  Description
-                  <span className="text-muted-foreground text-sm">
-                    (optional)
-                  </span>
-                </Label>
-                <Input
-                  id="repo-description"
-                  placeholder="Briefly describe your repository"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Collaborators />
-          <ResourceGroup />
-          <div className="grid w-full gap-3">
-            <Label className="gap-1" htmlFor="request-description">
-              Request Description
-            </Label>
-            <Textarea
-              id="request-description"
-              placeholder="Provide any additional context or details for your request"
-            />
-          </div>
+          <ClientRequestForm session={session} suggestedName={suggestedName} />
         </div>
       </div>
     </>
