@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 
 export const requestFormSchema = z.object({
-  repository_name: z.string().nonempty("Repository name is required"),
+  repository_name: z.string(),
   repository_description: z.string().optional(),
 })
 
@@ -38,6 +38,8 @@ export default function ClientRequestForm({
   function onSubmit(values: z.infer<typeof requestFormSchema>) {
     console.log(values)
   }
+
+  console.log(requestForm.formState.errors)
 
   return (
     <Form {...requestForm}>

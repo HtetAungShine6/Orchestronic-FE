@@ -146,7 +146,7 @@ export function RepoNameInput({
           <div className="h-full">
             <FormField
               control={form.control}
-              name="repository_description"
+              name="repository_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="gap-1">Repository name *</FormLabel>
@@ -157,6 +157,7 @@ export function RepoNameInput({
                         className="w-50"
                         value={repoName}
                         onChange={(e) => {
+                          field.onChange(e.target.value)
                           setIsTyping(true)
                           setHasTyped(true)
                           setRepoName(e.target.value)
