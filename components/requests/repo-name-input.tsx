@@ -95,7 +95,11 @@ export function RepoNameInput({
   return (
     <>
       <div className="flex">
-        <OwnerSection className="h-full grid gap-4" name={ownerName} />
+        <div className="h-full grid gap-4">
+          <Label htmlFor="owner">Owner *</Label>
+          <p className="font-medium">{ownerName}</p>
+        </div>
+
 
         <div className="px-2 mt-6">
           <p className="font-semibold text-2xl">/</p>
@@ -138,19 +142,3 @@ export function RepoNameInput({
     </>
   )
 }
-
-interface OwnerSectionProps extends React.HTMLAttributes<HTMLDivElement> {
-  name: string
-}
-
-const OwnerSection = memo(function OwnerSection({
-  name,
-  ...props
-}: OwnerSectionProps) {
-  return (
-    <div {...props}>
-      <Label htmlFor="owner">Owner *</Label>
-      <p className="font-medium">{name}</p>
-    </div>
-  )
-})
