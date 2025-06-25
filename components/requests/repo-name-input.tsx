@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label"
 import checkRepositoryAvailablity from "@/app/api/repository/api"
 import { useQuery } from "@tanstack/react-query"
 
-
 interface RepoNameInputProps {
   suggestedName: string
   ownerName: string
@@ -23,8 +22,8 @@ export function RepoNameInput({
   const debouncedRepoName = useDebounce(repoName, 500)
 
   const [message, setMessage] = useState<ReactNode>(null)
-  const [checking, setChecking] = useState<boolean>(false)
-  const [hasTyped, setHasTyped] = useState<boolean>(false)
+  const [isChecking, setIsChecking] = useState(false);
+  const [hasTyped, setHasTyped] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["repoName", debouncedRepoName],
@@ -33,7 +32,7 @@ export function RepoNameInput({
   })
 
   useEffect(() => {
-    if (!hasTyped) return
+    if (!hasTyped) return;
 
     async function checkAvailability(name: string) {
       if (checkBlank(name)) {
@@ -42,14 +41,11 @@ export function RepoNameInput({
             ❌ Name cannot be blank
           </span>
         )
-        setChecking(false)
+        setIsChecking(false);
         return
       }
 
-      if (
-        !validateFormat(name) &&
-        !data?.exists
-      ) {
+      if (!validateFormat(name)) {
         setMessage(
           <div className="text-muted-foreground text-xs">
             <span className="text-green-700 font-bold">
@@ -62,39 +58,38 @@ export function RepoNameInput({
             </span>
           </div>
         )
-        setChecking(false)
+        setIsChecking(false);
         return
       }
 
-      const exists: boolean = data?.exists
-
-      if (exists) {
+      if (data?.exists) {
         setMessage(
           <span className="text-red-700 text-xs font-bold">
-            ❌ The repository {formatRepoName(name)} already exists on this
-            account.
+            ❌ The repository {formatRepoName(name)} already exists on this account.
           </span>
         )
-      } else {
-        setMessage(
-          <span className="text-green-700 font-bold text-xs">
-            ✅ {name} is available.
-          </span>
-        )
+        setIsChecking(false);
+        return
       }
 
-      setChecking(false)
+      setMessage(
+        <span className="text-green-700 font-bold text-xs">
+          ✅ {name} is available.
+        </span>
+      )
+      setIsChecking(false);
     }
 
     checkAvailability(debouncedRepoName)
-  }, [data?.exists, debouncedRepoName, hasTyped])
+  }, [debouncedRepoName, hasTyped])
 
   function handleGenerate(event: React.MouseEvent<HTMLButtonElement>) {
     const name = event.currentTarget.value
-    if (repoName === name) return
-    setHasTyped(true)
-    setChecking(true)
     setRepoName(name)
+  }
+
+  if (error) {
+    return <p className="text-red-700 text-xs font-bold">Error: {error.message}</p>
   }
 
   return (
@@ -112,12 +107,12 @@ export function RepoNameInput({
             <Input
               value={repoName}
               onChange={(e) => {
-                setHasTyped(true)
-                setChecking(true)
+                setIsChecking(true);
+                setHasTyped(true);
                 setRepoName(e.target.value)
               }}
             />
-            {checking ? (
+            {isChecking || isLoading ? (
               <span className="text-muted-foreground text-xs">
                 Checking availability...
               </span>
