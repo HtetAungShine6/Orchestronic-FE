@@ -23,12 +23,21 @@ import { useQuery } from "@tanstack/react-query"
 import { fuzzyFindUsersByEmail } from "@/app/api/user/api"
 import { User } from "@/types/api"
 import { useDebounce } from "@/hooks/useDebounce"
+import { requestFormSchema } from "@/components/requests/client-request-form"
+import { UseFormReturn } from "react-hook-form"
+import z, { set } from "zod"
+import { IconTrash } from "@tabler/icons-react"
 
-export default function Collaborators() {
+interface CollaboratorsProps {
+  form: UseFormReturn<z.infer<typeof requestFormSchema>>
+}
+
+export default function Collaborators({ form }: CollaboratorsProps) {
   const [open, setOpen] = useState<boolean>(false)
   const [searchEmail, setSearchEmail] = useState<string>("")
   const [selectedUsers, setSelectedUsers] = useState<string[]>([])
   const debouncedSearchEmail = useDebounce(searchEmail, 500)
+  const [filteredUsers, setFilteredUsers] = useState<string[]>([])
 
   const {
     data: users,
@@ -37,7 +46,7 @@ export default function Collaborators() {
   } = useQuery({
     queryKey: ["userByEmail", debouncedSearchEmail],
     queryFn: () => fuzzyFindUsersByEmail(debouncedSearchEmail),
-    enabled: !!debouncedSearchEmail,
+    // enabled: !!debouncedSearchEmail,
   })
 
   function handleUserSelect(userEmail: string) {
@@ -45,11 +54,39 @@ export default function Collaborators() {
       if (prev.includes(userEmail)) {
         return prev
       } else {
-        return [...prev, userEmail]
+        const updated = [...prev, userEmail]
+        form.setValue("collaborators", updated)
+        return updated
+      }
+    })
+    setFilteredUsers((prev) => {
+      if (prev.includes(userEmail)) {
+        return prev
+      } else {
+        const updated = [...prev, userEmail]
+        return updated
       }
     })
     setOpen(false)
     setSearchEmail("")
+  }
+
+  function handleRemoveUser(email: string) {
+    setSelectedUsers((prev) => {
+      const updated = prev.filter((userEmail) => userEmail !== email)
+      form.setValue("collaborators", updated)
+      return updated
+    })
+  }
+
+  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const value = event.target.value
+    setSearchEmail(value)
+
+    const filtered = selectedUsers.filter((user) =>
+      user.toLowerCase().includes(value.toLowerCase())
+    )
+    setFilteredUsers(filtered)
   }
 
   return (
@@ -96,22 +133,38 @@ export default function Collaborators() {
           </CardAction>
         </CardHeader>
         <CardContent>
-          <Input type="text" placeholder="Find a collaborator..." />
-          <div className="mt-4">
-            {selectedUsers.length > 0 ? (
-              <ul className="list-disc pl-5">
-                {selectedUsers.map((email) => (
+          <Input
+            // value={searchEmail}
+            onChange={handleInputChange}
+            type="text"
+            placeholder="Find a collaborator..."
+          />
+
+          {filteredUsers.length > 0 ? (
+            <ul className="mt-4">
+              {filteredUsers.map((email) => (
+                <div key={email} className="flex items-center">
                   <li key={email} className="text-sm">
                     {email}
                   </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-muted-foreground text-sm">
-                No collaborators added yet.
-              </p>
-            )}
-          </div>
+                  <span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="ml-2"
+                      onClick={() => handleRemoveUser(email)}
+                    >
+                      <IconTrash />
+                    </Button>
+                  </span>
+                </div>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-muted-foreground text-sm">
+              No collaborators added yet.
+            </p>
+          )}
         </CardContent>
       </Card>
     </>

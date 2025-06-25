@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button"
 export const requestFormSchema = z.object({
   repository_name: z.string(),
   repository_description: z.string().optional(),
+  collaborators: z.array(z.string()).optional(),
 })
 
 interface ClientRequestFormProps {
@@ -32,6 +33,7 @@ export default function ClientRequestForm({
     defaultValues: {
       repository_name: "",
       repository_description: "",
+      collaborators: [],
     },
   })
 
@@ -49,7 +51,7 @@ export default function ClientRequestForm({
           ownerName={session?.user?.name || "Your Account"}
           form={requestForm}
         />
-        <Collaborators />
+        <Collaborators form={requestForm} />
         <ResourceGroup />
 
         <div className="grid w-full gap-3">
