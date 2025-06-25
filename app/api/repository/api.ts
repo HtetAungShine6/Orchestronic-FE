@@ -1,6 +1,6 @@
 import { ApiError } from "@/types/error"
 
-export default async function checkRepositoryAvailablity(name: string) {
+export default async function checkRepositoryAvailability(name: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/repositories/available-repository?name=${encodeURIComponent(name)}`
   )

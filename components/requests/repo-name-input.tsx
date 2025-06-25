@@ -1,12 +1,12 @@
 "use client"
 
-import { memo, useState, useEffect, ReactNode } from "react"
+import { useState, useEffect, ReactNode } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { checkBlank, formatRepoName, validateFormat } from "@/lib/utils"
 import { useDebounce } from "@/hooks/useDebounce"
 import { Label } from "@/components/ui/label"
-import checkRepositoryAvailablity from "@/app/api/repository/api"
+import checkRepositoryAvailability from "@/app/api/repository/api"
 import { useQuery } from "@tanstack/react-query"
 
 interface RepoNameInputProps {
@@ -22,26 +22,33 @@ export function RepoNameInput({
   const debouncedRepoName = useDebounce(repoName, 500)
 
   const [message, setMessage] = useState<ReactNode>(null)
-  const [isChecking, setIsChecking] = useState(false);
-  const [hasTyped, setHasTyped] = useState(false);
+  const [hasTyped, setHasTyped] = useState(false)
+  const [isTyping, setIsTyping] = useState(false)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["repoName", debouncedRepoName],
-    queryFn: () => checkRepositoryAvailablity(debouncedRepoName),
+    queryFn: () => checkRepositoryAvailability(debouncedRepoName),
     enabled: !!debouncedRepoName,
   })
 
   useEffect(() => {
-    if (!hasTyped) return;
+    if (repoName === debouncedRepoName) {
+      setIsTyping(false)
+    }
+  }, [debouncedRepoName, repoName])
 
-    async function checkAvailability(name: string) {
+  useEffect(() => {
+    if (!hasTyped) return
+
+    if (repoName !== debouncedRepoName) return
+
+    function checkAvailability(name: string) {
       if (checkBlank(name)) {
         setMessage(
           <span className="text-muted-foreground text-xs">
             ❌ Name cannot be blank
           </span>
         )
-        setIsChecking(false);
         return
       }
 
@@ -58,17 +65,16 @@ export function RepoNameInput({
             </span>
           </div>
         )
-        setIsChecking(false);
         return
       }
 
       if (data?.exists) {
         setMessage(
           <span className="text-red-700 text-xs font-bold">
-            ❌ The repository {formatRepoName(name)} already exists on this account.
+            ❌ The repository {formatRepoName(name)} already exists on this
+            account.
           </span>
         )
-        setIsChecking(false);
         return
       }
 
@@ -77,19 +83,20 @@ export function RepoNameInput({
           ✅ {name} is available.
         </span>
       )
-      setIsChecking(false);
     }
 
     checkAvailability(debouncedRepoName)
-  }, [debouncedRepoName, hasTyped])
+  }, [data?.exists, debouncedRepoName, hasTyped, repoName])
 
-  function handleGenerate(event: React.MouseEvent<HTMLButtonElement>) {
-    const name = event.currentTarget.value
-    setRepoName(name)
+  function handleGenerate() {
+    setHasTyped(true)
+    setRepoName(suggestedName)
   }
 
   if (error) {
-    return <p className="text-red-700 text-xs font-bold">Error: {error.message}</p>
+    return (
+      <p className="text-red-700 text-xs font-bold">Error: {error.message}</p>
+    )
   }
 
   return (
@@ -100,7 +107,6 @@ export function RepoNameInput({
           <p className="font-medium">{ownerName}</p>
         </div>
 
-
         <div className="px-2 mt-6">
           <p className="font-semibold text-2xl">/</p>
         </div>
@@ -109,14 +115,15 @@ export function RepoNameInput({
           <div className="grid gap-3">
             <Label htmlFor="repo-name">Repository name *</Label>
             <Input
+              id="repo-name"
               value={repoName}
               onChange={(e) => {
-                setIsChecking(true);
-                setHasTyped(true);
+                setIsTyping(true)
+                setHasTyped(true)
                 setRepoName(e.target.value)
               }}
             />
-            {isChecking || isLoading ? (
+            {isTyping || isLoading ? (
               <span className="text-muted-foreground text-xs">
                 Checking availability...
               </span>

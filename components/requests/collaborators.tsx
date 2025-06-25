@@ -22,19 +22,21 @@ import { Button } from "@/components/ui/button"
 import { useQuery } from "@tanstack/react-query"
 import { fuzzyFindUsersByEmail } from "@/app/api/user/api"
 import { User } from "@/types/api"
+import { useDebounce } from "@/hooks/useDebounce"
 
 export default function Collaborators() {
   const [open, setOpen] = useState(false)
   const [searchEmail, setSearchEmail] = useState("")
+  const debouncedSearchEmail = useDebounce(searchEmail, 500)
 
   const {
     data: users,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["userByEmail", searchEmail],
-    queryFn: () => fuzzyFindUsersByEmail(searchEmail),
-    enabled: !!searchEmail,
+    queryKey: ["userByEmail", debouncedSearchEmail],
+    queryFn: () => fuzzyFindUsersByEmail(debouncedSearchEmail),
+    enabled: !!debouncedSearchEmail,
   })
 
   return (
