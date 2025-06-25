@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Collaborators from "../../../../components/requests/collaborators"
 import ResourceGroup from "@/components/requests/resource-group"
+import { Textarea } from "@/components/ui/textarea"
 
 export const metadata: Metadata = {
   title: "New request",
@@ -79,14 +80,19 @@ export default async function Page() {
                     (optional)
                   </span>
                 </Label>
-                <Input />
+                <Input placeholder="Briefly describe your repository" />
               </div>
             </CardContent>
           </Card>
 
           <Collaborators />
-
           <ResourceGroup />
+          <div className="grid w-full gap-3">
+            <Label className="gap-1" htmlFor="request-description">
+              Request description
+            </Label>
+            <Textarea placeholder="Type your message here" />
+          </div>
         </div>
       </div>
     </>
