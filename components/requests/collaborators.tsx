@@ -25,7 +25,7 @@ import { User } from "@/types/api"
 import { useDebounce } from "@/hooks/useDebounce"
 import { requestFormSchema } from "@/components/requests/client-request-form"
 import { UseFormReturn } from "react-hook-form"
-import z, { set } from "zod"
+import z from "zod"
 import { IconTrash } from "@tabler/icons-react"
 
 interface CollaboratorsProps {

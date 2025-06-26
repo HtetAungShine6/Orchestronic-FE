@@ -5,7 +5,7 @@ import { z } from "zod"
 
 import { repositorySchema } from "@/app/(dashboard)/repositories/data/schema-repository"
 import RepositoriesTable from "@/app/(dashboard)/repositories/components/repositories-table"
-import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
+// import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
 import { Button } from "@/components/ui/button"
 import { IconPlus } from "@tabler/icons-react"
 import Link from "next/link"
