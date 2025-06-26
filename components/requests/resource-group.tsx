@@ -26,19 +26,33 @@ import {
 } from "@/components/ui/accordion"
 import { useSelector } from "react-redux"
 import { RootState } from "@/app/state/store"
+import { requestFormSchema } from "./client-request-form"
+import { UseFormReturn } from "react-hook-form"
+import z from "zod"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 
-const cloudProviders = [
+export const cloudProviders = [
   { value: "azure", label: "Azure", icon: "/icon/azure.svg" },
   { value: "aws", label: "AWS", icon: "/icon/aws.svg" },
 ]
-const regions = [
+export const regions = [
   { value: "ap-southeast-1", label: "Asia Pacific (Singapore)" },
   { value: "us-east-1", label: "US East (N. Virginia)" },
   { value: "us-west-2", label: "US West (Oregon)" },
   { value: "eu-west-1", label: "EU (Ireland)" },
 ]
 
-export default function ResourceGroup() {
+interface ResourceGroupProps {
+  form: UseFormReturn<z.infer<typeof requestFormSchema>>
+}
+
+export default function ResourceGroup({ form }: ResourceGroupProps) {
   const [vmCount, setVmCount] = useState(0)
   const [storageCount, setStorageCount] = useState(0)
   const [databaseCount, setDatabaseCount] = useState(0)
@@ -59,29 +73,38 @@ export default function ResourceGroup() {
             <Label htmlFor="resource-group-name">Resource Group Name</Label>
             <p className="truncate">rg-{repoName}</p>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="resource-group-provider">Cloud Provider</Label>
-            <Select defaultValue={cloudProviders[0].value}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {cloudProviders.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    <span className="flex items-center gap-2">
-                      <Image
-                        src={option.icon}
-                        width={16}
-                        height={16}
-                        alt={`${option.label} Icon`}
-                      />
-                      {option.label}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>{" "}
+          <FormField
+            control={form.control}
+            name="cloud_provider"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cloud Provider</FormLabel>
+                <FormControl>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {cloudProviders.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          <span className="flex items-center gap-2">
+                            <Image
+                              src={option.icon}
+                              width={16}
+                              height={16}
+                              alt={`${option.label} Icon`}
+                            />
+                            {option.label}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="grid gap-2">
             <Label htmlFor="resource-group-provider">Region</Label>
             <Select defaultValue={regions[0].value}>

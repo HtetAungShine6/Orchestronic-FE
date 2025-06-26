@@ -1,25 +1,44 @@
 "use client"
 
-import { Label } from "@/components/ui/label"
 import Collaborators from "@/components/requests/collaborators"
-import ResourceGroup from "@/components/requests/resource-group"
+import ResourceGroup, {
+  cloudProviders,
+  regions,
+} from "@/components/requests/resource-group"
 import { Textarea } from "@/components/ui/textarea"
 import { RepoNameInput } from "@/components/requests/repo-name-input"
 
 import { Session } from "next-auth"
-import { Form } from "@/components/ui/form"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import z from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
+import { resourceSchema } from "@/app/zod/scheme"
 
 export const requestFormSchema = z.object({
-  repository_name: z.string(),
+  repository_name: z.string().nonempty({
+    message: "",
+  }),
   repository_description: z.string().optional(),
   collaborators: z.array(z.string()).optional(),
-  resource_group: z.string(),
-  cloud_provider: z.string(),
-  region: z.string(),
+  resource_group_name: z.string().nonempty({
+    message: "",
+  }),
+  cloud_provider: z.string().nonempty({
+    message: "",
+  }),
+  region: z.string().nonempty({
+    message: "",
+  }),
+  resources: resourceSchema,
   request_description: z.string().nonempty({
     message: "Please provide a description for your request",
   }),
@@ -40,9 +59,15 @@ export default function ClientRequestForm({
       repository_name: "",
       repository_description: "",
       collaborators: [],
-      resource_group: "",
-      cloud_provider: "",
-      region: "",
+      resource_group_name: "",
+      cloud_provider: cloudProviders[0].value,
+      region: regions[0].value,
+      request_description: "",
+      resources: {
+        vm: undefined,
+        db: undefined,
+        storage: undefined,
+      },
     },
   })
 
@@ -61,18 +86,25 @@ export default function ClientRequestForm({
           form={requestForm}
         />
         <Collaborators form={requestForm} />
-        <ResourceGroup />
+        <ResourceGroup form={requestForm} />
 
-        <div className="grid w-full gap-3">
-          <Label className="gap-1" htmlFor="request-description">
-            Request Description
-          </Label>
-          <Textarea
-            id="request-description"
-            placeholder="Provide any additional context or details for your request"
-            className="h-32"
-          />
-        </div>
+        <FormField
+          control={requestForm.control}
+          name="request_description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Request Description</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Provide any additional context or details for your request"
+                  className="h-32"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="flex justify-end">
           <Button type="submit">Submit Request</Button>
         </div>
