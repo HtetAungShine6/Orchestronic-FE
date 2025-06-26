@@ -24,8 +24,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { useSelector } from "react-redux"
+import { RootState } from "@/app/state/store"
 
-const options = [
+const cloudProviders = [
   { value: "azure", label: "Azure", icon: "/icon/azure.svg" },
   { value: "aws", label: "AWS", icon: "/icon/aws.svg" },
 ]
@@ -40,6 +42,7 @@ export default function ResourceGroup() {
   const [vmCount, setVmCount] = useState(0)
   const [storageCount, setStorageCount] = useState(0)
   const [databaseCount, setDatabaseCount] = useState(0)
+  const repoName = useSelector((state: RootState) => state.repoName.value)
 
   return (
     <Card>
@@ -52,18 +55,18 @@ export default function ResourceGroup() {
       </CardHeader>
       <CardContent>
         <div className="flex gap-4 items-start w-135">
-          <div className="grid w-60">
+          <div className="grid w-[165px]">
             <Label htmlFor="resource-group-name">Resource Group Name</Label>
-            <p>rg-jasddsa-ds</p>
+            <p className="truncate">rg-{repoName}</p>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="resource-group-provider">Provider</Label>
-            <Select defaultValue={options[0].value}>
+            <Select defaultValue={cloudProviders[0].value}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {options.map((option) => (
+                {cloudProviders.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     <span className="flex items-center gap-2">
                       <Image
@@ -82,7 +85,7 @@ export default function ResourceGroup() {
           <div className="grid gap-2">
             <Label htmlFor="resource-group-provider">Provider</Label>
             <Select defaultValue={regions[0].value}>
-              <SelectTrigger className="">
+              <SelectTrigger className="w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

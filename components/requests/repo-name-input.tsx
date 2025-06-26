@@ -26,6 +26,9 @@ import {
 import { UseFormReturn } from "react-hook-form"
 import { requestFormSchema } from "@/components/requests/client-request-form"
 import z from "zod"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "@/app/state/store"
+import { setRepoName } from "./state/repo-slice"
 
 interface RepoNameInputProps {
   suggestedName: string
@@ -38,7 +41,9 @@ export function RepoNameInput({
   ownerName,
   form,
 }: RepoNameInputProps) {
-  const [repoName, setRepoName] = useState<string>("")
+  // const [repoName, setRepoName] = useState<string>("")
+  const repoName = useSelector((state: RootState) => state.repoName.value)
+  const dispatch = useDispatch()
   const debouncedRepoName = useDebounce(repoName, 500)
 
   const [message, setMessage] = useState<ReactNode>(null)
@@ -110,7 +115,7 @@ export function RepoNameInput({
 
   function handleGenerate() {
     setHasTyped(true)
-    setRepoName(suggestedName)
+    dispatch(setRepoName(suggestedName))
   }
 
   if (error) {
@@ -160,7 +165,7 @@ export function RepoNameInput({
                           field.onChange(e.target.value)
                           setIsTyping(true)
                           setHasTyped(true)
-                          setRepoName(e.target.value)
+                          dispatch(setRepoName(e.target.value))
                         }}
                       />
                       {isTyping || isLoading ? (
