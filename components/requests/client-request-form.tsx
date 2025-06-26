@@ -61,6 +61,7 @@ export default function ClientRequestForm({
           <Textarea
             id="request-description"
             placeholder="Provide any additional context or details for your request"
+            className="h-32"
           />
         </div>
         <div className="flex justify-end">

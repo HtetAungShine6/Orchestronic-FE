@@ -27,6 +27,8 @@ import { requestFormSchema } from "@/components/requests/client-request-form"
 import { UseFormReturn } from "react-hook-form"
 import z from "zod"
 import { IconTrash } from "@tabler/icons-react"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { getInitials } from "@/lib/utils"
 
 interface CollaboratorsProps {
   form: UseFormReturn<z.infer<typeof requestFormSchema>>
@@ -35,9 +37,9 @@ interface CollaboratorsProps {
 export default function Collaborators({ form }: CollaboratorsProps) {
   const [open, setOpen] = useState<boolean>(false)
   const [searchEmail, setSearchEmail] = useState<string>("")
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([])
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([])
   const debouncedSearchEmail = useDebounce(searchEmail, 500)
-  const [filteredUsers, setFilteredUsers] = useState<string[]>([])
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([])
 
   const {
     data: users,
@@ -46,24 +48,26 @@ export default function Collaborators({ form }: CollaboratorsProps) {
   } = useQuery({
     queryKey: ["userByEmail", debouncedSearchEmail],
     queryFn: () => fuzzyFindUsersByEmail(debouncedSearchEmail),
-    // enabled: !!debouncedSearchEmail,
   })
 
-  function handleUserSelect(userEmail: string) {
+  function handleUserSelect(user: User) {
     setSelectedUsers((prev) => {
-      if (prev.includes(userEmail)) {
+      if (prev.some((u) => u.email === user.email)) {
         return prev
       } else {
-        const updated = [...prev, userEmail]
-        form.setValue("collaborators", updated)
+        const updated = [...prev, user]
+        form.setValue(
+          "collaborators",
+          updated.map((u) => u.email)
+        )
         return updated
       }
     })
     setFilteredUsers((prev) => {
-      if (prev.includes(userEmail)) {
+      if (prev.some((u) => u.email === user.email)) {
         return prev
       } else {
-        const updated = [...prev, userEmail]
+        const updated = [...prev, user]
         return updated
       }
     })
@@ -73,8 +77,16 @@ export default function Collaborators({ form }: CollaboratorsProps) {
 
   function handleRemoveUser(email: string) {
     setSelectedUsers((prev) => {
-      const updated = prev.filter((userEmail) => userEmail !== email)
-      form.setValue("collaborators", updated)
+      const updated = prev.filter((user) => user.email !== email)
+      form.setValue(
+        "collaborators",
+        updated.map((u) => u.email)
+      )
+      return updated
+    })
+
+    setFilteredUsers((prev) => {
+      const updated = prev.filter((user) => user.email !== email)
       return updated
     })
   }
@@ -84,7 +96,7 @@ export default function Collaborators({ form }: CollaboratorsProps) {
     setSearchEmail(value)
 
     const filtered = selectedUsers.filter((user) =>
-      user.toLowerCase().includes(value.toLowerCase())
+      user.email.toLowerCase().includes(value.toLowerCase())
     )
     setFilteredUsers(filtered)
   }
@@ -101,14 +113,14 @@ export default function Collaborators({ form }: CollaboratorsProps) {
             {isLoading ? (
               <CommandEmpty>Loading...</CommandEmpty>
             ) : error ? (
-              <CommandEmpty>Error: {error.message}</CommandEmpty>
+              <CommandEmpty>{error.message}</CommandEmpty>
             ) : users?.length === 0 ? (
               <CommandEmpty>No users found.</CommandEmpty>
             ) : (
               users?.map((user: User) => (
                 <CommandItem
                   className="cursor-pointer"
-                  onSelect={() => handleUserSelect(user.email)}
+                  onSelect={() => handleUserSelect(user)}
                   key={user.email}
                   value={user.email}
                 >
@@ -141,27 +153,33 @@ export default function Collaborators({ form }: CollaboratorsProps) {
           />
 
           {filteredUsers.length > 0 ? (
-            <ul className="mt-4">
-              {filteredUsers.map((email) => (
-                <div key={email} className="flex items-center">
-                  <li key={email} className="text-sm">
-                    {email}
-                  </li>
+            <div className="flex flex-col gap-3 mt-4">
+              {filteredUsers.map((user) => (
+                <div key={user.email} className="flex items-center">
+                  <Avatar>
+                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                  </Avatar>
+                  <div className="ml-2 flex flex-1 flex-col text-sm">
+                    {user.name}
+                    <span className="text-muted-foreground text-xs">
+                      {user.email}
+                    </span>
+                  </div>
                   <span>
                     <Button
-                      variant="ghost"
+                      variant="destructive"
                       size="icon"
                       className="ml-2"
-                      onClick={() => handleRemoveUser(email)}
+                      onClick={() => handleRemoveUser(user.email)}
                     >
                       <IconTrash />
                     </Button>
                   </span>
                 </div>
               ))}
-            </ul>
+            </div>
           ) : (
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm mt-4">
               No collaborators added yet.
             </p>
           )}

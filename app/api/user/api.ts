@@ -25,10 +25,11 @@ export async function fuzzyFindUsersByEmail(email: string): Promise<User[]> {
 
   if (!res.ok) {
     const err = await res.json()
-    throw new ApiError(
-      err.statusCode || res.status,
-      err.message || "Unknown error"
-    )
+    const message =
+      err.message === "USER_NOT_FOUND"
+        ? "No users found with that email"
+        : err.message || "Something went wrong"
+    throw new ApiError(err.statusCode || res.status, message)
   }
 
   return res.json()
