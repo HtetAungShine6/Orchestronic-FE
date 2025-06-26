@@ -17,6 +17,12 @@ export const requestFormSchema = z.object({
   repository_name: z.string(),
   repository_description: z.string().optional(),
   collaborators: z.array(z.string()).optional(),
+  resource_group: z.string(),
+  cloud_provider: z.string(),
+  region: z.string(),
+  request_description: z.string().nonempty({
+    message: "Please provide a description for your request",
+  }),
 })
 
 interface ClientRequestFormProps {
@@ -34,6 +40,9 @@ export default function ClientRequestForm({
       repository_name: "",
       repository_description: "",
       collaborators: [],
+      resource_group: "",
+      cloud_provider: "",
+      region: "",
     },
   })
 

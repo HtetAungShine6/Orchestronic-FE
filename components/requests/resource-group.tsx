@@ -60,7 +60,7 @@ export default function ResourceGroup() {
             <p className="truncate">rg-{repoName}</p>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="resource-group-provider">Provider</Label>
+            <Label htmlFor="resource-group-provider">Cloud Provider</Label>
             <Select defaultValue={cloudProviders[0].value}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue />
@@ -83,7 +83,7 @@ export default function ResourceGroup() {
             </Select>
           </div>{" "}
           <div className="grid gap-2">
-            <Label htmlFor="resource-group-provider">Provider</Label>
+            <Label htmlFor="resource-group-provider">Region</Label>
             <Select defaultValue={regions[0].value}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue />
