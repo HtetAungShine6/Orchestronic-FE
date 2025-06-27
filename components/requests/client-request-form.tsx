@@ -64,9 +64,9 @@ export default function ClientRequestForm({
       region: regions[0].value,
       request_description: "",
       resources: {
-        vm: undefined,
-        db: undefined,
-        storage: undefined,
+        vm: [],
+        db: [],
+        storage: [],
       },
     },
   })

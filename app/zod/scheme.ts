@@ -18,7 +18,7 @@ const storageSchema = z.object({
 })
 
 export const resourceSchema = z.object({
-  vm: vmSchema.optional(),
-  db: dbSchema.optional(),
-  storage: storageSchema.optional(),
+  vm: z.array(vmSchema).optional(),
+  db: z.array(dbSchema).optional(),
+  storage: z.array(storageSchema).optional(),
 })
