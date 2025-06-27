@@ -27,7 +27,7 @@ import { RootState } from "@/app/state/store"
 import { useEffect } from "react"
 
 export const requestFormSchema = z.object({
-  repository_name: z.string().nonempty({
+  repository_name: z.string().refine((value) => value.trim().length > 0, {
     message: "",
   }),
   repository_description: z.string().optional(),
@@ -79,6 +79,7 @@ export default function ClientRequestForm({
   useEffect(() => {
     if (repoName) {
       requestForm.setValue("resource_group_name", repoName)
+      requestForm.setValue("repository_name", repoName)
     }
   }, [repoName, requestForm])
 

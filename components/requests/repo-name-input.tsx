@@ -79,16 +79,16 @@ export function RepoNameInput({
 
       if (!validateFormat(name)) {
         setMessage(
-          <div className="text-muted-foreground text-xs">
-            <span className="text-green-700 font-bold">
+          <>
+            <span className="text-green-700 font-bold text-xs">
               ✅ Your new repository will be created as {formatRepoName(name)}.
             </span>
             <br />
-            <span>
+            <span className="text-muted-foreground text-xs">
               The repository name can only contain ASCII letters, digits, and
               the characters ., -, and _.
             </span>
-          </div>
+          </>
         )
         return
       }
@@ -116,6 +116,7 @@ export function RepoNameInput({
   function handleGenerate() {
     setHasTyped(true)
     dispatch(setRepoName(suggestedName))
+    form.clearErrors("repository_name")
   }
 
   if (error) {
@@ -156,28 +157,27 @@ export function RepoNameInput({
                 <FormItem>
                   <FormLabel className="gap-1">Repository name *</FormLabel>
                   <FormControl>
-                    <div className="grid gap-1">
-                      <Input
-                        {...field}
-                        className="w-50"
-                        value={repoName}
-                        onChange={(e) => {
-                          field.onChange(e.target.value)
-                          setIsTyping(true)
-                          setHasTyped(true)
-                          dispatch(setRepoName(e.target.value))
-                        }}
-                      />
-                      {isTyping || isLoading ? (
-                        <span className="text-muted-foreground text-xs">
-                          Checking availability...
-                        </span>
-                      ) : (
-                        message
-                      )}
-                    </div>
+                    <Input
+                      {...field}
+                      className="w-50"
+                      value={repoName}
+                      onChange={(e) => {
+                        field.onChange(e.target.value)
+                        setIsTyping(true)
+                        setHasTyped(true)
+                        dispatch(setRepoName(e.target.value))
+                      }}
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>
+                    {isTyping || isLoading ? (
+                      <span className="text-muted-foreground text-xs">
+                        Checking availability...
+                      </span>
+                    ) : (
+                      message
+                    )}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -187,6 +187,7 @@ export function RepoNameInput({
           Great repository names are short and memorable. Need inspiration? How
           about{" "}
           <Button
+            type="button"
             variant="ghost"
             onClick={handleGenerate}
             value={suggestedName}
