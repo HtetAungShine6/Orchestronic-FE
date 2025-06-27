@@ -7,9 +7,8 @@ const vmSchema = z.object({
 })
 
 const dbSchema = z.object({
-  engine: z.enum(["postgres", "mysql", "mongodb"]),
-  version: z.string(),
-  storage: z.number().min(1, "Storage must be at least 1 GB"),
+  engine: z.string(),
+  size: z.number().min(1, "Storage must be at least 1 GB"),
 })
 
 const storageSchema = z.object({

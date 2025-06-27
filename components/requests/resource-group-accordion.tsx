@@ -155,7 +155,11 @@ export function ResourceGroupAccordion({
                   <CardContent className="grid gap-4 pt-4">
                     <div className="grid gap-2">
                       <Label htmlFor={`storage-type-${i}`}>Storage Type</Label>
-                      <Select>
+                      <Select
+                        onValueChange={(value) =>
+                          form.setValue(`resources.storage.${i}.type`, value)
+                        }
+                      >
                         <SelectTrigger id={`storage-type-${i}`}>
                           <SelectValue placeholder="Select storage type" />
                         </SelectTrigger>
@@ -169,10 +173,17 @@ export function ResourceGroupAccordion({
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor={`storage-name-${i}`}>Storage Name</Label>
+                      <Label htmlFor={`storage-size-${i}`}>Storage Size</Label>
                       <Input
-                        id={`storage-name-${i}`}
-                        placeholder="Enter storage name"
+                        type="number"
+                        id={`storage-size-${i}`}
+                        placeholder="Enter storage size"
+                        onChange={(e) => {
+                          form.setValue(
+                            `resources.storage.${i}.size`,
+                            Number(e.target.value)
+                          )
+                        }}
                       />
                     </div>
                   </CardContent>
@@ -201,10 +212,14 @@ export function ResourceGroupAccordion({
                   </CardHeader>
                   <CardContent className="grid gap-4 pt-4">
                     <div className="grid gap-2">
-                      <Label htmlFor={`db-type-${i}`}>Database Type</Label>
-                      <Select>
-                        <SelectTrigger id={`db-type-${i}`}>
-                          <SelectValue placeholder="Choose DB type" />
+                      <Label htmlFor={`db-engine-${i}`}>Database Engine</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          form.setValue(`resources.db.${i}.engine`, value)
+                        }
+                      >
+                        <SelectTrigger id={`db-engine-${i}`}>
+                          <SelectValue placeholder="Choose DB engine" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="postgres">PostgreSQL</SelectItem>
@@ -216,10 +231,17 @@ export function ResourceGroupAccordion({
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor={`db-name-${i}`}>Database Name</Label>
+                      <Label htmlFor={`db-size-${i}`}>Database Size</Label>
                       <Input
+                        type="number"
                         id={`db-name-${i}`}
-                        placeholder="Enter database name"
+                        placeholder="Enter database size"
+                        onChange={(e) => {
+                          form.setValue(
+                            `resources.db.${i}.size`,
+                            Number(e.target.value)
+                          )
+                        }}
                       />
                     </div>
                   </CardContent>
