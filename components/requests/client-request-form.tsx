@@ -22,6 +22,9 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { resourceSchema } from "@/app/zod/scheme"
+import { useSelector } from "react-redux"
+import { RootState } from "@/app/state/store"
+import { useEffect } from "react"
 
 export const requestFormSchema = z.object({
   repository_name: z.string().nonempty({
@@ -53,6 +56,8 @@ export default function ClientRequestForm({
   suggestedName,
   session,
 }: ClientRequestFormProps) {
+  const repoName = useSelector((state: RootState) => state.repoName.value)
+
   const requestForm = useForm<z.infer<typeof requestFormSchema>>({
     resolver: zodResolver(requestFormSchema),
     defaultValues: {
@@ -70,6 +75,12 @@ export default function ClientRequestForm({
       },
     },
   })
+
+  useEffect(() => {
+    if (repoName) {
+      requestForm.setValue("resource_group_name", repoName)
+    }
+  }, [repoName, requestForm])
 
   function onSubmit(values: z.infer<typeof requestFormSchema>) {
     console.log(values)
