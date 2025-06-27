@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 
 import { useSelector } from "react-redux"
 import { RootState } from "@/app/state/store"
