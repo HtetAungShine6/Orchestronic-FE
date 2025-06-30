@@ -55,7 +55,7 @@ interface ClientRequestFormProps {
 export default function ClientRequestForm({
   suggestedName,
   session,
-}: ClientRequestFormProps) {
+}: Readonly<ClientRequestFormProps>) {
   const repoName = useSelector((state: RootState) => state.repoName.value)
 
   const requestForm = useForm<z.infer<typeof requestFormSchema>>({

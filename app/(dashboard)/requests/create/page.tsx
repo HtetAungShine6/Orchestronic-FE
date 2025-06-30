@@ -23,8 +23,6 @@ export default async function Page() {
   const suggestedName = generateRepoName()
   const session = await getServerSession(authOptions)
 
-  console.log("Session in create request page:", session)
-
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
       <div className="flex items-center justify-between space-y-2">
