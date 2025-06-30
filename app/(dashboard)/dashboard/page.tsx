@@ -15,6 +15,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query"
 import { getRequests } from "@/app/api/requests/api"
+import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",
@@ -53,7 +54,6 @@ export default async function Page() {
     queryFn: getRequests,
   })
 
-  // const requests = await getRequests()
   const repositories = await getRepositories()
 
   return (
@@ -73,7 +73,7 @@ export default async function Page() {
           </Button>
         </div>
         <HydrationBoundary state={dehydrate(queryClient)}>
-          {/* <RequestsTable pageSize={5} /> */}
+          <RequestsTable pageSize={5} />
         </HydrationBoundary>
       </div>
 

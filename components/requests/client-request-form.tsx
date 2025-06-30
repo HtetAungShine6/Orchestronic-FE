@@ -87,8 +87,6 @@ export default function ClientRequestForm({
     console.log(values)
   }
 
-  console.log(requestForm.formState.errors)
-
   return (
     <Form {...requestForm}>
       <form onSubmit={requestForm.handleSubmit(onSubmit)} className="space-y-8">

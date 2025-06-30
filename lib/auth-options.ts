@@ -1,16 +1,16 @@
 import AzureADProvider from "next-auth/providers/azure-ad"
 import { JWT } from "next-auth/jwt"
 import { createUser, getUserByEmail } from "@/app/api/user/api"
-import type { Session, User } from "next-auth"
+import type { Account, Session, User } from "next-auth"
 import type { AuthOptions } from "next-auth"
 import { isApiError } from "@/types/error"
 
 export const authOptions: AuthOptions = {
   providers: [
     AzureADProvider({
-      clientId: process.env.AZURE_AD_CLIENT_ID || "",
-      clientSecret: process.env.AZURE_AD_CLIENT_SECRET || "",
-      tenantId: process.env.AZURE_AD_TENANT_ID || "",
+      clientId: process.env.AZURE_AD_CLIENT_ID ?? "",
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET ?? "",
+      tenantId: process.env.AZURE_AD_TENANT_ID ?? "",
     }),
   ],
   session: {
@@ -34,6 +34,7 @@ export const authOptions: AuthOptions = {
         }
 
         if (existingUser) {
+          user.id = existingUser.id
           user.role = existingUser.role
         }
 
@@ -44,19 +45,33 @@ export const authOptions: AuthOptions = {
       }
     },
 
-    async jwt({ token, user }: { token: JWT; user?: User }) {
+    async jwt({
+      token,
+      user,
+      account,
+    }: {
+      token: JWT
+      user?: User
+      account?: Account | null
+    }) {
       if (user) {
+        token.id = user.id
         token.name = user.name ?? undefined
         token.email = user.email ?? undefined
         token.role = user.role ?? undefined
+      }
+      if (account?.access_token) {
+        token.accessToken = account.access_token
       }
       return token
     },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (token) {
+        session.user.id = token.id
         session.user.name = token.name
         session.user.email = token.email
         session.user.role = token.role
+        session.user.accessToken = token.accessToken
       }
       return session
     },
