@@ -59,7 +59,7 @@ export function ResourceGroupAccordionVM({
             >
               <AccordionTrigger>Virtual Machines #{i + 1}</AccordionTrigger>
               <AccordionContent>
-                <Card className="mt-2">
+                <Card>
                   <CardHeader>
                     <CardTitle>VM #{i + 1}</CardTitle>
                     <CardDescription>
@@ -67,45 +67,67 @@ export function ResourceGroupAccordionVM({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="grid gap-2">
-                    <Label>CPU</Label>
+                    <Label>Name</Label>
                     <Input
-                      placeholder="e.g., 2 vCPU"
-                      type="number"
+                      placeholder="e.g., web-server-1"
                       onChange={(e) => {
-                        form.setValue(
-                          `resources.vm.${i}.cpu`,
-                          Number(e.target.value)
-                        )
+                        form.setValue(`resources.vm.${i}.name`, e.target.value)
                       }}
                     />
-                    <Label>Memory</Label>
-                    <Input
-                      placeholder="e.g., 4 GB"
-                      type="number"
-                      onChange={(e) => {
-                        form.setValue(
-                          `resources.vm.${i}.memory`,
-                          Number(e.target.value)
-                        )
-                      }}
-                    />
-                    <Label>OS</Label>
-                    <Select
-                      onValueChange={(value) =>
-                        form.setValue(`resources.vm.${i}.os`, value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose OS" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {operatingSystems.map((os) => (
-                          <SelectItem key={os.value} value={os.value}>
-                            {os.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="flex justify-between">
+                      <div className="grid gap-2">
+                        <Label>CPU</Label>
+                        <Input
+                          placeholder="e.g., 2"
+                          type="number"
+                          onChange={(e) => {
+                            form.setValue(
+                              `resources.vm.${i}.cpu`,
+                              Number(e.target.value)
+                            )
+                          }}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>RAM</Label>
+                        <Input
+                          placeholder="e.g., 4 GB"
+                          type="number"
+                          onChange={(e) => {
+                            form.setValue(
+                              `resources.vm.${i}.memory`,
+                              Number(e.target.value)
+                            )
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <div className="grid gap-2">
+                        <Label>Operating System</Label>
+                        <Select
+                          onValueChange={(value) =>
+                            form.setValue(`resources.vm.${i}.os`, value)
+                          }
+                        >
+                          <SelectTrigger className="w-54">
+                            <SelectValue placeholder="Choose OS" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {operatingSystems.map((os) => (
+                              <SelectItem key={os.value} value={os.value}>
+                                {os.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>Disk Size</Label>
+                        <Input placeholder="e.g., 100 GB" type="number" />
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </AccordionContent>

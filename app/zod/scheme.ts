@@ -1,9 +1,17 @@
 import { z } from "zod"
 
 const vmSchema = z.object({
-  cpu: z.number().min(1, "CPU must be at least 1"),
+  name: z.string().nonempty({
+    message: "VM name is required",
+  }),
+  cpu: z.number().min(1, "CPU must be at least 1 vCPU"),
   memory: z.number().min(1, "Memory must be at least 1 GB"),
-  os: z.string(),
+  os: z.string().nonempty({
+    message: "Operating system is required",
+  }),
+  instancetype: z.string().nonempty({
+    message: "Instance type is required",
+  }),
 })
 
 const dbSchema = z.object({

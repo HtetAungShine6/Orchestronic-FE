@@ -57,14 +57,14 @@ export function ResourceGroupAccordionST({
             >
               <AccordionTrigger>Storage #{i + 1}</AccordionTrigger>
               <AccordionContent>
-                <Card className="mt-2">
+                <Card>
                   <CardHeader>
                     <CardTitle>Storage #{i + 1}</CardTitle>
                     <CardDescription>
                       Configure storage settings
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="grid gap-4 pt-4">
+                  <CardContent className="grid gap-2">
                     <div className="grid gap-2">
                       <Label htmlFor={`storage-type-${i}`}>Storage Type</Label>
                       <Select

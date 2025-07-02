@@ -25,11 +25,6 @@ import { UseFormReturn } from "react-hook-form"
 import { requestFormSchema } from "./client-request-form"
 import z from "zod"
 
-export const operatingSystems = [
-  { value: "ubuntu", label: "Ubuntu" },
-  { value: "windows", label: "Windows" },
-]
-
 interface ResourceGroupAccordionProps {
   form: UseFormReturn<z.infer<typeof requestFormSchema>>
   databaseCount: number
@@ -59,35 +54,80 @@ export function ResourceGroupAccordionDB({
             >
               <AccordionTrigger>Database #{i + 1}</AccordionTrigger>
               <AccordionContent>
-                <Card className="mt-2">
+                <Card>
                   <CardHeader>
                     <CardTitle>Database #{i + 1}</CardTitle>
                     <CardDescription>
                       Configure database settings
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="grid gap-4 pt-4">
+                  <CardContent className="grid gap-2">
                     <div className="grid gap-2">
-                      <Label htmlFor={`db-engine-${i}`}>Database Engine</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          form.setValue(`resources.db.${i}.engine`, value)
-                        }
-                      >
-                        <SelectTrigger id={`db-engine-${i}`}>
-                          <SelectValue placeholder="Choose DB engine" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="postgres">PostgreSQL</SelectItem>
-                          <SelectItem value="mysql">MySQL</SelectItem>
-                          <SelectItem value="mssql">SQL Server</SelectItem>
-                          <SelectItem value="oracle">Oracle</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label>Name</Label>
+                      <Input
+                        placeholder="e.g., web-server-1"
+                        onChange={(e) => {
+                          form.setValue(
+                            `resources.vm.${i}.name`,
+                            e.target.value
+                          )
+                        }}
+                      />
+                      <div className="flex justify-between">
+                        <div className="grid gap-2">
+                          <Label htmlFor={`db-engine-${i}`}>
+                            Database Engine
+                          </Label>
+                          <Select
+                            onValueChange={(value) =>
+                              form.setValue(`resources.db.${i}.engine`, value)
+                            }
+                          >
+                            <SelectTrigger id={`db-engine-${i}`}>
+                              <SelectValue placeholder="Choose DB engine" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="postgres">
+                                PostgreSQL
+                              </SelectItem>
+                              <SelectItem value="mysql">MySQL</SelectItem>
+                              <SelectItem value="mssql">SQL Server</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor={`db-instance-class-${i}`}>
+                            Instance Class / Size
+                          </Label>
+                          <Select
+                            onValueChange={(value) =>
+                              form.setValue(
+                                `resources.db.${i}.instanceClass`,
+                                value
+                              )
+                            }
+                          >
+                            <SelectTrigger id={`db-instance-class-${i}`}>
+                              <SelectValue placeholder="Choose DB instance class" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="db.t2.micro">
+                                db.t2.micro
+                              </SelectItem>
+                              <SelectItem value="db.t2.small">
+                                db.t2.small
+                              </SelectItem>
+                              <SelectItem value="db.t2.medium">
+                                db.t2.medium
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor={`db-size-${i}`}>Database Size</Label>
+                      <Label htmlFor={`db-size-${i}`}>Storage Size</Label>
                       <Input
                         type="number"
                         id={`db-name-${i}`}
