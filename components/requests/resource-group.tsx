@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { useSelector } from "react-redux"
 import { RootState } from "@/app/state/store"
@@ -31,7 +31,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { ResourceGroupAccordion } from "./resource-group-accordion"
+import { ResourceGroupAccordionST } from "./resource-group-accordion-st"
+import { ResourceGroupAccordionVM } from "./resource-group-accordion-vm"
+import { ResourceGroupAccordionDB } from "./resource-group-accordion-db"
 
 export const cloudProviders = [
   { value: "azure", label: "Azure", icon: "/icon/azure.svg" },
@@ -48,7 +50,7 @@ interface ResourceGroupProps {
   form: UseFormReturn<z.infer<typeof requestFormSchema>>
 }
 
-export default function ResourceGroup({ form }: ResourceGroupProps) {
+export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
   const [vmCount, setVmCount] = useState(0)
   const [storageCount, setStorageCount] = useState(0)
   const [databaseCount, setDatabaseCount] = useState(0)
@@ -119,50 +121,54 @@ export default function ResourceGroup({ form }: ResourceGroupProps) {
         </div>
         <div className="grid gap-4 mt-6 w-135">
           <Label htmlFor="resources">Resources</Label>
-          <div className="flex gap-6 ">
-            <Label htmlFor="vm" className="w-60">
-              Virtual Machines
-            </Label>
-            <Input
-              id="vm"
-              placeholder="e.g., 2"
-              type="number"
-              min={0}
-              onChange={(e) => setVmCount(Number(e.target.value))}
+          <div>
+            <div className="flex gap-6">
+              <Label htmlFor="vm" className="w-60">
+                Virtual Machines
+              </Label>
+              <Input
+                id="vm"
+                placeholder="e.g., 2"
+                type="number"
+                min={0}
+                onChange={(e) => setVmCount(Number(e.target.value))}
+              />
+            </div>
+            <ResourceGroupAccordionVM form={form} vmCount={vmCount} />
+          </div>
+          <div className="">
+            <div className="flex gap-6">
+              <Label htmlFor="storage" className="w-60">
+                Storage Accounts
+              </Label>
+              <Input
+                id="storage"
+                placeholder="e.g., 1"
+                type="number"
+                min={0}
+                onChange={(e) => setStorageCount(Number(e.target.value))}
+              />
+            </div>
+            <ResourceGroupAccordionST form={form} storageCount={storageCount} />
+          </div>
+          <div className="">
+            <div className="flex gap-6">
+              <Label htmlFor="sql" className="w-60">
+                Databases
+              </Label>
+              <Input
+                id="database"
+                placeholder="e.g., 1"
+                type="number"
+                min={0}
+                onChange={(e) => setDatabaseCount(Number(e.target.value))}
+              />
+            </div>
+            <ResourceGroupAccordionDB
+              form={form}
+              databaseCount={databaseCount}
             />
           </div>
-          <div className="flex gap-6 ">
-            <Label htmlFor="storage" className="w-60">
-              Storage Accounts
-            </Label>
-            <Input
-              id="storage"
-              placeholder="e.g., 1"
-              type="number"
-              min={0}
-              onChange={(e) => setStorageCount(Number(e.target.value))}
-            />
-          </div>
-          <div className="flex gap-6">
-            <Label htmlFor="sql" className="w-60">
-              Databases
-            </Label>
-            <Input
-              id="database"
-              placeholder="e.g., 1"
-              type="number"
-              min={0}
-              onChange={(e) => setDatabaseCount(Number(e.target.value))}
-            />
-          </div>
-        </div>
-        <div className="mt-6">
-          <ResourceGroupAccordion
-            form={form}
-            vmCount={vmCount}
-            storageCount={storageCount}
-            databaseCount={databaseCount}
-          />
         </div>
       </CardContent>
     </Card>
