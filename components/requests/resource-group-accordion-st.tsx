@@ -53,7 +53,7 @@ export function ResourceGroupAccordionST({
             <AccordionItem
               key={i}
               value={`storage-${i}`}
-              ref={i === storageCount - 1 ? lastStorageRef : null}
+              ref={i === Math.floor(storageCount / 3) ? lastStorageRef : null}
             >
               <AccordionTrigger>Storage #{i + 1}</AccordionTrigger>
               <AccordionContent>

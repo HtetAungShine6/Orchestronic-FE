@@ -55,7 +55,7 @@ export function ResourceGroupAccordionDB({
             <AccordionItem
               key={i}
               value={`database-${i}`}
-              ref={i === databaseCount - 1 ? lastDBRef : null}
+              ref={i === Math.floor(databaseCount / 3) ? lastDBRef : null}
             >
               <AccordionTrigger>Database #{i + 1}</AccordionTrigger>
               <AccordionContent>

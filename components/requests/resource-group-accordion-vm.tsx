@@ -55,7 +55,7 @@ export function ResourceGroupAccordionVM({
             <AccordionItem
               key={i}
               value={`virtual-machine-${i}`}
-              ref={i === vmCount - 1 ? lastVMRef : null}
+              ref={i === Math.floor(vmCount / 3) ? lastVMRef : null}
             >
               <AccordionTrigger>Virtual Machines #{i + 1}</AccordionTrigger>
               <AccordionContent>
