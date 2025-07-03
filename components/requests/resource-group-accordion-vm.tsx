@@ -24,10 +24,11 @@ import {
 import { UseFormReturn } from "react-hook-form"
 import { requestFormSchema } from "./client-request-form"
 import z from "zod"
+import Image from "next/image"
 
 export const operatingSystems = [
-  { value: "ubuntu", label: "Ubuntu" },
-  { value: "windows", label: "Windows" },
+  { value: "ubuntu", label: "Ubuntu", icon: "/icon/ubuntu.png" },
+  { value: "windows", label: "Windows", icon: "/icon/windows.png" },
 ]
 
 interface ResourceGroupAccordionProps {
@@ -57,7 +58,12 @@ export function ResourceGroupAccordionVM({
               value={`virtual-machine-${i}`}
               ref={i === Math.floor(vmCount / 3) ? lastVMRef : null}
             >
-              <AccordionTrigger>Virtual Machines #{i + 1}</AccordionTrigger>
+              <AccordionTrigger className="flex items-center justify-between">
+                <div className="flex items-center justify-between w-full outline-none">
+                  Virtual Machines #{i + 1}
+                  <span className="cursor-pointer">Delete</span>
+                </div>
+              </AccordionTrigger>
               <AccordionContent>
                 <Card>
                   <CardHeader>
@@ -117,7 +123,15 @@ export function ResourceGroupAccordionVM({
                           <SelectContent>
                             {operatingSystems.map((os) => (
                               <SelectItem key={os.value} value={os.value}>
-                                {os.label}
+                                <span className="flex items-center gap-2">
+                                  <Image
+                                    src={os.icon}
+                                    width={16}
+                                    height={16}
+                                    alt={`${os.label} Icon`}
+                                  />
+                                  {os.label}
+                                </span>
                               </SelectItem>
                             ))}
                           </SelectContent>

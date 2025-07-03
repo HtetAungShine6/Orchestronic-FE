@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 
 import { useSelector } from "react-redux"
 import { RootState } from "@/app/state/store"
@@ -40,10 +40,26 @@ export const cloudProviders = [
   { value: "aws", label: "AWS", icon: "/icon/aws.svg" },
 ]
 export const regions = [
-  { value: "ap-southeast-1", label: "Asia Pacific (Singapore)" },
-  { value: "us-east-1", label: "US East (N. Virginia)" },
-  { value: "us-west-2", label: "US West (Oregon)" },
-  { value: "eu-west-1", label: "EU (Ireland)" },
+  {
+    value: "ap-southeast-1",
+    label: "Asia Pacific (Singapore)",
+    flag: "https://flagsapi.com/SG/flat/16.png",
+  },
+  {
+    value: "us-east-1",
+    label: "US East (N. Virginia)",
+    flag: "https://flagsapi.com/US/flat/16.png",
+  },
+  {
+    value: "us-west-2",
+    label: "US West (Oregon)",
+    flag: "https://flagsapi.com/US/flat/16.png",
+  },
+  {
+    value: "eu-west-1",
+    label: "EU (Ireland)",
+    flag: "https://flagsapi.com/IE/flat/16.png",
+  },
 ]
 
 interface ResourceGroupProps {
@@ -112,7 +128,15 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
               <SelectContent>
                 {regions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                    <span className="flex items-center gap-2">
+                      <Image
+                        src={option.flag}
+                        width={16}
+                        height={16}
+                        alt={`${option.label} Icon`}
+                      />
+                      {option.label}
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>
