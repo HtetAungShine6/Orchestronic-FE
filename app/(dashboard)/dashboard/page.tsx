@@ -5,7 +5,7 @@ import { z } from "zod"
 
 import { repositorySchema } from "@/app/(dashboard)/repositories/data/schema-repository"
 import RepositoriesTable from "@/app/(dashboard)/repositories/components/repositories-table"
-// import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
+
 import { Button } from "@/components/ui/button"
 import { IconPlus } from "@tabler/icons-react"
 import Link from "next/link"
@@ -16,25 +16,6 @@ import {
 } from "@tanstack/react-query"
 import { getRequests } from "@/app/api/requests/api"
 import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
-import { getSession } from "next-auth/react"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth-options"
-
-// export const metadata: Metadata = {
-//   title: "Dashboard",
-//   description: "A task and issue tracker build using Tanstack Table.",
-// }
-
-// Simulate a database read for tasks.
-// async function getRequests() {
-//   const data = await fs.readFile(
-//     path.join(process.cwd(), "app/(dashboard)/requests/data/requests.json")
-//   )
-
-//   const requests = JSON.parse(data.toString())
-
-//   return z.array(requestSchema).parse(requests)
-// }
 
 async function getRepositories() {
   const data = await fs.readFile(
@@ -50,10 +31,6 @@ async function getRepositories() {
 }
 
 export default async function Page() {
-  // const session = await getServerSession(authOptions)
-
-  // console.log("Session in dashboard:", session)
-
   const queryClient = new QueryClient()
 
   await queryClient.prefetchQuery({

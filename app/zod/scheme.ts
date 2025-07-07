@@ -17,6 +17,9 @@ const vmSchema = z.object({
 const dbSchema = z.object({
   engine: z.string(),
   size: z.number().min(1, "Storage must be at least 1 GB"),
+  instanceClass: z.string().nonempty({
+    message: "Instance class is required",
+  }),
 })
 
 const storageSchema = z.object({

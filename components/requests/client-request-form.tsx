@@ -92,7 +92,7 @@ export default function ClientRequestForm({
       <form onSubmit={requestForm.handleSubmit(onSubmit)} className="space-y-8">
         <RepoNameInput
           suggestedName={suggestedName}
-          ownerName={session?.user?.name || "Your Account"}
+          ownerName={session?.user?.name ?? "Your Account"}
           form={requestForm}
         />
         <Collaborators form={requestForm} />
