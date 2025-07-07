@@ -16,6 +16,9 @@ import {
 } from "@tanstack/react-query"
 import { getRequests } from "@/app/api/requests/api"
 import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
+import { getSession } from "next-auth/react"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth-options"
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",
@@ -47,6 +50,10 @@ async function getRepositories() {
 }
 
 export default async function Page() {
+  // const session = await getServerSession(authOptions)
+
+  // console.log("Session in dashboard:", session)
+
   const queryClient = new QueryClient()
 
   await queryClient.prefetchQuery({

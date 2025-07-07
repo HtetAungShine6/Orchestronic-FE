@@ -11,26 +11,34 @@ import {
   // useSidebar,
 } from "@/components/ui/sidebar"
 import { usePathname } from "next/navigation"
+import { Session } from "next-auth"
+import { Role } from "@/types/role"
 
 export function NavDocuments({
   items,
   label,
-}: {
+  session,
+}: Readonly<{
   items: {
     title: string
     url: string
     icon: Icon
+    role?: Role[]
   }[]
   label: string
-}) {
+  session: Session | null
+}>) {
   const pathname = usePathname()
-  // const { isMobile } = useSidebar()
+
+  const itemsFiltered = items.filter((item) =>
+    item.role?.includes(session?.user.role as Role)
+  )
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>{label ?? "No label"}</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
+        {itemsFiltered.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton
               asChild

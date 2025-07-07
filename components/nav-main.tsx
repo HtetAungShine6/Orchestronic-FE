@@ -11,16 +11,27 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
+import { Role } from "@/types/role"
+import { Session } from "next-auth"
+
 export function NavMain({
   items,
-}: {
+  session,
+}: Readonly<{
   items: {
     title: string
     url: string
     icon?: Icon
+    role?: Role[]
   }[]
-}) {
+  session: Session | null
+}>) {
   const pathname = usePathname()
+
+  const itemsFiltered = items.filter((item) =>
+    item.role?.includes(session?.user.role as Role)
+  )
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -44,7 +55,7 @@ export function NavMain({
           </SidebarMenuItem>
         </SidebarMenu> */}
         <SidebarMenu>
-          {items.map((item) => (
+          {itemsFiltered.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 tooltip={item.title}

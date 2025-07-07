@@ -4,9 +4,10 @@ import { ReactScan } from "@/components/react-scan-component"
 
 import "./globals.css"
 import SessionProvider from "@/components/provider/session-provider"
-import { getServerSession } from "next-auth/next"
+import { getServerSession } from "next-auth"
 import ReactQueryProvider from "@/components/provider/react-query-provider"
 import ReduxProvider from "@/components/provider/redux-provider"
+import { authOptions } from "@/lib/auth-options"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +30,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await getServerSession()
+  const session = await getServerSession(authOptions)
+
   return (
     <html lang="en">
       <ReactScan />

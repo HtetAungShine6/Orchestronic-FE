@@ -4,6 +4,7 @@ import { createUser, getUserByEmail } from "@/app/api/user/api"
 import type { Account, Session, User } from "next-auth"
 import type { AuthOptions } from "next-auth"
 import { isApiError } from "@/types/error"
+import { Role } from "@/types/role"
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -56,21 +57,22 @@ export const authOptions: AuthOptions = {
     }) {
       if (user) {
         token.id = user.id
-        token.name = user.name ?? undefined
-        token.email = user.email ?? undefined
-        token.role = user.role ?? undefined
+        token.name = user.name
+        token.email = user.email
+        token.role = user.role
       }
       if (account?.access_token) {
         token.accessToken = account.access_token
       }
       return token
     },
+
     async session({ session, token }: { session: Session; token: JWT }) {
       if (token) {
         session.user.id = token.id
         session.user.name = token.name
         session.user.email = token.email
-        session.user.role = token.role
+        session.user.role = token.role as Role
         session.user.accessToken = token.accessToken
       }
       return session

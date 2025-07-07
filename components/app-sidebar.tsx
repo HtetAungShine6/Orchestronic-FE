@@ -46,10 +46,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navData.navMain} />
-        <NavDocuments items={navData.operations} label="Operations" />
-        <NavDocuments items={navData.collaborations} label="Collaboration" />
-        <NavSecondary items={navData.navSecondary} className="mt-auto" />
+        <NavMain items={navData.navMain} session={session} />
+        <NavDocuments
+          items={navData.operations}
+          label="Operations"
+          session={session}
+        />
+        <NavDocuments
+          items={navData.collaborations}
+          label="Collaboration"
+          session={session}
+        />
+        <NavSecondary
+          items={navData.navSecondary}
+          className="mt-auto"
+          session={session}
+        />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

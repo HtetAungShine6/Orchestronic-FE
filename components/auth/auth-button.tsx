@@ -12,7 +12,7 @@ export default function AuthButton() {
     return (
       <Button
         variant="outline"
-        onClick={() => signIn("azure-ad", { callbackUrl: "/dashboard" })}
+        onClick={() => signIn("azure-ad", { callbackUrl: "/" })}
       >
         {/*
         <Image

@@ -10,8 +10,8 @@ export async function getUserByEmail(email: string): Promise<User> {
   if (!res.ok) {
     const err = await res.json()
     throw new ApiError(
-      err.statusCode || res.status,
-      err.message || "Unknown error"
+      err.statusCode ?? res.status,
+      err.message ?? "Unknown error"
     )
   }
 
