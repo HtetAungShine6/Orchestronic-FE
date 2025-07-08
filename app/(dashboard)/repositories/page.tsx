@@ -1,25 +1,18 @@
-import { promises as fs } from "fs"
-import path from "path"
-import { repositorySchema } from "./data/schema-repository"
-import { z } from "zod"
-
+import { getRepositories } from "@/app/api/repository/api"
 import RepositoriesTable from "./components/repositories-table"
-
-async function getRequests() {
-  const data = await fs.readFile(
-    path.join(
-      process.cwd(),
-      "app/(dashboard)/repositories/data/repositories.json"
-    )
-  )
-
-  const repositories = JSON.parse(data.toString())
-
-  return z.array(repositorySchema).parse(repositories)
-}
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query"
 
 export default async function Page() {
-  const repositories = await getRequests()
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: ["repositories"],
+    queryFn: getRepositories,
+  })
 
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
@@ -31,7 +24,9 @@ export default async function Page() {
           </p>
         </div>
       </div>
-      <RepositoriesTable data={repositories} />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <RepositoriesTable pageSize={5} />
+      </HydrationBoundary>
     </div>
   )
 }

@@ -2,26 +2,35 @@
 
 import { DataTable } from "@/components/data-table/components/data-table"
 import { useRouter } from "next/navigation"
-import { Repository } from "../data/schema-repository"
 import { columnsRepositories } from "./columns-repositories"
+import { getRepositories } from "@/app/api/repository/api"
+import { useQuery } from "@tanstack/react-query"
 
 interface RepositoriesTableProps {
-  data: Repository[]
   pageSize?: number
 }
 
 export default function RepositoriesTable({
-  data,
   pageSize = 10,
 }: RepositoriesTableProps) {
   const router = useRouter()
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["repositories"],
+    queryFn: getRepositories,
+  })
+
+  if (isLoading) return <p>Loading...</p>
+  if (error) return <p>Error loading table</p>
+
+  console.log("Repositories data:", data)
   return (
     <DataTable
       data={data}
       columns={columnsRepositories}
-      filterColumn="repository"
+      filterColumn="name"
       pageSize={pageSize}
-      onRowClick={(row) => router.push(`/repositories/${row.repository}`)}
+      onRowClick={(row) => router.push(`/repositories/${row.id}`)}
     />
   )
 }

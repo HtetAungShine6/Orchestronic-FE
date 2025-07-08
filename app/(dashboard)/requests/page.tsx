@@ -1,8 +1,21 @@
 // import { Metadata } from "next"
 
+import { getRequests } from "@/app/api/requests/api"
 import RequestsTable from "./components/requests-table"
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query"
 
 export default async function Page() {
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: ["requests"],
+    queryFn: getRequests,
+  })
+
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
       <div className="flex items-center justify-between space-y-2">
@@ -13,7 +26,9 @@ export default async function Page() {
           </p>
         </div>
       </div>
-      <RequestsTable />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <RequestsTable pageSize={5} />
+      </HydrationBoundary>
     </div>
   )
 }

@@ -1,11 +1,40 @@
 import { z } from "zod"
 
-// We're keeping a simple non-relational schema here.
-// IRL, you will have a schema for your data models.
 export const repositorySchema = z.object({
+  id: z.string(),
+  name: z.string(),
   description: z.string(),
-  developers: z.array(z.string()),
-  repository: z.string(),
+  resourcesId: z.string(),
+  status: z.string(),
+
+  resources: z.object({
+    id: z.string(),
+    name: z.string(),
+    cloudProvider: z.string(),
+    region: z.string(),
+    resourceConfigId: z.string(),
+  }),
+
+  collaborators: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      email: z.string(),
+      role: z.string(),
+    })
+  ),
+
+  request: z.object({
+    id: z.string(),
+    displayCode: z.string(),
+    status: z.string(),
+    description: z.string(),
+    ownerId: z.string(),
+    repositoryId: z.string(),
+    resourcesId: z.string(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+  }),
 })
 
 export type Repository = z.infer<typeof repositorySchema>

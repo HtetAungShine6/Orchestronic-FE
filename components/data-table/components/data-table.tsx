@@ -111,7 +111,6 @@ export function DataTable<TData, TValue>({
                   onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => {
-                    console.log(cell.column.columnDef.cell, cell.getContext())
                     return (
                       <TableCell key={cell.id}>
                         {flexRender(
