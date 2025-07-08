@@ -5,75 +5,30 @@ import { ColumnDef } from "@tanstack/react-table"
 import { statuses } from "../data/data"
 import { Request } from "../data/schema-request"
 import { DataTableColumnHeader } from "@/components/data-table/components/data-table-column-header"
-import { cn, formatResourceCounts } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
 export const columnsRequests: ColumnDef<Request>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //       className="translate-y-[2px]"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //       className="translate-y-[2px]"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
   {
-    accessorKey: "id",
+    accessorKey: "displayCode",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Request" />
     ),
     cell: ({ row }) => (
-      <div className="w-[80px] truncate">{row.getValue("id")}</div>
+      <div className="w-[80px] truncate">{row.getValue("displayCode")}</div>
     ),
     enableSorting: false,
     enableHiding: false,
   },
-  // {
-  //   accessorKey: "title",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Title" />
-  //   ),
-  //   cell: ({ row }) => {
-  //     // const label = labels.find((label) => label.value === row.original.label)
-
-  //     return (
-  //       <div className="flex space-x-2">
-  //         {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
-  //         <span className="max-w-[500px] truncate font-medium">
-  //           {row.getValue("title")}
-  //         </span>
-  //       </div>
-  //     )
-  //   },
-  // },
   {
-    accessorKey: "date",
+    accessorKey: "createdAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
     cell: ({ row }) => {
-      // const label = labels.find((label) => label.value === row.original.label)
-
       return (
         <div className="flex space-x-2">
-          {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
           <span className="">
-            {new Date(row.getValue("date")).toLocaleDateString("en-GB", {
+            {new Date(row.getValue("createdAt")).toLocaleDateString("en-GB", {
               weekday: "short",
               day: "2-digit",
               month: "short",
@@ -92,14 +47,11 @@ export const columnsRequests: ColumnDef<Request>[] = [
       <DataTableColumnHeader column={column} title="Requested Resources" />
     ),
     cell: ({ row }) => {
-      // const label = labels.find((label) => label.value === row.original.label)
+      const resources = row.getValue("resources") as Request["resources"]
 
       return (
         <div className="flex space-x-2">
-          {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
-          <span className="">
-            {formatResourceCounts(row.getValue("resources"))}
-          </span>
+          <span className="">{resources.name}</span>
         </div>
       )
     },
@@ -110,12 +62,11 @@ export const columnsRequests: ColumnDef<Request>[] = [
       <DataTableColumnHeader column={column} title="Repository" />
     ),
     cell: ({ row }) => {
-      // const label = labels.find((label) => label.value === row.original.label)
+      const repository = row.getValue("repository") as Request["repository"]
 
       return (
         <div className="flex space-x-2">
-          {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
-          <span className="">{row.getValue("repository")}</span>
+          <span className="">{repository.name}</span>
         </div>
       )
     },
@@ -147,35 +98,4 @@ export const columnsRequests: ColumnDef<Request>[] = [
       return value.includes(row.getValue(id))
     },
   },
-  // {
-  //   accessorKey: "priority",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Priority" />
-  //   ),
-  //   cell: ({ row }) => {
-  //     const priority = priorities.find(
-  //       (priority) => priority.value === row.getValue("priority")
-  //     )
-
-  //     if (!priority) {
-  //       return null
-  //     }
-
-  //     return (
-  //       <div className="flex items-center">
-  //         {priority.icon && (
-  //           <priority.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-  //         )}
-  //         <span>{priority.label}</span>
-  //       </div>
-  //     )
-  //   },
-  //   filterFn: (row, id, value) => {
-  //     return value.includes(row.getValue(id))
-  //   },
-  // },
-  // {
-  //   id: "actions",
-  //   cell: ({ row }) => <DataTableRowActions row={row} />,
-  // },
 ]

@@ -21,11 +21,13 @@ export default function RequestsTable({ pageSize = 10 }: RequestsTableProps) {
   if (isLoading) return <p>Loading...</p>
   if (error) return <p>Error loading table</p>
 
+  console.log("Requests data:", data)
+
   return (
     <DataTable
       data={data}
       columns={columnsRequests}
-      filterColumn="id"
+      filterColumn="displayCode"
       pageSize={pageSize}
       onRowClick={(row) => router.push(`/requests/${row.id}`)}
     />
