@@ -1,3 +1,4 @@
+import { Resource } from "@/app/(dashboard)/resources/data/schema-resources"
 import { faker } from "@faker-js/faker"
 
 import { clsx, type ClassValue } from "clsx"
@@ -15,23 +16,23 @@ export function getInitials(name: string): string {
     .join("")
 }
 
-const resourceTypes = ["VM", "DB", "ST"]
-export function generateResources() {
-  const counts: Record<string, number> = {}
-
-  const types = faker.helpers
-    .shuffle(resourceTypes)
-    .slice(0, faker.number.int({ min: 1, max: 3 }))
-
-  for (const type of types) {
-    counts[type] = faker.number.int({ min: 1, max: 3 })
-  }
-
-  const formatted = Object.entries(counts)
-    .map(([type, count]) => `${count} ${type}${count > 1 ? "s" : ""}`)
+const resourceTypes = {
+  vms: "VM",
+  dbs: "DB",
+  sts: "ST",
+}
+export function generateResources(resourceConfig: Resource["resourceConfig"]) {
+  return Object.entries(resourceConfig)
+    .filter(([key, value]) => key !== "id" && Array.isArray(value))
+    .map(([type, items]) => {
+      const count = items.length
+      const label =
+        count > 1
+          ? `${resourceTypes[type as keyof typeof resourceTypes]}s`
+          : resourceTypes[type as keyof typeof resourceTypes]
+      return `${count} ${label}`
+    })
     .join(", ")
-
-  return formatted
 }
 
 export function generateRepoName() {
@@ -68,4 +69,11 @@ export function formatResourceCounts(resource: Record<string, number>): string {
   return Object.entries(counts)
     .map(([type, count]) => `${count} ${type}${count > 1 ? "s" : ""}`)
     .join(", ")
+}
+
+export function toTitleCase(str: string): string {
+  return str.replace(
+    /\w\S*/g,
+    (text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+  )
 }

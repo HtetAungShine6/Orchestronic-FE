@@ -2,13 +2,13 @@ import fs from "fs"
 import path from "path"
 import { faker } from "@faker-js/faker"
 
-import { generateRepoName, generateResources } from "@/lib/utils"
+import { generateRepoName } from "@/lib/utils"
 
 const resources = Array.from({ length: 100 }, () => {
   const repoName = generateRepoName()
   return {
     name: `${repoName}-rg`,
-    resources: generateResources(),
+    // resources: generateResources(),
     developers: Array.from(
       { length: faker.number.int({ min: 3, max: 5 }) },
       () => faker.person.fullName()

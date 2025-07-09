@@ -3,10 +3,58 @@ import { z } from "zod"
 // We're keeping a simple non-relational schema here.
 // IRL, you will have a schema for your data models.
 export const resourceSchema = z.object({
+  id: z.string().uuid(),
   name: z.string(),
-  developers: z.array(z.string()),
-  resources: z.string(),
-  repository: z.string(),
+  cloudProvider: z.enum(["aws", "azure", "gcp"]),
+  region: z.string(),
+  resourceConfigId: z.string().uuid(),
+  resourceConfig: z.object({
+    id: z.string().uuid(),
+    vms: z.array(
+      z.object({
+        id: z.string().uuid(),
+        name: z.string(),
+        numberOfCores: z.number(),
+        memory: z.number(),
+        os: z.string(),
+        resourceConfigId: z.string().uuid(),
+      })
+    ),
+    dbs: z.array(
+      z.object({
+        id: z.string().uuid(),
+        engine: z.string(), // You can restrict this with z.enum([...]) if needed
+        storageGB: z.number(),
+        resourceConfigId: z.string().uuid(),
+      })
+    ),
+    sts: z.array(
+      z.object({
+        id: z.string().uuid(),
+        type: z.string(), // You can also use z.enum(["SSD", "HDD"]) if only limited values
+        capacityGB: z.number(),
+        resourceConfigId: z.string().uuid(),
+      })
+    ),
+  }),
+  repository: z.object({
+    id: z.string().uuid(),
+    name: z.string(),
+    description: z.string(),
+    resourcesId: z.string().uuid(),
+    status: z.enum(["Pending", "Approved", "Rejected"]),
+  }),
+  request: z.object({
+    id: z.string().uuid(),
+    displayCode: z.string(),
+    status: z.enum(["Pending", "Approved", "Rejected"]),
+    description: z.string(),
+    ownerId: z.string().uuid(),
+    repositoryId: z.string().uuid(),
+    resourcesId: z.string().uuid(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+  }),
 })
 
 export type Resource = z.infer<typeof resourceSchema>
