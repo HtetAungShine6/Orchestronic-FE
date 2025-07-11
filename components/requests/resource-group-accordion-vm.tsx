@@ -137,10 +137,10 @@ export function ResourceGroupAccordionVM({
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="grid gap-2">
+                      {/* <div className="grid gap-2">
                         <Label>Disk Size</Label>
                         <Input placeholder="e.g., 100 GB" type="number" />
-                      </div>
+                      </div> */}
                     </div>
                   </CardContent>
                 </Card>

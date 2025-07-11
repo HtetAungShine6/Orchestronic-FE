@@ -22,6 +22,9 @@ export const columnsResources: ColumnDef<Resource>[] = [
   },
   {
     accessorKey: "cloudProvider",
+    meta: {
+      title: "Cloud Provider",
+    },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cloud Provider" />
     ),
@@ -35,6 +38,9 @@ export const columnsResources: ColumnDef<Resource>[] = [
   },
   {
     accessorKey: "resourceConfig",
+    meta: {
+      title: "Resources",
+    },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Resources" />
     ),

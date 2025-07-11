@@ -21,6 +21,9 @@ export const columnsRequests: ColumnDef<Request>[] = [
   },
   {
     accessorKey: "createdAt",
+    meta: {
+      title: "Date",
+    },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
@@ -44,7 +47,7 @@ export const columnsRequests: ColumnDef<Request>[] = [
   {
     accessorKey: "resources",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Requested Resources" />
+      <DataTableColumnHeader column={column} title="Resources" />
     ),
     cell: ({ row }) => {
       const resources = row.getValue("resources") as Request["resources"]

@@ -59,6 +59,9 @@ export const columnsRepositories: ColumnDef<Repository>[] = [
   // },
   {
     accessorKey: "name",
+    meta: {
+      title: "Repository",
+    },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Repository" />
     ),
