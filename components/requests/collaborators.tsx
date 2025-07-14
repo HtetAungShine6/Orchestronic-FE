@@ -139,7 +139,11 @@ export default function Collaborators({ form }: CollaboratorsProps) {
             Invite teammates to contribute to this repository.
           </CardDescription>
           <CardAction>
-            <Button variant="secondary" onClick={() => setOpen(true)}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setOpen(true)}
+            >
               Add people
             </Button>
           </CardAction>
