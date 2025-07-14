@@ -27,7 +27,7 @@ export default function RequestsTable({ pageSize = 10 }: RequestsTableProps) {
       columns={columnsRequests}
       filterColumn="displayCode"
       pageSize={pageSize}
-      onRowClick={(row) => router.push(`/requests/${row.id}`)}
+      onRowClick={(row) => router.push(`/requests/${row.displayCode}`)}
     />
   )
 }

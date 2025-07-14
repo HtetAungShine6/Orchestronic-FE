@@ -57,7 +57,7 @@ export const navData = {
       title: "Monitoring",
       url: "/monitoring",
       icon: IconCloudSearch,
-      role: [Role.Admin, Role.Developer, Role.IT],
+      role: [Role.Admin, Role.Developer],
     },
     {
       title: "Policies",
@@ -71,7 +71,7 @@ export const navData = {
       title: "Team",
       url: "/team",
       icon: IconUsers,
-      role: [Role.Admin, Role.Developer, Role.IT],
+      role: [Role.Admin, Role.Developer],
     },
   ],
 }

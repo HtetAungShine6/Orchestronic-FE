@@ -34,6 +34,10 @@ export function NavDocuments({
     item.role?.includes(session?.user.role as Role)
   )
 
+  if (itemsFiltered.length === 0) {
+    return null
+  }
+
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>{label ?? "No label"}</SidebarGroupLabel>

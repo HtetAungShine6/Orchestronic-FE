@@ -17,6 +17,7 @@ export const authOptions: AuthOptions = {
   session: {
     strategy: "jwt",
   },
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user }: { user: User }) {
       if (!user.email) return false
@@ -55,6 +56,18 @@ export const authOptions: AuthOptions = {
       user?: User
       account?: Account | null
     }) {
+      if (token.email) {
+        try {
+          const freshUser = await getUserByEmail(token.email)
+          token.id = freshUser.id
+          token.name = freshUser.name
+          token.email = freshUser.email
+          token.role = freshUser.role
+        } catch (error) {
+          console.error("Error fetching fresh user data:", error)
+        }
+      }
+
       if (user) {
         token.id = user.id
         token.name = user.name

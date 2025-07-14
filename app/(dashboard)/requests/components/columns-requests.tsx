@@ -6,6 +6,7 @@ import { statuses } from "../data/data"
 import { Request } from "../data/schema-request"
 import { DataTableColumnHeader } from "@/components/data-table/components/data-table-column-header"
 import { cn } from "@/lib/utils"
+import { format } from "date-fns"
 
 export const columnsRequests: ColumnDef<Request>[] = [
   {
@@ -28,18 +29,13 @@ export const columnsRequests: ColumnDef<Request>[] = [
       <DataTableColumnHeader column={column} title="Date" />
     ),
     cell: ({ row }) => {
+      const formatted = format(
+        new Date(row.getValue("createdAt")),
+        "EEE, dd MMM, HH:mm"
+      )
       return (
         <div className="flex space-x-2">
-          <span className="">
-            {new Date(row.getValue("createdAt")).toLocaleDateString("en-GB", {
-              weekday: "short",
-              day: "2-digit",
-              month: "short",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            })}
-          </span>
+          <span className="">{formatted}</span>
         </div>
       )
     },
