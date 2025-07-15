@@ -1,5 +1,8 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { Role } from "@/types/role"
 import {
   Cpu,
   DatabaseZap,
@@ -8,6 +11,7 @@ import {
   Network,
   Pencil,
 } from "lucide-react"
+import { useSession } from "next-auth/react"
 import { ReactNode } from "react"
 
 const memoryLimit = 32 // in GB
@@ -72,6 +76,7 @@ export default function PagePolicySection() {
 }
 
 function PolicyCard({ policy, index }: { policy: Policy; index: number }) {
+  const { data: session } = useSession()
   return (
     <div className="grid gap-3">
       <div className="flex items-center justify-between">
@@ -79,9 +84,11 @@ function PolicyCard({ policy, index }: { policy: Policy; index: number }) {
           {policy.icon}
           <h3 className="font-medium">{policy.name}</h3>
         </div>
-        <Button variant="outline" size="sm">
-          <Pencil /> Edit
-        </Button>
+        {session?.user?.role === Role.IT && (
+          <Button variant="outline" size="sm">
+            <Pencil /> Edit
+          </Button>
+        )}
       </div>
       <div className="flex justify-between">
         <div className="w-1/2">

@@ -1,6 +1,6 @@
 import PagePolicySection from "./components/page-policy-section"
 
-export default function Page() {
+export default async function Page() {
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
       <div className="space-y-2">
