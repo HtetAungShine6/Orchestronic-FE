@@ -1,5 +1,13 @@
+import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Cpu, DatabaseZap, HardDrive, MemoryStick, Network } from "lucide-react"
+import {
+  Cpu,
+  DatabaseZap,
+  HardDrive,
+  MemoryStick,
+  Network,
+  Pencil,
+} from "lucide-react"
 import { ReactNode } from "react"
 
 const memoryLimit = 32 // in GB
@@ -66,9 +74,14 @@ export default function PagePolicySection() {
 function PolicyCard({ policy, index }: { policy: Policy; index: number }) {
   return (
     <div className="grid gap-3">
-      <div className="flex items-center gap-1">
-        {policy.icon}
-        <h3 className="font-medium">{policy.name}</h3>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          {policy.icon}
+          <h3 className="font-medium">{policy.name}</h3>
+        </div>
+        <Button variant="outline" size="sm">
+          <Pencil /> Edit
+        </Button>
       </div>
       <div className="flex justify-between">
         <div className="w-1/2">
