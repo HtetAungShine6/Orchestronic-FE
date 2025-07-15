@@ -13,6 +13,17 @@ import {
 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { ReactNode } from "react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 
 const memoryLimit = 32 // in GB
 const storageLimitHDD = 1 // in TB
@@ -85,9 +96,7 @@ function PolicyCard({ policy, index }: { policy: Policy; index: number }) {
           <h3 className="font-medium">{policy.name}</h3>
         </div>
         {session?.user?.role === Role.IT && (
-          <Button variant="outline" size="sm">
-            <Pencil /> Edit
-          </Button>
+          <EditPolicyDialog policy={policy} />
         )}
       </div>
       <div className="flex justify-between">
@@ -106,5 +115,43 @@ function PolicyCard({ policy, index }: { policy: Policy; index: number }) {
         </div>
       )}
     </div>
+  )
+}
+
+function EditPolicyDialog({ policy }: { policy: Policy }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Pencil /> Edit
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit policy</DialogTitle>
+          <DialogDescription>
+            Update the policy details below. Ensure that changes comply with the
+            overall resource management guidelines.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4">
+          <div className="grid gap-2">
+            <Label>Name</Label>
+            <Input type="text" defaultValue={policy.name} />
+          </div>
+          <div className="grid gap-2">
+            <Label>Description</Label>
+            <Textarea defaultValue={policy.description} />
+          </div>
+          <div className="grid gap-2">
+            <Label>Max Limit</Label>
+            <Input type="text" defaultValue={policy.max} />
+          </div>
+          <Button type="submit" className="mt-4">
+            Save Changes
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
