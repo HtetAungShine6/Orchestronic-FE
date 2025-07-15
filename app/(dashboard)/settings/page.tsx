@@ -1,11 +1,16 @@
+import SettingsSection from "./components/settings-section"
+
 export default function Page() {
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-      {/* <SectionCards />
-      <div className="px-4 lg:px-6">
-        <ChartAreaInteractive />
+    <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
+      <div className="space-y-2">
+        <h2 className="text-2xl font-bold tracking-tight">Policies</h2>
+        <p className="text-muted-foreground">
+          Here&apos;s a list of your policies for provisioning infrastructure!
+        </p>
       </div>
-      <DataTable data={data} /> */}
+
+      <SettingsSection />
     </div>
   )
 }

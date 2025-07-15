@@ -76,7 +76,7 @@ Requests for higher bandwidth must be justified and approved by the PM.`,
   },
 ]
 
-export default function PagePolicySection() {
+export default function PolicySection() {
   return (
     <div className="flex flex-col">
       {policies.map((policy, index) => (

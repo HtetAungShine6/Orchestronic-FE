@@ -1,4 +1,4 @@
-import PagePolicySection from "./components/page-policy-section"
+import PolicySection from "./components/policy-section"
 
 export default async function Page() {
   return (
@@ -10,7 +10,7 @@ export default async function Page() {
         </p>
       </div>
 
-      <PagePolicySection />
+      <PolicySection />
     </div>
   )
 }
