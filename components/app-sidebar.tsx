@@ -52,11 +52,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           label="Operations"
           session={session}
         />
-        <NavDocuments
+        {/* <NavDocuments
           items={navData.collaborations}
           label="Collaboration"
           session={session}
-        />
+        /> */}
         <NavSecondary
           items={navData.navSecondary}
           className="mt-auto"
