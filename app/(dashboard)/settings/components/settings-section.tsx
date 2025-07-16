@@ -46,11 +46,6 @@ export default function SettingsSection() {
               </DrawerHeader>
               <DrawerFooter>
                 <Button>Submit</Button>
-                <DrawerClose className="w-full">
-                  <Button className="w-full" variant="outline">
-                    Cancel
-                  </Button>
-                </DrawerClose>
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
@@ -74,11 +69,6 @@ export default function SettingsSection() {
               </DrawerHeader>
               <DrawerFooter>
                 <Button>Submit</Button>
-                <DrawerClose className="w-full">
-                  <Button className="w-full" variant="outline">
-                    Cancel
-                  </Button>
-                </DrawerClose>
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
