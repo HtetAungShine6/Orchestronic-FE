@@ -2,8 +2,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardHeader } from "@/components/ui/card"
 import { getInitials } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { authOptions } from "@/lib/auth-options"
+import { getServerSession } from "next-auth"
 
 export default async function Page() {
+  const session = await getServerSession(authOptions)
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
       <div className="space-y-2">
