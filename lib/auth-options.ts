@@ -12,6 +12,12 @@ export const authOptions: AuthOptions = {
       clientId: process.env.AZURE_AD_CLIENT_ID ?? "",
       clientSecret: process.env.AZURE_AD_CLIENT_SECRET ?? "",
       tenantId: process.env.AZURE_AD_TENANT_ID ?? "",
+      authorization: {
+        params: {
+          scope:
+            "openid profile email api://bfbb98d5-f4cf-4d6b-b6fc-487eecff1c69/access_as_user",
+        },
+      },
     }),
   ],
   session: {
@@ -56,6 +62,7 @@ export const authOptions: AuthOptions = {
       user?: User
       account?: Account | null
     }) {
+      console.log("JWT callback triggered", { token, user, account })
       if (token.email) {
         try {
           const freshUser = await getUserByEmail(token.email)
