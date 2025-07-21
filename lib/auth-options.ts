@@ -5,7 +5,7 @@ import type { Account, Session, User } from "next-auth"
 import type { AuthOptions } from "next-auth"
 import { isApiError } from "@/types/error"
 import { Role } from "@/types/role"
-import exchangeToken from "@/app/api/auth/api"
+import exchangeToken, { refreshAccessToken } from "@/app/api/auth/api"
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -63,29 +63,33 @@ export const authOptions: AuthOptions = {
       user?: User
       account?: Account | null
     }) {
-      if (token.email) {
-        try {
-          const freshUser = await getUserByEmail(token.email)
-          token.id = freshUser.id
-          token.name = freshUser.name
-          token.email = freshUser.email
-          token.role = freshUser.role
-        } catch (error) {
-          console.error("Error fetching fresh user data:", error)
-        }
-      }
-
       if (user) {
-        const backendRes = await exchangeToken(token.accessToken ?? "")
+        const backendRes = await exchangeToken(account?.access_token ?? "")
         token.id = user.id
         token.name = user.name
         token.email = user.email
         token.role = user.role
-        token.backendToken = backendRes.token
+        token.backendaccessToken = backendRes.accessToken
+        token.backendrefreshToken = backendRes.refreshToken
+        token.backendaccessTokenExpires = Date.now() + 3600 * 1000
+        token.accessToken = account?.access_token
+        return token
       }
-      if (account?.access_token) {
-        token.accessToken = account.access_token
+
+      // On every subsequent request
+      if (Date.now() >= (token.backendaccessTokenExpires ?? 0)) {
+        try {
+          const newAccessToken = await refreshAccessToken(
+            token.backendrefreshToken ?? ""
+          )
+          token.backendaccessToken = newAccessToken.accessToken
+          token.backendaccessTokenExpires = Date.now() + 3600 * 1000
+        } catch (err) {
+          console.error("Failed to refresh token", err)
+          return { ...token, error: "RefreshAccessTokenError" }
+        }
       }
+
       return token
     },
 
@@ -96,7 +100,7 @@ export const authOptions: AuthOptions = {
         session.user.email = token.email
         session.user.role = token.role as Role
         session.user.accessToken = token.accessToken
-        session.user.backendToken = token.backendToken
+        session.user.backendaccessToken = token.backendaccessToken
       }
       return session
     },

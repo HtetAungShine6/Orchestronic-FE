@@ -8,7 +8,9 @@ declare module "next-auth" {
     email: string
     role: Role
     accessToken?: string
-    backendToken?: string
+    backendaccessToken?: string
+    backendaccessTokenExpires?: number
+    backendrefreshToken?: string
   }
 
   interface Session {
@@ -18,7 +20,9 @@ declare module "next-auth" {
       email?: string
       role?: Role
       accessToken?: string
-      backendToken?: string
+      backendaccessToken?: string
+      backendaccessTokenExpires?: number
+      backendrefreshToken?: string
     }
   }
 }
@@ -30,6 +34,8 @@ declare module "next-auth/jwt" {
     email?: string
     role?: Role
     accessToken?: string
-    backendToken?: string
+    backendaccessToken?: string
+    backendaccessTokenExpires?: number
+    backendrefreshToken?: string
   }
 }

@@ -7,7 +7,7 @@ export async function getRequests() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/request`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${session?.user?.backendToken}`,
+      Authorization: `Bearer ${session?.user?.backendaccessToken}`,
     },
   })
 
