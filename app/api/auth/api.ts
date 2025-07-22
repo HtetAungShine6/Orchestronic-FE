@@ -22,13 +22,13 @@ export default async function exchangeToken(
   return res.json()
 }
 
-export async function refreshAccessToken(backendaccessToken: string) {
+export async function refreshAccessToken(refreshToken: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ refreshToken: backendaccessToken }),
+    body: JSON.stringify({ refreshToken }),
   })
 
   if (!res.ok) {

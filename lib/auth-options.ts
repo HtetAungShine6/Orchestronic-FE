@@ -101,6 +101,8 @@ export const authOptions: AuthOptions = {
         session.user.role = token.role as Role
         session.user.accessToken = token.accessToken
         session.user.backendaccessToken = token.backendaccessToken
+        session.user.backendrefreshToken = token.backendrefreshToken
+        session.user.backendaccessTokenExpires = token.backendaccessTokenExpires
       }
       return session
     },
