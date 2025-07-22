@@ -52,7 +52,9 @@ export function ResourceGroupAccordionDB({
               value={`database-${i}`}
               ref={i === Math.floor(databaseCount / 3) ? lastDBRef : null}
             >
-              <AccordionTrigger>Database #{i + 1}</AccordionTrigger>
+              <AccordionTrigger className="cursor-pointer">
+                Database #{i + 1}
+              </AccordionTrigger>
               <AccordionContent>
                 <Card>
                   <CardHeader>

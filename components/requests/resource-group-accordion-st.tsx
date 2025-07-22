@@ -55,7 +55,9 @@ export function ResourceGroupAccordionST({
               value={`storage-${i}`}
               ref={i === Math.floor(storageCount / 3) ? lastStorageRef : null}
             >
-              <AccordionTrigger>Storage #{i + 1}</AccordionTrigger>
+              <AccordionTrigger className="cursor-pointer">
+                Storage #{i + 1}
+              </AccordionTrigger>
               <AccordionContent>
                 <Card>
                   <CardHeader>

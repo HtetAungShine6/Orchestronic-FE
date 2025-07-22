@@ -58,11 +58,8 @@ export function ResourceGroupAccordionVM({
               value={`virtual-machine-${i}`}
               ref={i === Math.floor(vmCount / 3) ? lastVMRef : null}
             >
-              <AccordionTrigger className="flex items-center justify-between">
-                <div className="flex items-center justify-between w-full outline-none">
-                  Virtual Machines #{i + 1}
-                  <span className="cursor-pointer">Delete</span>
-                </div>
+              <AccordionTrigger className="cursor-pointer">
+                Virtual Machines #{i + 1}
               </AccordionTrigger>
               <AccordionContent>
                 <Card>
