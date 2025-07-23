@@ -89,7 +89,7 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
           </div>
           <FormField
             control={form.control}
-            name="cloud_provider"
+            name="resources.cloud_provider"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Cloud Provider</FormLabel>

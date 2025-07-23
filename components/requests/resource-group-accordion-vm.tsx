@@ -74,7 +74,10 @@ export function ResourceGroupAccordionVM({
                     <Input
                       placeholder="e.g., web-server-1"
                       onChange={(e) => {
-                        form.setValue(`resources.vm.${i}.name`, e.target.value)
+                        form.setValue(
+                          `resources.resourceConfig.vm.${i}.name`,
+                          e.target.value
+                        )
                       }}
                     />
                     <div className="flex justify-between">
@@ -85,7 +88,7 @@ export function ResourceGroupAccordionVM({
                           type="number"
                           onChange={(e) => {
                             form.setValue(
-                              `resources.vm.${i}.cpu`,
+                              `resources.resourceConfig.vm.${i}.numberOfCores`,
                               Number(e.target.value)
                             )
                           }}
@@ -98,7 +101,7 @@ export function ResourceGroupAccordionVM({
                           type="number"
                           onChange={(e) => {
                             form.setValue(
-                              `resources.vm.${i}.memory`,
+                              `resources.resourceConfig.vm.${i}.memory`,
                               Number(e.target.value)
                             )
                           }}
@@ -111,7 +114,10 @@ export function ResourceGroupAccordionVM({
                         <Label>Operating System</Label>
                         <Select
                           onValueChange={(value) =>
-                            form.setValue(`resources.vm.${i}.os`, value)
+                            form.setValue(
+                              `resources.resourceConfig.vm.${i}.os`,
+                              value
+                            )
                           }
                         >
                           <SelectTrigger className="w-54">

@@ -5,7 +5,6 @@ import type { Account, Session, User } from "next-auth"
 import type { AuthOptions } from "next-auth"
 import { isApiError } from "@/types/error"
 import { Role } from "@/types/role"
-import exchangeToken, { refreshAccessToken } from "@/app/api/auth/api"
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -64,30 +63,12 @@ export const authOptions: AuthOptions = {
       account?: Account | null
     }) {
       if (user) {
-        const backendRes = await exchangeToken(account?.access_token ?? "")
         token.id = user.id
         token.name = user.name
         token.email = user.email
         token.role = user.role
-        token.backendaccessToken = backendRes.accessToken
-        token.backendrefreshToken = backendRes.refreshToken
-        token.backendaccessTokenExpires = Date.now() + 3600 * 1000
         token.accessToken = account?.access_token
         return token
-      }
-
-      // On every subsequent request
-      if (Date.now() >= (token.backendaccessTokenExpires ?? 0)) {
-        try {
-          const newAccessToken = await refreshAccessToken(
-            token.backendrefreshToken ?? ""
-          )
-          token.backendaccessToken = newAccessToken.accessToken
-          token.backendaccessTokenExpires = Date.now() + 3600 * 1000
-        } catch (err) {
-          console.error("Failed to refresh token", err)
-          return { ...token, error: "RefreshAccessTokenError" }
-        }
       }
 
       return token
@@ -100,9 +81,6 @@ export const authOptions: AuthOptions = {
         session.user.email = token.email
         session.user.role = token.role as Role
         session.user.accessToken = token.accessToken
-        session.user.backendaccessToken = token.backendaccessToken
-        session.user.backendrefreshToken = token.backendrefreshToken
-        session.user.backendaccessTokenExpires = token.backendaccessTokenExpires
       }
       return session
     },

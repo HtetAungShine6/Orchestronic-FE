@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+// import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -65,16 +65,16 @@ export function ResourceGroupAccordionDB({
                   </CardHeader>
                   <CardContent className="grid gap-2">
                     <div className="grid gap-2">
-                      <Label>Name</Label>
+                      {/* <Label>Name</Label>
                       <Input
                         placeholder="e.g., web-server-1"
                         onChange={(e) => {
                           form.setValue(
-                            `resources.vm.${i}.name`,
+                            `resources.resourceConfig.db.${i}.name`,
                             e.target.value
                           )
                         }}
-                      />
+                      /> */}
                       <div className="flex justify-between">
                         <div className="grid gap-2">
                           <Label htmlFor={`db-engine-${i}`}>
@@ -82,7 +82,10 @@ export function ResourceGroupAccordionDB({
                           </Label>
                           <Select
                             onValueChange={(value) =>
-                              form.setValue(`resources.db.${i}.engine`, value)
+                              form.setValue(
+                                `resources.resourceConfig.db.${i}.engine`,
+                                value
+                              )
                             }
                           >
                             <SelectTrigger id={`db-engine-${i}`}>
@@ -97,7 +100,7 @@ export function ResourceGroupAccordionDB({
                             </SelectContent>
                           </Select>
                         </div>
-                        <div className="grid gap-2">
+                        {/* <div className="grid gap-2">
                           <Label htmlFor={`db-instance-class-${i}`}>
                             Instance Class / Size
                           </Label>
@@ -124,11 +127,11 @@ export function ResourceGroupAccordionDB({
                               </SelectItem>
                             </SelectContent>
                           </Select>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
 
-                    <div className="grid gap-2">
+                    {/* <div className="grid gap-2">
                       <Label htmlFor={`db-size-${i}`}>Storage Size</Label>
                       <Input
                         type="number"
@@ -141,7 +144,7 @@ export function ResourceGroupAccordionDB({
                           )
                         }}
                       />
-                    </div>
+                    </div> */}
                   </CardContent>
                 </Card>
               </AccordionContent>

@@ -41,7 +41,6 @@ export function RepoNameInput({
   ownerName,
   form,
 }: RepoNameInputProps) {
-  // const [repoName, setRepoName] = useState<string>("")
   const repoName = useSelector((state: RootState) => state.repoName.value)
   const dispatch = useDispatch()
   const debouncedRepoName = useDebounce(repoName, 500)
@@ -116,7 +115,7 @@ export function RepoNameInput({
   function handleGenerate() {
     setHasTyped(true)
     dispatch(setRepoName(suggestedName))
-    form.clearErrors("repository_name")
+    form.clearErrors("repository.name")
   }
 
   if (error) {
@@ -152,7 +151,7 @@ export function RepoNameInput({
           <div className="h-full">
             <FormField
               control={form.control}
-              name="repository_name"
+              name="repository.name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="gap-1">Repository name *</FormLabel>
@@ -199,7 +198,7 @@ export function RepoNameInput({
         </p>
         <FormField
           control={form.control}
-          name="repository_description"
+          name="repository.description"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="gap-1">

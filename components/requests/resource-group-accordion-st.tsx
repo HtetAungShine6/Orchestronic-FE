@@ -71,7 +71,10 @@ export function ResourceGroupAccordionST({
                       <Label htmlFor={`storage-type-${i}`}>Storage Type</Label>
                       <Select
                         onValueChange={(value) =>
-                          form.setValue(`resources.storage.${i}.type`, value)
+                          form.setValue(
+                            `resources.resourceConfig.storage.${i}.type`,
+                            value
+                          )
                         }
                       >
                         <SelectTrigger id={`storage-type-${i}`}>
@@ -94,7 +97,7 @@ export function ResourceGroupAccordionST({
                         placeholder="Enter storage size"
                         onChange={(e) => {
                           form.setValue(
-                            `resources.storage.${i}.size`,
+                            `resources.resourceConfig.storage.${i}.capacityGB`,
                             Number(e.target.value)
                           )
                         }}

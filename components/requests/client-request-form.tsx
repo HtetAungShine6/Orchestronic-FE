@@ -25,24 +25,18 @@ import { resourceSchema } from "@/app/zod/scheme"
 import { useSelector } from "react-redux"
 import { RootState } from "@/app/state/store"
 import { useEffect } from "react"
+import createRequest from "@/app/api/requests/api"
 
 export const requestFormSchema = z.object({
-  repository_name: z.string().refine((value) => value.trim().length > 0, {
-    message: "",
-  }),
-  repository_description: z.string().optional(),
-  collaborators: z.array(z.string()).optional(),
-  resource_group_name: z.string().nonempty({
-    message: "",
-  }),
-  cloud_provider: z.string().nonempty({
-    message: "",
-  }),
-  region: z.string().nonempty({
-    message: "",
-  }),
   resources: resourceSchema,
-  request_description: z.string().nonempty({
+  collaborators: z.array(z.string()).optional(),
+  repository: z.object({
+    name: z.string().nonempty({
+      message: "Repository name is required",
+    }),
+    description: z.string().optional(),
+  }),
+  description: z.string().nonempty({
     message: "Please provide a description for your request",
   }),
 })
@@ -61,31 +55,25 @@ export default function ClientRequestForm({
   const requestForm = useForm<z.infer<typeof requestFormSchema>>({
     resolver: zodResolver(requestFormSchema),
     defaultValues: {
-      repository_name: "",
-      repository_description: "",
-      collaborators: [],
-      resource_group_name: "",
-      cloud_provider: cloudProviders[0].value,
-      region: regions[0].value,
-      request_description: "",
       resources: {
-        vm: [],
-        db: [],
-        storage: [],
+        cloud_provider: cloudProviders[0].value,
+        region: regions[0].value,
       },
     },
   })
 
   useEffect(() => {
     if (repoName) {
-      requestForm.setValue("resource_group_name", repoName)
-      requestForm.setValue("repository_name", repoName)
+      requestForm.setValue("resources.name", repoName)
+      requestForm.setValue("repository.name", repoName)
     }
   }, [repoName, requestForm])
 
   function onSubmit(values: z.infer<typeof requestFormSchema>) {
-    console.log(values)
+    createRequest(values)
   }
+
+  console.log(requestForm.formState.errors)
 
   return (
     <Form {...requestForm}>
@@ -100,7 +88,7 @@ export default function ClientRequestForm({
 
         <FormField
           control={requestForm.control}
-          name="request_description"
+          name="description"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Request Description</FormLabel>
