@@ -7,7 +7,6 @@ import { getServerSession } from "next-auth"
 
 export default async function Page() {
   const session = await getServerSession(authOptions)
-  console.log("Session in account page:", session)
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
       <div className="space-y-2">

@@ -5,6 +5,7 @@ import type { Account, Session, User } from "next-auth"
 import type { AuthOptions } from "next-auth"
 import { isApiError } from "@/types/error"
 import { Role } from "@/types/role"
+import authExchange from "@/app/api/auth/api"
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -62,6 +63,16 @@ export const authOptions: AuthOptions = {
       user?: User
       account?: Account | null
     }) {
+      // On initial login
+      if (account?.access_token) {
+        try {
+          const backendAccessToken = await authExchange(account.access_token)
+          token.backendAccessToken = backendAccessToken.accessToken
+        } catch (error) {
+          console.error("Error during JWT token exchange:", error)
+        }
+      }
+
       if (user) {
         token.id = user.id
         token.name = user.name
@@ -81,6 +92,7 @@ export const authOptions: AuthOptions = {
         session.user.email = token.email
         session.user.role = token.role as Role
         session.user.accessToken = token.accessToken
+        session.user.backendAccessToken = token.backendAccessToken
       }
       return session
     },
