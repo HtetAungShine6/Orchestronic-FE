@@ -20,11 +20,10 @@ export default async function checkRepositoryAvailability(name: string) {
 
 export async function getRepositories() {
   const session = await getServerSession(authOptions)
-
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/repositories`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${session?.user?.accessToken}`,
+      Authorization: `Bearer ${session?.user?.backendAccessToken}`,
     },
   })
 

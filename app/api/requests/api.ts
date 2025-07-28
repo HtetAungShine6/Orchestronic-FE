@@ -1,24 +1,16 @@
 import { requestFormSchema } from "@/components/requests/client-request-form"
 import { authOptions } from "@/lib/auth-options"
-import { fetchWithAuth } from "@/lib/fetchWithAuth"
 import { ApiError } from "@/types/error"
 import { getServerSession } from "next-auth"
 import z from "zod"
 
 export async function getRequests() {
   const session = await getServerSession(authOptions)
-
-  console.log("Fetching requests with session:", session)
-
-  const res = await fetchWithAuth(
-    `${process.env.NEXT_PUBLIC_API_URL}/request`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.user?.backendAccessToken}`,
-      },
-    }
-  )
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/request`, {
+    headers: {
+      Authorization: `Bearer ${session?.user?.backendAccessToken}`,
+    },
+  })
 
   if (!res.ok) {
     const err = await res.json()
@@ -39,7 +31,7 @@ export default async function createRequest(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${session?.user?.accessToken}`,
+      Authorization: `Bearer ${session?.user?.backendAccessToken}`,
     },
     body: JSON.stringify(data),
   })

@@ -26,8 +26,13 @@ export const authOptions: AuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async signIn({ user }: { user: User }) {
+    async signIn({ user, account }: { user: User; account?: Account | null }) {
       if (!user.email) return false
+      const backendAccessToken = (await authExchange(
+        account?.access_token ?? ""
+      )) as { accessToken: string }
+
+      console.log("Backend Access Token:", backendAccessToken)
 
       try {
         let existingUser: User
@@ -45,6 +50,7 @@ export const authOptions: AuthOptions = {
         if (existingUser) {
           user.id = existingUser.id
           user.role = existingUser.role
+          user.backendAccessToken = backendAccessToken.accessToken
         }
 
         return true
@@ -54,32 +60,13 @@ export const authOptions: AuthOptions = {
       }
     },
 
-    async jwt({
-      token,
-      user,
-      account,
-    }: {
-      token: JWT
-      user?: User
-      account?: Account | null
-    }) {
-      // On initial login
-      if (account?.access_token) {
-        try {
-          const backendAccessToken = await authExchange(account.access_token)
-          token.backendAccessToken = backendAccessToken.accessToken
-        } catch (error) {
-          console.error("Error during JWT token exchange:", error)
-        }
-      }
-
+    async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
         token.id = user.id
         token.name = user.name
         token.email = user.email
         token.role = user.role
-        token.accessToken = account?.access_token
-        return token
+        token.backendAccessToken = user.backendAccessToken
       }
 
       return token
@@ -91,7 +78,6 @@ export const authOptions: AuthOptions = {
         session.user.name = token.name
         session.user.email = token.email
         session.user.role = token.role as Role
-        session.user.accessToken = token.accessToken
         session.user.backendAccessToken = token.backendAccessToken
       }
       return session
