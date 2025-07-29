@@ -32,8 +32,6 @@ export const authOptions: AuthOptions = {
         account?.access_token ?? ""
       )) as { accessToken: string }
 
-      console.log("Backend Access Token:", backendAccessToken)
-
       try {
         let existingUser: User
 
