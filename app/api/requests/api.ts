@@ -27,6 +27,7 @@ export default async function createRequest(
   data: z.infer<typeof requestFormSchema>
 ) {
   const session = await getServerSession(authOptions)
+
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/request`, {
     method: "POST",
     headers: {

@@ -26,11 +26,8 @@ export const authOptions: AuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async signIn({ user, account }: { user: User; account?: Account | null }) {
+    async signIn({ user, account }: { user: User; account: Account | null }) {
       if (!user.email) return false
-      const backendAccessToken = (await authExchange(
-        account?.access_token ?? ""
-      )) as { accessToken: string }
 
       try {
         let existingUser: User
@@ -46,9 +43,12 @@ export const authOptions: AuthOptions = {
         }
 
         if (existingUser) {
+          const backendAccessToken = (await authExchange(
+            account?.access_token ?? ""
+          )) as { accessToken: string }
+          user.backendAccessToken = backendAccessToken.accessToken
           user.id = existingUser.id
           user.role = existingUser.role
-          user.backendAccessToken = backendAccessToken.accessToken
         }
 
         return true

@@ -45,6 +45,7 @@ export async function createUser(user: User) {
       role: Role.Developer,
     }),
   })
+  console.log(res)
   if (!res.ok) {
     const err = await res.json()
     throw new ApiError(

@@ -23,17 +23,29 @@ const storageSchema = z.object({
 
 export const resourceSchema = z.object({
   name: z.string().nonempty({
-    message: "",
+    message: "Please provide a name for your resources",
   }),
-  cloud_provider: z.string().nonempty({
-    message: "",
+  cloudProvider: z.string().nonempty({
+    message: "Please select a cloud provider",
   }),
   region: z.string().nonempty({
-    message: "",
+    message: "Please select a region",
   }),
-  resourceConfig: z.object({
-    vm: z.array(vmSchema).optional(),
-    db: z.array(dbSchema).optional(),
-    storage: z.array(storageSchema).optional(),
-  }),
+  resourceConfig: z
+    .object({
+      vm: z.array(vmSchema).optional(),
+      db: z.array(dbSchema).optional(),
+      storage: z.array(storageSchema).optional(),
+    })
+    .refine(
+      (data) => {
+        const hasVM = data.vm && data.vm.length > 0
+        const hasDB = data.db && data.db.length > 0
+        const hasStorage = data.storage && data.storage.length > 0
+        return hasVM || hasDB || hasStorage
+      },
+      {
+        message: "At least one resource (VM, Database, or Storage) is required",
+      }
+    ),
 })
