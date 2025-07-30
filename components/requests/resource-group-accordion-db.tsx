@@ -24,6 +24,7 @@ import {
 import { UseFormReturn } from "react-hook-form"
 import { requestFormSchema } from "./client-request-form"
 import z from "zod"
+import { Input } from "@/components/ui/input"
 
 interface ResourceGroupAccordionProps {
   form: UseFormReturn<z.infer<typeof requestFormSchema>>
@@ -100,51 +101,21 @@ export function ResourceGroupAccordionDB({
                             </SelectContent>
                           </Select>
                         </div>
-                        {/* <div className="grid gap-2">
-                          <Label htmlFor={`db-instance-class-${i}`}>
-                            Instance Class / Size
-                          </Label>
-                          <Select
-                            onValueChange={(value) =>
+                        <div className="grid gap-2">
+                          <Label>Storage</Label>
+                          <Input
+                            placeholder="e.g., 4 GB"
+                            type="number"
+                            onChange={(e) => {
                               form.setValue(
-                                `resources.db.${i}.instanceClass`,
-                                value
+                                `resources.resourceConfig.db.${i}.storageGB`,
+                                Number(e.target.value)
                               )
-                            }
-                          >
-                            <SelectTrigger id={`db-instance-class-${i}`}>
-                              <SelectValue placeholder="Choose DB instance class" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="db.t2.micro">
-                                db.t2.micro
-                              </SelectItem>
-                              <SelectItem value="db.t2.small">
-                                db.t2.small
-                              </SelectItem>
-                              <SelectItem value="db.t2.medium">
-                                db.t2.medium
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div> */}
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
-
-                    {/* <div className="grid gap-2">
-                      <Label htmlFor={`db-size-${i}`}>Storage Size</Label>
-                      <Input
-                        type="number"
-                        id={`db-name-${i}`}
-                        placeholder="Enter database size"
-                        onChange={(e) => {
-                          form.setValue(
-                            `resources.db.${i}.size`,
-                            Number(e.target.value)
-                          )
-                        }}
-                      />
-                    </div> */}
                   </CardContent>
                 </Card>
               </AccordionContent>

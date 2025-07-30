@@ -25,6 +25,7 @@ import { resourceSchema } from "@/app/zod/scheme"
 import { useSelector } from "react-redux"
 import { RootState } from "@/app/state/store"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,6 +35,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import createRequest from "@/app/api/requests/api"
+import { useMutation } from "@tanstack/react-query"
 
 export const requestFormSchema = z.object({
   resources: resourceSchema,
@@ -59,6 +62,20 @@ export default function ClientRequestForm({
   session,
 }: Readonly<ClientRequestFormProps>) {
   const repoName = useSelector((state: RootState) => state.repoName.value)
+  const router = useRouter()
+  const [showSuccess, setShowSuccess] = useState(false)
+
+  const mutation = useMutation({
+    mutationFn: (values: z.infer<typeof requestFormSchema>) =>
+      createRequest(values),
+    onSuccess: (data) => {
+      console.log("Request created:", data)
+      setShowSuccess(true)
+    },
+    onError: (error) => {
+      console.error("Failed to create request:", error)
+    },
+  })
 
   const requestForm = useForm<z.infer<typeof requestFormSchema>>({
     resolver: zodResolver(requestFormSchema),
@@ -78,30 +95,18 @@ export default function ClientRequestForm({
   }, [repoName, requestForm])
 
   async function onSubmit(values: z.infer<typeof requestFormSchema>) {
-    try {
-      const response = await fetch("/api/requests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      })
+    mutation.mutate(values)
+  }
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Failed to create request")
-      }
-
-      const result = await response.json()
-      console.log("Request created successfully:", result)
-    } catch (error) {
-      console.error("Error creating request:", error)
-    }
+  const handleSuccessClose = () => {
+    setShowSuccess(false)
+    router.push("/requests")
   }
 
   return (
     <>
       <AlertDialogError form={requestForm} />
+      <AlertDialogSuccess isOpen={showSuccess} onClose={handleSuccessClose} />
 
       <Form {...requestForm}>
         <form
@@ -134,7 +139,9 @@ export default function ClientRequestForm({
             )}
           />
           <div className="flex justify-end">
-            <Button type="submit">Submit Request</Button>
+            <Button type="submit" disabled={mutation.isPending}>
+              {mutation.isPending ? "Submitting..." : "Submit Request"}
+            </Button>
           </div>
         </form>
       </Form>
@@ -152,6 +159,8 @@ function AlertDialogError({
   useEffect(() => {
     setHasErrors(Object.keys(form.formState.errors).length > 0)
   }, [form.formState.errors])
+
+  console.log(form.formState.errors)
 
   return (
     <AlertDialog open={hasErrors}>
@@ -172,6 +181,33 @@ function AlertDialogError({
         <AlertDialogFooter>
           <AlertDialogAction onClick={() => setHasErrors(false)}>
             OK
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
+
+function AlertDialogSuccess({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean
+  onClose: () => void
+}) {
+  return (
+    <AlertDialog open={isOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Request Created Successfully!</AlertDialogTitle>
+          <AlertDialogDescription>
+            Your request has been submitted successfully. You will be redirected
+            to the requests page to view your submission.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogAction onClick={onClose}>
+            Go to Requests
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

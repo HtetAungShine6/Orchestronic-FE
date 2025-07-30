@@ -16,7 +16,7 @@ export async function getRequests() {
     const err = await res.json()
     throw new ApiError(
       err.statusCode ?? res.status,
-      err.message ?? "Unknown error"
+      err.message ?? "Failed to fetch requests"
     )
   }
 
@@ -26,13 +26,10 @@ export async function getRequests() {
 export default async function createRequest(
   data: z.infer<typeof requestFormSchema>
 ) {
-  const session = await getServerSession(authOptions)
-
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/request`, {
+  const res = await fetch(`/api/requests`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${session?.user?.backendAccessToken}`,
     },
     body: JSON.stringify(data),
   })
@@ -41,7 +38,7 @@ export default async function createRequest(
     const err = await res.json()
     throw new ApiError(
       err.statusCode ?? res.status,
-      err.message ?? "Unknown error"
+      err.message ?? "Fail to create request"
     )
   }
 
