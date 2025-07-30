@@ -23,9 +23,7 @@ export async function getRequests() {
   return res.json()
 }
 
-export default async function createRequest(
-  data: z.infer<typeof requestFormSchema>
-) {
+export async function createRequest(data: z.infer<typeof requestFormSchema>) {
   const res = await fetch(`/api/requests`, {
     method: "POST",
     headers: {
@@ -39,6 +37,25 @@ export default async function createRequest(
     throw new ApiError(
       err.statusCode ?? res.status,
       err.message ?? "Fail to create request"
+    )
+  }
+
+  return res.json()
+}
+
+export async function getRequestBySlug(slug: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/requests/${slug}`,
+    {
+      method: "GET",
+    }
+  )
+
+  if (!res.ok) {
+    const err = await res.json()
+    throw new ApiError(
+      err.statusCode ?? res.status,
+      err.message ?? "Failed to fetch request"
     )
   }
 

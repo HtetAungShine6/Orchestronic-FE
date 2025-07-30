@@ -35,7 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import createRequest from "@/app/api/requests/api"
+import { createRequest } from "@/app/api/requests/api"
 import { useMutation } from "@tanstack/react-query"
 
 export const requestFormSchema = z.object({

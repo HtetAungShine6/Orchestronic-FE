@@ -1,3 +1,5 @@
+import { getRequestBySlug } from "@/app/api/requests/api"
+import RequestDetail from "@/components/requests/[slug]/request-detail"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,6 +8,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query"
 
 export default async function Page({
   params,
@@ -13,6 +20,13 @@ export default async function Page({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: ["request", slug],
+    queryFn: () => getRequestBySlug(slug),
+  })
+
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
       <div className="flex items-center justify-between space-y-2">
@@ -31,6 +45,9 @@ export default async function Page({
           <h2 className="text-2xl font-bold tracking-tight">{slug}</h2>
         </div>
       </div>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <RequestDetail slug={slug} />
+      </HydrationBoundary>
     </div>
   )
 }

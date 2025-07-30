@@ -16,16 +16,6 @@ import { CheckCircle, CircleOff, Timer } from "lucide-react"
 // ]
 
 export const statuses = [
-  // {
-  //   value: "backlog",
-  //   label: "Backlog",
-  //   icon: HelpCircle,
-  // },
-  // {
-  //   value: "todo",
-  //   label: "Todo",
-  //   icon: Circle,
-  // },
   {
     value: "Pending",
     label: "In Progress",
