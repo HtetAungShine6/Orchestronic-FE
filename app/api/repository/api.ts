@@ -11,7 +11,8 @@ export default async function checkRepositoryAvailability(name: string) {
     const err = await res.json()
     throw new ApiError(
       err.statusCode ?? res.status,
-      err.message ?? "Unknown error"
+      err.message ?? "Unknown error",
+      err.error ?? "An error occurred while checking repository availability"
     )
   }
 
@@ -31,7 +32,8 @@ export async function getRepositories() {
     const err = await res.json()
     throw new ApiError(
       err.statusCode ?? res.status,
-      err.message ?? "Unknown error"
+      err.message ?? "Unknown error",
+      err.error ?? "An error occurred while fetching repositories"
     )
   }
 
