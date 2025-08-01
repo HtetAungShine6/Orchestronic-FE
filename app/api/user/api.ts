@@ -11,7 +11,8 @@ export async function getUserByEmail(email: string): Promise<User> {
     const err = await res.json()
     throw new ApiError(
       err.statusCode ?? res.status,
-      err.message ?? "Unknown error"
+      err.message ?? "Unknown error",
+      err.error ?? "An error occurred while fetching user by email"
     )
   }
 
@@ -25,11 +26,11 @@ export async function fuzzyFindUsersByEmail(email: string): Promise<User[]> {
 
   if (!res.ok) {
     const err = await res.json()
-    const message =
-      err.message === "USER_NOT_FOUND"
-        ? "No users found with that email"
-        : err.message || "Something went wrong"
-    throw new ApiError(err.statusCode || res.status, message)
+    throw new ApiError(
+      err.statusCode ?? res.status,
+      err.message ?? "Unknown error",
+      err.error ?? "An error occurred while fuzzy finding users by email"
+    )
   }
 
   return res.json()
@@ -49,7 +50,8 @@ export async function createUser(user: User) {
     const err = await res.json()
     throw new ApiError(
       err.statusCode || res.status,
-      err.message || "Unknown error"
+      err.message || "Unknown error",
+      err.error || "An error occurred while creating user"
     )
   }
   return res.json()
