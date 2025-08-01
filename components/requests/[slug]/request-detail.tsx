@@ -6,6 +6,7 @@ import ResourceGroupCard from "./resource-group-card"
 import OrganizationCard from "./organization-card"
 import { Role } from "@/types/role"
 import DescriptionCard from "./description-card"
+import { ResourceConfig } from "@/types/resource"
 
 export interface RequestDetail {
   id: string
@@ -23,12 +24,7 @@ export interface RequestDetail {
     cloudProvider: string
     region: string
     resourceConfigId: string
-    resourceConfig: {
-      id: string
-      vms: any[]
-      dbs: any[]
-      sts: any[]
-    }
+    resourceConfig: ResourceConfig
   }
   repository: {
     id: string
