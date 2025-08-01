@@ -35,6 +35,17 @@ export interface RequestDetail {
     name: string
     description: string | null
     resourcesId: string
+    RepositoryCollaborator: {
+      userId: string
+      repositoryId: string
+      user: {
+        id: string
+        email: string
+        name: string
+        role: Role
+      }
+      assignedAt: string
+    }[]
     status: "Pending" | "Approved" | "Rejected"
   }
   owner: {
