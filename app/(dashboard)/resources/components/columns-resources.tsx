@@ -5,6 +5,8 @@ import { ColumnDef } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/components/data-table/components/data-table-column-header"
 import { Resource } from "../data/schema-resources"
 import { generateResources, toTitleCase } from "@/lib/utils"
+import { cloudProviders } from "@/components/requests/resource-group"
+import Image from "next/image"
 
 export const columnsResources: ColumnDef<Resource>[] = [
   {
@@ -29,9 +31,24 @@ export const columnsResources: ColumnDef<Resource>[] = [
       <DataTableColumnHeader column={column} title="Cloud Provider" />
     ),
     cell: ({ row }) => {
+      const cloudProvider = cloudProviders.find(
+        (provider) =>
+          provider.label === toTitleCase(row.getValue("cloudProvider"))
+      )
+
+      if (!cloudProvider) {
+        return null
+      }
+
       return (
         <div className="flex space-x-2">
-          <span className="">{toTitleCase(row.getValue("cloudProvider"))}</span>
+          <Image
+            src={cloudProvider.icon}
+            width={16}
+            height={16}
+            alt={`${cloudProvider.label} Icon`}
+          />
+          <span>{cloudProvider.label}</span>
         </div>
       )
     },
