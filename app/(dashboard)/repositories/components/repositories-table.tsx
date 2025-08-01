@@ -23,6 +23,8 @@ export default function RepositoriesTable({
   if (isLoading) return <p>Loading...</p>
   if (error) return <p>Error loading table</p>
 
+  console.log("Repositories data:", data)
+
   return (
     <DataTable
       data={data}

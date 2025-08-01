@@ -40,12 +40,20 @@ import { useMutation } from "@tanstack/react-query"
 
 export const requestFormSchema = z.object({
   resources: resourceSchema,
-  collaborators: z.array(z.string()).optional(),
   repository: z.object({
     name: z.string().nonempty({
       message: "Repository name is required",
     }),
     description: z.string().optional(),
+    collaborators: z
+      .array(
+        z.object({
+          id: z.string().nonempty({
+            message: "Collaborator ID is required",
+          }),
+        })
+      )
+      .optional(),
   }),
   description: z.string().nonempty({
     message: "Please provide a description for your request",
@@ -80,6 +88,9 @@ export default function ClientRequestForm({
   const requestForm = useForm<z.infer<typeof requestFormSchema>>({
     resolver: zodResolver(requestFormSchema),
     defaultValues: {
+      repository: {
+        description: "",
+      },
       resources: {
         cloudProvider: cloudProviders[0].value,
         region: regions[0].value,
@@ -95,12 +106,13 @@ export default function ClientRequestForm({
   }, [repoName, requestForm])
 
   async function onSubmit(values: z.infer<typeof requestFormSchema>) {
+    console.log("Form submitted with values:", values)
     mutation.mutate(values)
   }
 
   const handleSuccessClose = () => {
     setShowSuccess(false)
-    router.push("/requests")
+    router.push(`/requests/${mutation.data?.displayCode}`)
   }
 
   return (
@@ -159,8 +171,6 @@ function AlertDialogError({
   useEffect(() => {
     setHasErrors(Object.keys(form.formState.errors).length > 0)
   }, [form.formState.errors])
-
-  console.log(form.formState.errors)
 
   return (
     <AlertDialog open={hasErrors}>

@@ -6,6 +6,7 @@ import z from "zod"
 
 export async function getRequests() {
   const session = await getServerSession(authOptions)
+
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/request`, {
     headers: {
       Authorization: `Bearer ${session?.user?.backendAccessToken}`,
@@ -16,7 +17,8 @@ export async function getRequests() {
     const err = await res.json()
     throw new ApiError(
       err.statusCode ?? res.status,
-      err.message ?? "Failed to fetch requests"
+      err.message ?? "Failed to fetch requests",
+      err.error ?? "Unknown error"
     )
   }
 
@@ -36,7 +38,8 @@ export async function createRequest(data: z.infer<typeof requestFormSchema>) {
     const err = await res.json()
     throw new ApiError(
       err.statusCode ?? res.status,
-      err.message ?? "Fail to create request"
+      err.message ?? "Fail to create request",
+      err.error ?? "Unknown error"
     )
   }
 
@@ -44,18 +47,20 @@ export async function createRequest(data: z.infer<typeof requestFormSchema>) {
 }
 
 export async function getRequestBySlug(slug: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/requests/${slug}`,
-    {
-      method: "GET",
-    }
-  )
+  const res = await fetch(`/api/requests/${slug}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
 
   if (!res.ok) {
     const err = await res.json()
+    console.error("Error fetching request by slug:", err)
     throw new ApiError(
       err.statusCode ?? res.status,
-      err.message ?? "Failed to fetch request"
+      err.message ?? "Failed to fetch request by slug",
+      err.error ?? "Unknown error"
     )
   }
 

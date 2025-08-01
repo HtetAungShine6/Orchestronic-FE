@@ -7,6 +7,9 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { IconPlus } from "@tabler/icons-react"
 
 export default async function Page() {
   const queryClient = new QueryClient()
@@ -25,9 +28,14 @@ export default async function Page() {
             Here&apos;s a list of your requests!
           </p>
         </div>
+        <Button asChild>
+          <Link href="/requests/create">
+            <IconPlus /> Request
+          </Link>
+        </Button>
       </div>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <RequestsTable pageSize={5} />
+        <RequestsTable pageSize={10} />
       </HydrationBoundary>
     </div>
   )

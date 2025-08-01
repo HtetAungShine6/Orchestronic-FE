@@ -209,8 +209,8 @@ export function RepoNameInput({
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Briefly describe your repository"
                   {...field}
+                  placeholder="Briefly describe your repository"
                 />
               </FormControl>
               <FormMessage />

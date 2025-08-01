@@ -20,15 +20,15 @@ export const navData = {
       role: [Role.Admin, Role.Developer, Role.IT],
     },
     {
-      title: "Repositories",
-      url: "/repositories",
-      icon: IconFolder,
-      role: [Role.Admin, Role.Developer, Role.IT],
-    },
-    {
       title: "Requests",
       url: "/requests",
       icon: IconSend,
+      role: [Role.Admin, Role.Developer, Role.IT],
+    },
+    {
+      title: "Repositories",
+      url: "/repositories",
+      icon: IconFolder,
       role: [Role.Admin, Role.Developer, Role.IT],
     },
     {

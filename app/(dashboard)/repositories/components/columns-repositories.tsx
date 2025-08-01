@@ -74,14 +74,17 @@ export const columnsRepositories: ColumnDef<Repository>[] = [
     },
   },
   {
-    accessorKey: "collaborators",
+    accessorKey: "RepositoryCollaborator",
+    meta: {
+      title: "Collaborators",
+    },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Collaborators" />
     ),
     cell: ({ row }) => {
       const initials = row.getValue(
-        "collaborators"
-      ) as Repository["collaborators"]
+        "RepositoryCollaborator"
+      ) as Repository["RepositoryCollaborator"]
 
       return (
         <div className="flex space-x-2">
@@ -91,10 +94,12 @@ export const columnsRepositories: ColumnDef<Repository>[] = [
                 <TooltipTrigger asChild>
                   <Avatar className="h-8 w-8">
                     {/* <AvatarImage src="/avatars/03.png" alt={initial} /> */}
-                    <AvatarFallback>{getInitials(initial.name)}</AvatarFallback>
+                    <AvatarFallback>
+                      {getInitials(initial.user.name)}
+                    </AvatarFallback>
                   </Avatar>
                 </TooltipTrigger>
-                <TooltipContent>{initial.name}</TooltipContent>
+                <TooltipContent>{initial.user.name}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           ))}

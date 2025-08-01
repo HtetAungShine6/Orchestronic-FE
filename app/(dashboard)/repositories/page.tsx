@@ -25,7 +25,7 @@ export default async function Page() {
         </div>
       </div>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <RepositoriesTable pageSize={5} />
+        <RepositoriesTable pageSize={10} />
       </HydrationBoundary>
     </div>
   )

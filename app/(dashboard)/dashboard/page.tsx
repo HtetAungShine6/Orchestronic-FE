@@ -13,6 +13,13 @@ import {
 import { getRequests } from "@/app/api/requests/api"
 import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
 import { getRepositories } from "@/app/api/repository/api"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description:
+    "Welcome to your dashboard! Here you can manage your requests and repositories.",
+}
 
 export default async function Page() {
   const queryClient = new QueryClient()

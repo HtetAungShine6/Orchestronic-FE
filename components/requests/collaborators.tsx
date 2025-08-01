@@ -57,8 +57,8 @@ export default function Collaborators({ form }: CollaboratorsProps) {
       } else {
         const updated = [...prev, user]
         form.setValue(
-          "collaborators",
-          updated.map((u) => u.email)
+          "repository.collaborators",
+          updated.map((u) => ({ id: u.id }))
         )
         return updated
       }
@@ -79,8 +79,8 @@ export default function Collaborators({ form }: CollaboratorsProps) {
     setSelectedUsers((prev) => {
       const updated = prev.filter((user) => user.email !== email)
       form.setValue(
-        "collaborators",
-        updated.map((u) => u.email)
+        "repository.collaborators",
+        updated.map((u) => ({ id: u.id }))
       )
       return updated
     })
@@ -93,10 +93,9 @@ export default function Collaborators({ form }: CollaboratorsProps) {
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const value = event.target.value
-    setSearchEmail(value)
 
     const filtered = selectedUsers.filter((user) =>
-      user.email.toLowerCase().includes(value.toLowerCase())
+      user.name.toLowerCase().includes(value.toLowerCase())
     )
     setFilteredUsers(filtered)
   }

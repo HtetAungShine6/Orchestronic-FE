@@ -1,4 +1,5 @@
 import { authOptions } from "@/lib/auth-options"
+import { ApiError } from "@/types/error"
 import { getServerSession } from "next-auth"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -27,7 +28,11 @@ export async function GET(
     if (!res.ok) {
       const err = await res.json()
       return NextResponse.json(
-        { error: err.message ?? "Failed to fetch request slug" },
+        {
+          statusCode: err.statusCode ?? res.status,
+          message: err.message ?? "Failed to fetch request slug",
+          error: err.error ?? "Unknown error",
+        },
         { status: err.statusCode ?? res.status }
       )
     }
@@ -35,7 +40,17 @@ export async function GET(
     const result = await res.json()
     return NextResponse.json(result)
   } catch (error) {
-    console.error("Error fetching request slug:", error)
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          statusCode: error.statusCode,
+          message: error.message,
+          error: error.error,
+        },
+        { status: error.statusCode }
+      )
+    }
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

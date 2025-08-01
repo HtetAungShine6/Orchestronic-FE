@@ -15,12 +15,17 @@ export const repositorySchema = z.object({
     resourceConfigId: z.string(),
   }),
 
-  collaborators: z.array(
+  RepositoryCollaborator: z.array(
     z.object({
-      id: z.string(),
-      name: z.string(),
-      email: z.string(),
-      role: z.string(),
+      userId: z.string(),
+      repositoryId: z.string(),
+      user: z.object({
+        id: z.string(),
+        email: z.string(),
+        name: z.string(),
+        role: z.string(),
+      }),
+      assignedAt: z.string(),
     })
   ),
 
