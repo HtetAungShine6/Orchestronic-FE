@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import Image from "next/image"
 import { RequestDetail } from "./request-detail"
+import { Separator } from "@/components/ui/separator"
+import ResourceConfigSection from "./resource-config-section"
 
 export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
   const status = statuses.find((s) => s.value === data?.status)
@@ -70,6 +72,10 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
           </div>
         </div>
       </CardContent>
+      <Separator />
+      <div className="px-4">
+        <ResourceConfigSection data={data} />
+      </div>
     </Card>
   )
 }

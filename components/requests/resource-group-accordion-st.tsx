@@ -72,7 +72,7 @@ export function ResourceGroupAccordionST({
                       <Select
                         onValueChange={(value) =>
                           form.setValue(
-                            `resources.resourceConfig.storage.${i}.type`,
+                            `resources.resourceConfig.sts.${i}.type`,
                             value
                           )
                         }
@@ -97,7 +97,7 @@ export function ResourceGroupAccordionST({
                         placeholder="Enter storage size"
                         onChange={(e) => {
                           form.setValue(
-                            `resources.resourceConfig.storage.${i}.capacityGB`,
+                            `resources.resourceConfig.sts.${i}.capacityGB`,
                             Number(e.target.value)
                           )
                         }}

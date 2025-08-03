@@ -33,15 +33,15 @@ export const resourceSchema = z.object({
   }),
   resourceConfig: z
     .object({
-      vm: z.array(vmSchema).optional(),
-      db: z.array(dbSchema).optional(),
-      storage: z.array(storageSchema).optional(),
+      vms: z.array(vmSchema).optional(),
+      dbs: z.array(dbSchema).optional(),
+      sts: z.array(storageSchema).optional(),
     })
     .refine(
       (data) => {
-        const hasVM = data.vm && data.vm.length > 0
-        const hasDB = data.db && data.db.length > 0
-        const hasStorage = data.storage && data.storage.length > 0
+        const hasVM = data.vms && data.vms.length > 0
+        const hasDB = data.dbs && data.dbs.length > 0
+        const hasStorage = data.sts && data.sts.length > 0
         return hasVM || hasDB || hasStorage
       },
       {

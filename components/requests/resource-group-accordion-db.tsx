@@ -84,7 +84,7 @@ export function ResourceGroupAccordionDB({
                           <Select
                             onValueChange={(value) =>
                               form.setValue(
-                                `resources.resourceConfig.db.${i}.engine`,
+                                `resources.resourceConfig.dbs.${i}.engine`,
                                 value
                               )
                             }
@@ -108,7 +108,7 @@ export function ResourceGroupAccordionDB({
                             type="number"
                             onChange={(e) => {
                               form.setValue(
-                                `resources.resourceConfig.db.${i}.storageGB`,
+                                `resources.resourceConfig.dbs.${i}.storageGB`,
                                 Number(e.target.value)
                               )
                             }}

@@ -75,7 +75,7 @@ export function ResourceGroupAccordionVM({
                       placeholder="e.g., web-server-1"
                       onChange={(e) => {
                         form.setValue(
-                          `resources.resourceConfig.vm.${i}.name`,
+                          `resources.resourceConfig.vms.${i}.name`,
                           e.target.value
                         )
                       }}
@@ -88,7 +88,7 @@ export function ResourceGroupAccordionVM({
                           type="number"
                           onChange={(e) => {
                             form.setValue(
-                              `resources.resourceConfig.vm.${i}.numberOfCores`,
+                              `resources.resourceConfig.vms.${i}.numberOfCores`,
                               Number(e.target.value)
                             )
                           }}
@@ -101,7 +101,7 @@ export function ResourceGroupAccordionVM({
                           type="number"
                           onChange={(e) => {
                             form.setValue(
-                              `resources.resourceConfig.vm.${i}.memory`,
+                              `resources.resourceConfig.vms.${i}.memory`,
                               Number(e.target.value)
                             )
                           }}
@@ -115,7 +115,7 @@ export function ResourceGroupAccordionVM({
                         <Select
                           onValueChange={(value) =>
                             form.setValue(
-                              `resources.resourceConfig.vm.${i}.os`,
+                              `resources.resourceConfig.vms.${i}.os`,
                               value
                             )
                           }
