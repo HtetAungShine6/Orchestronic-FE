@@ -48,7 +48,7 @@ export const requestFormSchema = z.object({
     collaborators: z
       .array(
         z.object({
-          id: z.string().nonempty({
+          userId: z.string().nonempty({
             message: "Collaborator ID is required",
           }),
         })

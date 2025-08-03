@@ -58,7 +58,7 @@ export default function Collaborators({ form }: CollaboratorsProps) {
         const updated = [...prev, user]
         form.setValue(
           "repository.collaborators",
-          updated.map((u) => ({ id: u.id }))
+          updated.map((u) => ({ userId: u.id }))
         )
         return updated
       }
@@ -80,7 +80,7 @@ export default function Collaborators({ form }: CollaboratorsProps) {
       const updated = prev.filter((user) => user.email !== email)
       form.setValue(
         "repository.collaborators",
-        updated.map((u) => ({ id: u.id }))
+        updated.map((u) => ({ userId: u.id }))
       )
       return updated
     })
