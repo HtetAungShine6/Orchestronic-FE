@@ -26,22 +26,24 @@ export default function OrganizationCard({ data }: { data?: RequestDetail }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 items-center">
           <div>
             <Label className="text-sm font-medium text-muted-foreground">
               Name
             </Label>
             <p>{data?.owner?.name}</p>
           </div>
-          <Link
-            className="cursor-pointer hover:underline w-fit"
-            href={`/repositories/${data?.repository?.id}`}
-          >
-            <Label className="text-sm font-medium text-muted-foreground cursor-pointer">
-              Repository
-            </Label>
-            <p>{data?.repository?.name}</p>
-          </Link>
+          <div>
+            <Link
+              className="cursor-pointer hover:underline w-fit"
+              href={`/repositories/${data?.repository?.id}`}
+            >
+              <Label className="text-sm font-medium text-muted-foreground cursor-pointer">
+                Repository
+              </Label>
+              <p>{data?.repository?.name}</p>
+            </Link>
+          </div>
           <div>
             <Label className="text-sm font-medium text-muted-foreground">
               Email
@@ -49,7 +51,7 @@ export default function OrganizationCard({ data }: { data?: RequestDetail }) {
             <p>{data?.owner?.email}</p>
           </div>
 
-          <div className="">
+          <div>
             <Label className="text-sm font-medium text-muted-foreground mb-1">
               Collaborators
             </Label>
@@ -73,12 +75,12 @@ export default function OrganizationCard({ data }: { data?: RequestDetail }) {
               )
             )}
           </div>
-        </div>
-        <div>
-          <Label className="text-sm font-medium text-muted-foreground">
-            Role
-          </Label>
-          <p>{data?.owner?.role}</p>
+          <div>
+            <Label className="text-sm font-medium text-muted-foreground">
+              Role
+            </Label>
+            <p>{data?.owner?.role}</p>
+          </div>
         </div>
       </CardContent>
     </Card>
