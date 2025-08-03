@@ -1,5 +1,11 @@
 import { statuses } from "@/app/(dashboard)/requests/data/data"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { cloudProviders } from "../resource-group"
 import { IconPackages } from "@tabler/icons-react"
@@ -39,7 +45,7 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
             <Label className="text-sm font-medium text-muted-foreground">
               Name
             </Label>
-            <p>rg-{data?.resources?.name}</p>
+            <p className="truncate">rg-{data?.resources?.name}</p>
           </div>
           <div>
             <Label className="text-sm font-medium text-muted-foreground">
@@ -73,9 +79,9 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
         </div>
       </CardContent>
       <Separator />
-      <div className="px-4">
+      <CardFooter>
         <ResourceConfigSection data={data} />
-      </div>
+      </CardFooter>
     </Card>
   )
 }
