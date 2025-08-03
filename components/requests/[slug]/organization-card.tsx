@@ -55,25 +55,27 @@ export default function OrganizationCard({ data }: { data?: RequestDetail }) {
             <Label className="text-sm font-medium text-muted-foreground mb-1">
               Collaborators
             </Label>
-            {data?.repository.RepositoryCollaborator.map(
-              (
-                initial: Repository["RepositoryCollaborator"][number],
-                index: number
-              ) => (
-                <TooltipProvider key={`${index}_${initial}`}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>
-                          {getInitials(initial.user.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                    </TooltipTrigger>
-                    <TooltipContent>{initial.user.name}</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )
-            )}
+            <div className="flex gap-2">
+              {data?.repository.RepositoryCollaborator.map(
+                (
+                  initial: Repository["RepositoryCollaborator"][number],
+                  index: number
+                ) => (
+                  <TooltipProvider key={`${index}_${initial}`}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback>
+                            {getInitials(initial.user.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </TooltipTrigger>
+                      <TooltipContent>{initial.user.name}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )
+              )}
+            </div>
           </div>
           <div>
             <Label className="text-sm font-medium text-muted-foreground">
