@@ -189,7 +189,11 @@ export function ResourceGroupAccordionVM({
                           placeholder="Auto-filled from VM size"
                           type="number"
                           //TODO(jan): Handle decimal places correctly
-                          value={(selectedValue?.memoryInMB / 1024).toFixed(1)}
+                          value={
+                            selectedValue?.memoryInMB === undefined
+                              ? ""
+                              : (selectedValue.memoryInMB / 1024).toFixed(1)
+                          }
                         />
                       </div>
                     </div>
