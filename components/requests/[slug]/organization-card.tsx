@@ -14,7 +14,6 @@ import { Repository } from "@/app/(dashboard)/repositories/data/schema-repositor
 import Link from "next/link"
 
 export default function OrganizationCard({ data }: { data?: RequestDetail }) {
-  console.log("OrganizationCard data:", data)
   return (
     <Card>
       <CardHeader>

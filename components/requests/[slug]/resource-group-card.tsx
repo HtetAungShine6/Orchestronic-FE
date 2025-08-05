@@ -24,18 +24,16 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between text-xl font-bold tracking-tight">
-          <p className="flex items-center gap-1">
+        <CardTitle className="flex items-center justify-between">
+          <p className="flex items-center text-xl font-bold">
             <IconPackages />
             Resource Group
           </p>
-          <p className="flex items-center">
+          <p className="flex items-center gap-1">
             {status?.icon && (
-              <status.icon className={cn("mr-2 h-4 w-4", status.color)} />
+              <status.icon className={cn("h-4 w-4", status.color)} />
             )}
-            <span className={cn("text-base font-normal", status?.color)}>
-              {status?.label}
-            </span>
+            <span className="text-sm font-normal">{status?.label}</span>
           </p>
         </CardTitle>
       </CardHeader>

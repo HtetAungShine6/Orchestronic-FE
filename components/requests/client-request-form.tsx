@@ -76,8 +76,7 @@ export default function ClientRequestForm({
   const mutation = useMutation({
     mutationFn: (values: z.infer<typeof requestFormSchema>) =>
       createRequest(values),
-    onSuccess: (data) => {
-      console.log("Request created:", data)
+    onSuccess: () => {
       setShowSuccess(true)
     },
     onError: (error) => {
@@ -106,7 +105,6 @@ export default function ClientRequestForm({
   }, [repoName, requestForm])
 
   async function onSubmit(values: z.infer<typeof requestFormSchema>) {
-    console.log("Form submitted with values:", values)
     mutation.mutate(values)
   }
 
