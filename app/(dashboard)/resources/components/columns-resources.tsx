@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/components/data-table/components/data-table-column-header"
 import { Resource } from "../data/schema-resources"
 import { generateResources, toTitleCase } from "@/lib/utils"
-import { cloudProviders } from "@/components/requests/resource-group"
+import { cloudProviders, regions } from "@/components/requests/resource-group"
 import Image from "next/image"
 
 export const columnsResources: ColumnDef<Resource>[] = [
@@ -49,6 +49,30 @@ export const columnsResources: ColumnDef<Resource>[] = [
             alt={`${cloudProvider.label} Icon`}
           />
           <span>{cloudProvider.label}</span>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "region",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Region" />
+    ),
+    cell: ({ row }) => {
+      const region = regions.find((r) => r.value === row.getValue("region"))
+      return (
+        <div className="flex space-x-2">
+          <span className="flex items-center gap-2">
+            {region?.flag && (
+              <Image
+                src={region.flag}
+                width={16}
+                height={16}
+                alt={`${region.label} Flag`}
+              />
+            )}
+            {region?.label}
+          </span>
         </div>
       )
     },

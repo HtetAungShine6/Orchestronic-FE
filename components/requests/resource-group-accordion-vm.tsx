@@ -89,6 +89,7 @@ export function ResourceGroupAccordionVM({
   vmCount,
 }: Readonly<ResourceGroupAccordionProps>) {
   const lastVMRef = useRef<HTMLDivElement | null>(null)
+  const [selectedValue, setSelectedValue] = useState<VmSizeDto | null>(null)
 
   useEffect(() => {
     if (lastVMRef.current) {
@@ -135,19 +136,8 @@ export function ResourceGroupAccordionVM({
                         <ComboboxDemo
                           form={form}
                           vmIndex={i}
-                          onSelect={(vmSize) => {
-                            // Auto-populate form fields when VM size is selected
-                            if (vmSize) {
-                              form.setValue(
-                                `resources.resourceConfig.vms.${i}.numberOfCores`,
-                                vmSize.numberOfCores
-                              )
-                              form.setValue(
-                                `resources.resourceConfig.vms.${i}.memory`,
-                                Math.round(vmSize.memoryInMB / 1024)
-                              )
-                            }
-                          }}
+                          selectedValue={selectedValue}
+                          setSelectedValue={setSelectedValue}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -189,17 +179,7 @@ export function ResourceGroupAccordionVM({
                           disabled
                           placeholder="Auto-filled from VM size"
                           type="number"
-                          value={
-                            form.watch(
-                              `resources.resourceConfig.vms.${i}.numberOfCores`
-                            ) || ""
-                          }
-                          onChange={(e) => {
-                            form.setValue(
-                              `resources.resourceConfig.vms.${i}.numberOfCores`,
-                              Number(e.target.value)
-                            )
-                          }}
+                          value={selectedValue?.numberOfCores}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -208,17 +188,8 @@ export function ResourceGroupAccordionVM({
                           disabled
                           placeholder="Auto-filled from VM size"
                           type="number"
-                          value={
-                            form.watch(
-                              `resources.resourceConfig.vms.${i}.memory`
-                            ) || ""
-                          }
-                          onChange={(e) => {
-                            form.setValue(
-                              `resources.resourceConfig.vms.${i}.memory`,
-                              Number(e.target.value)
-                            )
-                          }}
+                          //TODO(jan): Handle decimal places correctly
+                          value={(selectedValue?.memoryInMB / 1024).toFixed(1)}
                         />
                       </div>
                     </div>
@@ -237,11 +208,18 @@ interface ComboboxDemoProps {
   form: UseFormReturn<z.infer<typeof requestFormSchema>>
   vmIndex: number
   onSelect?: (vmSize: VmSizeDto | null) => void
+  selectedValue?: VmSizeDto | null
+  setSelectedValue?: (vmSize: VmSizeDto | null) => void
 }
 
-export function ComboboxDemo({ onSelect }: ComboboxDemoProps) {
+export function ComboboxDemo({
+  form,
+  vmIndex,
+  onSelect,
+  selectedValue,
+  setSelectedValue,
+}: ComboboxDemoProps) {
   const [open, setOpen] = useState(false)
-  const [selectedValue, setSelectedValue] = useState<VmSizeDto | null>(null)
   const [searchValue, setSearchValue] = useState("")
 
   const {
@@ -256,6 +234,12 @@ export function ComboboxDemo({ onSelect }: ComboboxDemoProps) {
   const handleSelect = (vmSize: VmSizeDto) => {
     const newSelection = selectedValue?.id === vmSize.id ? null : vmSize
     setSelectedValue(newSelection)
+    if (newSelection) {
+      form.setValue(
+        `resources.resourceConfig.vms.${vmIndex}.sizeId`,
+        newSelection.id
+      )
+    }
     setOpen(false)
     onSelect?.(newSelection)
   }

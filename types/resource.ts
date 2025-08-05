@@ -1,9 +1,11 @@
+import { VmSizeDto } from "./request"
+
 export interface VMInstance {
   id: string
   name: string
-  numberOfCores: number
-  memory: number
   os: string
+  size: VmSizeDto
+  sizeId: string
   resourceConfigId: string
 }
 

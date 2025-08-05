@@ -79,7 +79,7 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="space-y-4 min-h-[390px]">
+    <div className="space-y-4">
       <DataTableToolbar table={table} filterColumn={filterColumn as string} />
       <div className="rounded-md border">
         <Table>

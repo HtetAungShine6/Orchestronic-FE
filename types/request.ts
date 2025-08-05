@@ -1,16 +1,10 @@
 export interface VmSizeDto {
   id: string
-
   name: string
-
   numberOfCores: number
-
   maxDataDiskCount: number
-
   memoryInMB: number
-
   osDiskSizeInMB: number
-
   resourceDiskSizeInMB: number
 }
 

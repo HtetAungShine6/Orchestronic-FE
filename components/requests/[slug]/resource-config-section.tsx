@@ -19,8 +19,8 @@ export default function ResourceConfigSection({
       {data?.resources.resourceConfig.vms &&
         data.resources.resourceConfig.vms.length > 0 && (
           <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="vms" asChild className="py-0 cursor-pointer">
-              <Card className="cursor-pointer rounded-sm">
+            <AccordionItem value="vms" asChild className="py-0">
+              <Card className="rounded-sm">
                 <AccordionTrigger className="p-4 text-left items-center cursor-pointer">
                   <div className="flex gap-2 items-center">
                     <Monitor size={40} className="text-muted-foreground" />
@@ -49,10 +49,18 @@ export default function ResourceConfigSection({
                           </div>
                           <div>
                             <span className="font-medium text-foreground">
+                              Size:
+                            </span>
+                            <p className="text-muted-foreground">
+                              {vm.size.name}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="font-medium text-foreground">
                               CPU Cores:
                             </span>
                             <p className="text-muted-foreground">
-                              {vm.numberOfCores}
+                              {vm.size.numberOfCores}
                             </p>
                           </div>
                           <div>
@@ -60,7 +68,7 @@ export default function ResourceConfigSection({
                               RAM:
                             </span>
                             <p className="text-muted-foreground">
-                              {vm.memory} GB
+                              {(vm.size.memoryInMB / 1024).toFixed(1)} GB
                             </p>
                           </div>
                           <div>
@@ -83,8 +91,8 @@ export default function ResourceConfigSection({
       {data?.resources.resourceConfig.dbs &&
         data.resources.resourceConfig.dbs.length > 0 && (
           <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="dbs" asChild className="py-0 cursor-pointer">
-              <Card className="cursor-pointer rounded-sm">
+            <AccordionItem value="dbs" asChild className="py-0 ">
+              <Card className=" rounded-sm">
                 <AccordionTrigger className="p-4 text-left items-center cursor-pointer">
                   <div className="flex gap-2 items-center">
                     <Database size={40} className="text-muted-foreground" />
@@ -136,8 +144,8 @@ export default function ResourceConfigSection({
       {data?.resources.resourceConfig.sts &&
         data.resources.resourceConfig.sts.length > 0 && (
           <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="sts" asChild className="py-0 cursor-pointer">
-              <Card className="cursor-pointer rounded-sm">
+            <AccordionItem value="sts" asChild className="py-0 ">
+              <Card className=" rounded-sm">
                 <AccordionTrigger className="p-4 text-left items-center cursor-pointer">
                   <div className="flex gap-2 items-center">
                     <HardDrive size={40} className="text-muted-foreground" />

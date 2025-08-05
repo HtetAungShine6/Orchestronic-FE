@@ -7,6 +7,7 @@ import OrganizationCard from "./organization-card"
 import { Role } from "@/types/role"
 import DescriptionCard from "./description-card"
 import { ResourceConfig } from "@/types/resource"
+import { VmSizeDto } from "@/types/request"
 
 export interface RequestDetail {
   id: string
@@ -23,6 +24,8 @@ export interface RequestDetail {
     name: string
     cloudProvider: string
     region: string
+    size: VmSizeDto
+    sizeId: string
     resourceConfigId: string
     resourceConfig: ResourceConfig
   }
