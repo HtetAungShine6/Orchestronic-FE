@@ -26,7 +26,7 @@ import { requestFormSchema } from "./client-request-form"
 import z from "zod"
 import Image from "next/image"
 import { useQuery } from "@tanstack/react-query"
-import { ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -129,38 +129,26 @@ export function ResourceGroupAccordionVM({
                       }}
                     />
 
-                    {/* <div className="flex justify-between">
-                      <div className="grid gap-2">
-                        <Label>CPU</Label>
-                        <Input
-                          placeholder="e.g., 2"
-                          type="number"
-                          onChange={(e) => {
-                            form.setValue(
-                              `resources.resourceConfig.vms.${i}.numberOfCores`,
-                              Number(e.target.value)
-                            )
-                          }}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label>RAM</Label>
-                        <Input
-                          placeholder="e.g., 4 GB"
-                          type="number"
-                          onChange={(e) => {
-                            form.setValue(
-                              `resources.resourceConfig.vms.${i}.memory`,
-                              Number(e.target.value)
-                            )
-                          }}
-                        />
-                      </div>
-                    </div> */}
-                    <div className="flex justify-between">
+                    <div className="flex justify-between gap-4">
                       <div className="grid gap-2">
                         <Label>VM Size</Label>
-                        <ComboboxDemo />
+                        <ComboboxDemo
+                          form={form}
+                          vmIndex={i}
+                          onSelect={(vmSize) => {
+                            // Auto-populate form fields when VM size is selected
+                            if (vmSize) {
+                              form.setValue(
+                                `resources.resourceConfig.vms.${i}.numberOfCores`,
+                                vmSize.numberOfCores
+                              )
+                              form.setValue(
+                                `resources.resourceConfig.vms.${i}.memory`,
+                                Math.round(vmSize.memoryInMB / 1024)
+                              )
+                            }
+                          }}
+                        />
                       </div>
                       <div className="grid gap-2">
                         <Label>Operating System</Label>
@@ -193,6 +181,47 @@ export function ResourceGroupAccordionVM({
                         </Select>
                       </div>
                     </div>
+
+                    <div className="flex justify-between gap-4">
+                      <div className="grid gap-2">
+                        <Label>CPU Cores</Label>
+                        <Input
+                          disabled
+                          placeholder="Auto-filled from VM size"
+                          type="number"
+                          value={
+                            form.watch(
+                              `resources.resourceConfig.vms.${i}.numberOfCores`
+                            ) || ""
+                          }
+                          onChange={(e) => {
+                            form.setValue(
+                              `resources.resourceConfig.vms.${i}.numberOfCores`,
+                              Number(e.target.value)
+                            )
+                          }}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>RAM (GB)</Label>
+                        <Input
+                          disabled
+                          placeholder="Auto-filled from VM size"
+                          type="number"
+                          value={
+                            form.watch(
+                              `resources.resourceConfig.vms.${i}.memory`
+                            ) || ""
+                          }
+                          onChange={(e) => {
+                            form.setValue(
+                              `resources.resourceConfig.vms.${i}.memory`,
+                              Number(e.target.value)
+                            )
+                          }}
+                        />
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </AccordionContent>
@@ -204,9 +233,15 @@ export function ResourceGroupAccordionVM({
   )
 }
 
-export function ComboboxDemo() {
+interface ComboboxDemoProps {
+  form: UseFormReturn<z.infer<typeof requestFormSchema>>
+  vmIndex: number
+  onSelect?: (vmSize: VmSizeDto | null) => void
+}
+
+export function ComboboxDemo({ onSelect }: ComboboxDemoProps) {
   const [open, setOpen] = useState(false)
-  const [selectedValue, setSelectedValue] = useState("")
+  const [selectedValue, setSelectedValue] = useState<VmSizeDto | null>(null)
   const [searchValue, setSearchValue] = useState("")
 
   const {
@@ -218,6 +253,13 @@ export function ComboboxDemo() {
     queryFn: () => fetchVmSizes(searchValue, 1, 20),
   })
 
+  const handleSelect = (vmSize: VmSizeDto) => {
+    const newSelection = selectedValue?.id === vmSize.id ? null : vmSize
+    setSelectedValue(newSelection)
+    setOpen(false)
+    onSelect?.(newSelection)
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -225,16 +267,15 @@ export function ComboboxDemo() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[216px] justify-between text-left"
         >
-          {selectedValue
-            ? vmSizes?.find((vmSize) => vmSize.name === selectedValue)?.name ||
-              selectedValue
-            : "Select VM Size..."}
-          <ChevronsUpDown className="opacity-50" />
+          <span className="truncate">
+            {selectedValue ? selectedValue.name : "Select VM Size..."}
+          </span>
+          <ChevronsUpDown className="opacity-50 ml-2 h-4 w-4 shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[400px] p-0">
         <Command>
           <CommandInput
             placeholder="Search VM sizes..."
@@ -242,7 +283,7 @@ export function ComboboxDemo() {
             value={searchValue}
             onValueChange={setSearchValue}
           />
-          <CommandList>
+          <CommandList className="max-h-[300px]">
             {isLoading && <CommandEmpty>Loading VM sizes...</CommandEmpty>}
             {error && <CommandEmpty>Error loading VM sizes.</CommandEmpty>}
             {!isLoading && !error && (!vmSizes || vmSizes.length === 0) && (
@@ -251,29 +292,29 @@ export function ComboboxDemo() {
             <CommandGroup>
               {vmSizes?.map((vmSize) => (
                 <CommandItem
-                  className="flex flex-col gap-1 items-start"
                   key={vmSize.id}
                   value={vmSize.name}
-                  onSelect={(currentValue) => {
-                    setSelectedValue(
-                      currentValue === selectedValue ? "" : currentValue
-                    )
-                    setOpen(false)
-                  }}
+                  onSelect={() => handleSelect(vmSize)}
+                  className="flex items-start gap-3 py-3"
                 >
-                  <p>{vmSize.name}</p>
-                  <ul className="space-y-1 text-xs text-muted-foreground">
-                    <li>vCPUs: {vmSize.numberOfCores}</li>
-                    <li>RAM: {(vmSize.memoryInMB / 1024).toFixed(1)} GB</li>
-                    <li>
-                      OS Disk: {(vmSize.osDiskSizeInMB / 1024).toFixed(1)} GB
-                    </li>
-                    <li>
-                      Resource Disk:{" "}
-                      {(vmSize.resourceDiskSizeInMB / 1024).toFixed(1)} GB
-                    </li>
-                    <li>Max Data Disks: {vmSize.maxDataDiskCount}</li>
-                  </ul>
+                  <div className="flex-1">
+                    <div className="font-medium">{vmSize.name}</div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs text-muted-foreground">
+                      <div>vCPUs: {vmSize.numberOfCores}</div>
+                      <div>RAM: {Math.round(vmSize.memoryInMB / 1024)} GB</div>
+                      <div>
+                        OS Disk: {Math.round(vmSize.osDiskSizeInMB / 1024)} GB
+                      </div>
+                      <div>Max Disks: {vmSize.maxDataDiskCount}</div>
+                    </div>
+                  </div>
+                  <Check
+                    className={`h-4 w-4 shrink-0 ${
+                      selectedValue?.id === vmSize.id
+                        ? "opacity-100"
+                        : "opacity-0"
+                    }`}
+                  />
                 </CommandItem>
               ))}
             </CommandGroup>
