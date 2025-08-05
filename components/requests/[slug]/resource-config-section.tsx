@@ -68,7 +68,11 @@ export default function ResourceConfigSection({
                               RAM:
                             </span>
                             <p className="text-muted-foreground">
-                              {(vm.size.memoryInMB / 1024).toFixed(1)} GB
+                              {(vm.size.memoryInMB / 1024).toFixed(1)} GB (
+                              <span className="text-xs">
+                                {vm.size.memoryInMB} MB
+                              </span>
+                              )
                             </p>
                           </div>
                           <div>
