@@ -7,6 +7,8 @@ import {
 import { Card } from "@/components/ui/card"
 import { RequestDetail } from "./request-detail"
 import { Monitor, Database, HardDrive } from "lucide-react"
+import { operatingSystems } from "../resource-group-accordion-vm"
+import Image from "next/image"
 
 export default function ResourceConfigSection({
   data,
@@ -15,7 +17,6 @@ export default function ResourceConfigSection({
 }) {
   return (
     <div className="w-full space-y-4">
-      {/* Virtual Machines */}
       {data?.resources.resourceConfig.vms &&
         data.resources.resourceConfig.vms.length > 0 && (
           <Accordion type="single" collapsible className="w-full">
@@ -35,55 +36,70 @@ export default function ResourceConfigSection({
                 </AccordionTrigger>
                 <AccordionContent className="p-4 pt-0">
                   <div className="space-y-4">
-                    {data.resources.resourceConfig.vms.map((vm, index) => (
-                      <div
-                        key={`vm-${index}`}
-                        className="border rounded-lg p-4 bg-muted/50"
-                      >
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="font-medium text-foreground">
-                              VM Name:
-                            </span>
-                            <p className="text-muted-foreground">{vm.name}</p>
-                          </div>
-                          <div>
-                            <span className="font-medium text-foreground">
-                              Size:
-                            </span>
-                            <p className="text-muted-foreground">
-                              {vm.size.name}
-                            </p>
-                          </div>
-                          <div>
-                            <span className="font-medium text-foreground">
-                              CPU Cores:
-                            </span>
-                            <p className="text-muted-foreground">
-                              {vm.size.numberOfCores}
-                            </p>
-                          </div>
-                          <div>
-                            <span className="font-medium text-foreground">
-                              RAM:
-                            </span>
-                            <p className="text-muted-foreground">
-                              {(vm.size.memoryInMB / 1024).toFixed(1)} GB (
-                              <span className="text-xs">
-                                {vm.size.memoryInMB} MB
+                    {data.resources.resourceConfig.vms.map((vm, index) => {
+                      const os = operatingSystems.find(
+                        (item) => item.value === vm.os
+                      )
+                      return (
+                        <div
+                          key={`vm-${index}`}
+                          className="border rounded-lg p-4 bg-muted/50"
+                        >
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <span className="font-medium text-foreground">
+                                VM Name:
                               </span>
-                              )
-                            </p>
-                          </div>
-                          <div>
-                            <span className="font-medium text-foreground">
-                              Operating System:
-                            </span>
-                            <p className="text-muted-foreground">{vm.os}</p>
+                              <p className="text-muted-foreground">{vm.name}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-foreground">
+                                Size:
+                              </span>
+                              <p className="text-muted-foreground">
+                                {vm.size.name}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-foreground">
+                                CPU Cores:
+                              </span>
+                              <p className="text-muted-foreground">
+                                {vm.size.numberOfCores}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-foreground">
+                                RAM:
+                              </span>
+                              <p className="text-muted-foreground">
+                                {(vm.size.memoryInMB / 1024).toFixed(1)} GB (
+                                <span className="text-xs">
+                                  {vm.size.memoryInMB} MB
+                                </span>
+                                )
+                              </p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-foreground">
+                                Operating System:
+                              </span>
+                              <p className="flex gap-1">
+                                <Image
+                                  src={os?.icon}
+                                  width={16}
+                                  height={16}
+                                  alt={`${os?.label} Icon`}
+                                />
+                                <span className="text-muted-foreground">
+                                  {os?.label}
+                                </span>
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </AccordionContent>
               </Card>

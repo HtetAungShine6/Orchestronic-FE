@@ -1,5 +1,3 @@
-// import { Metadata } from "next"
-
 import RepositoriesTable from "@/app/(dashboard)/repositories/components/repositories-table"
 
 import { Button } from "@/components/ui/button"
