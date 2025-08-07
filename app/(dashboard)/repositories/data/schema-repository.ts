@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { requestSchema } from "../../requests/data/schema-request"
 
 export const repositorySchema = z.object({
   id: z.string(),
@@ -29,17 +30,7 @@ export const repositorySchema = z.object({
     })
   ),
 
-  request: z.object({
-    id: z.string(),
-    displayCode: z.string(),
-    status: z.string(),
-    description: z.string(),
-    ownerId: z.string(),
-    repositoryId: z.string(),
-    resourcesId: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-  }),
+  request: requestSchema,
 })
 
 export type Repository = z.infer<typeof repositorySchema>

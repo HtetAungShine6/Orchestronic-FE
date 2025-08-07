@@ -2,9 +2,10 @@
 
 import { DataTable } from "@/components/data-table/components/data-table"
 import { useRouter } from "next/navigation"
-import { columnsRequests } from "./columns-requests"
+import { getColumnsRequests } from "./columns-requests"
 import { getRequests } from "@/app/api/requests/api"
 import { useQuery } from "@tanstack/react-query"
+import { useSession } from "next-auth/react"
 
 interface RequestsTableProps {
   pageSize?: number
@@ -12,6 +13,7 @@ interface RequestsTableProps {
 
 export default function RequestsTable({ pageSize = 10 }: RequestsTableProps) {
   const router = useRouter()
+  const { data: session } = useSession()
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["requests"],
@@ -21,10 +23,12 @@ export default function RequestsTable({ pageSize = 10 }: RequestsTableProps) {
   if (isLoading) return <p>Loading...</p>
   if (error) return <p>Error loading table</p>
 
+  const columns = getColumnsRequests(session?.user?.role)
+
   return (
     <DataTable
       data={data}
-      columns={columnsRequests}
+      columns={columns}
       filterColumn="displayCode"
       pageSize={pageSize}
       onRowClick={(row) => router.push(`/requests/${row.displayCode}`)}

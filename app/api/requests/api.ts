@@ -80,15 +80,16 @@ export interface RequestStatusResponse {
   updatedAt: string
 }
 
-export async function approveRequest(
-  requestId: string
+export async function changeRequestStatus(
+  requestId: string,
+  status: Status
 ): Promise<RequestStatusResponse> {
   const res = await fetch(`/api/requests/${requestId}/status`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ status: "Approved" }),
+    body: JSON.stringify({ status }),
   })
 
   if (!res.ok) {

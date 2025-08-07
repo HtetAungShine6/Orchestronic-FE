@@ -15,7 +15,6 @@ import Image from "next/image"
 import { RequestDetail } from "./request-detail"
 import { Separator } from "@/components/ui/separator"
 import ResourceConfigSection from "./resource-config-section"
-import { Status } from "@/types/api"
 
 export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
   const status = statuses.find((s) => s.value === data?.status)
@@ -23,12 +22,7 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
     (provider) => provider.value === data?.resources?.cloudProvider
   )
   return (
-    <Card
-      className={cn(
-        "min-h-[91%] h-auto",
-        data?.status === Status.Approved && "h-full"
-      )}
-    >
+    <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <p className="flex items-center text-xl font-bold">
@@ -49,7 +43,7 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
             <Label className="text-sm font-medium text-muted-foreground">
               Name
             </Label>
-            <p className="truncate">rg-{data?.resources?.name}</p>
+            <p className="truncate">{data?.resources?.name}</p>
           </div>
           <div>
             <Label className="text-sm font-medium text-muted-foreground">

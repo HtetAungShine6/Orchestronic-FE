@@ -99,7 +99,7 @@ export default function ClientRequestForm({
 
   useEffect(() => {
     if (repoName) {
-      requestForm.setValue("resources.name", repoName)
+      requestForm.setValue("resources.name", `rg-${repoName}`)
       requestForm.setValue("repository.name", repoName)
     }
   }, [repoName, requestForm])
@@ -136,7 +136,7 @@ export default function ClientRequestForm({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Request Description</FormLabel>
+                <FormLabel>Request Description *</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Provide any additional context or details for your request"

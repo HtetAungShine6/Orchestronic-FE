@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { columnsRepositories } from "./columns-repositories"
 import { getRepositories } from "@/app/api/repository/api"
 import { useQuery } from "@tanstack/react-query"
+import { useSession } from "next-auth/react"
 
 interface RepositoriesTableProps {
   pageSize?: number
@@ -14,6 +15,7 @@ export default function RepositoriesTable({
   pageSize = 10,
 }: RepositoriesTableProps) {
   const router = useRouter()
+  const { data: session } = useSession()
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["repositories"],
@@ -23,10 +25,12 @@ export default function RepositoriesTable({
   if (isLoading) return <p>Loading...</p>
   if (error) return <p>Error loading table</p>
 
+  const columns = columnsRepositories(session?.user?.role)
+
   return (
     <DataTable
       data={data}
-      columns={columnsRepositories}
+      columns={columns}
       filterColumn="name"
       pageSize={pageSize}
       onRowClick={(row) => router.push(`/repositories/${row.id}`)}
