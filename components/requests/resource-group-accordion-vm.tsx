@@ -237,7 +237,7 @@ export function ComboboxDemo({
 
   const handleSelect = (vmSize: VmSizeDto) => {
     const newSelection = selectedValue?.id === vmSize.id ? null : vmSize
-    setSelectedValue(newSelection)
+    setSelectedValue?.(newSelection)
     if (newSelection) {
       form.setValue(
         `resources.resourceConfig.vms.${vmIndex}.sizeId`,
