@@ -91,7 +91,9 @@ export default function RequestDetail({ slug }: { slug: string }) {
           origin: { y: 0.6 },
         })
         setShowApprovePopup(true)
-        queryClient.invalidateQueries(["request", slug])
+        queryClient.invalidateQueries({
+          queryKey: ["request", slug],
+        })
       }
     },
     onError: (error) => {
