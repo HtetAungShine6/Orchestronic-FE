@@ -1,5 +1,6 @@
 import { requestFormSchema } from "@/components/requests/client-request-form"
 import { authOptions } from "@/lib/auth-options"
+import { Status } from "@/types/api"
 import { ApiError } from "@/types/error"
 import { getServerSession } from "next-auth"
 import z from "zod"
@@ -60,6 +61,41 @@ export async function getRequestBySlug(slug: string) {
     throw new ApiError(
       err.statusCode ?? res.status,
       err.message ?? "Failed to fetch request by slug",
+      err.error ?? "Unknown error"
+    )
+  }
+
+  return res.json()
+}
+
+export interface RequestStatusResponse {
+  id: string
+  displayCode: string
+  status: Status
+  description: string
+  ownerId: string
+  repositoryId: string
+  resourcesId: string
+  createdAt: string
+  updatedAt: string
+}
+
+export async function approveRequest(
+  requestId: string
+): Promise<RequestStatusResponse> {
+  const res = await fetch(`/api/requests/${requestId}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ status: "Approved" }),
+  })
+
+  if (!res.ok) {
+    const err = await res.json()
+    throw new ApiError(
+      err.statusCode ?? res.status,
+      err.message ?? "Failed to approve request",
       err.error ?? "Unknown error"
     )
   }

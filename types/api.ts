@@ -12,3 +12,9 @@ export type User = {
   email: string
   role: Role
 }
+
+export enum Status {
+  Pending = "Pending",
+  Approved = "Approved",
+  Rejected = "Rejected",
+}
