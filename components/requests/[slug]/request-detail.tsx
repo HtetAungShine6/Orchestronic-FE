@@ -8,6 +8,9 @@ import { Role } from "@/types/role"
 import DescriptionCard from "./description-card"
 import { ResourceConfig } from "@/types/resource"
 import { VmSizeDto } from "@/types/request"
+import { useSession } from "next-auth/react"
+import { haveAdminOrIT } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 
 export interface RequestDetail {
   id: string
@@ -61,20 +64,29 @@ export default function RequestDetail({ slug }: { slug: string }) {
     queryFn: () => getRequestBySlug(slug),
   })
 
+  const session = useSession()
+
   if (isLoading) return <div>Loading...</div>
   if (error instanceof ApiError) return <div>{error.message}</div>
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Left side - Resource details */}
-      <div className="lg:col-span-2 space-y-6">
-        <ResourceGroupCard data={data} />
-      </div>
+    <div className="flex flex-col gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left side - Resource details */}
+        <div className="lg:col-span-2 space-y-6">
+          <ResourceGroupCard data={data} />
+        </div>
 
-      {/* Right side - Organization info */}
-      <div className="space-y-6">
-        <OrganizationCard data={data} />
-        <DescriptionCard data={data} />
+        {/* Right side - Organization info */}
+        <div className="flex flex-col space-y-6">
+          <OrganizationCard data={data} />
+          <DescriptionCard data={data} />
+          {haveAdminOrIT(session.data?.user.role) && (
+            <div className="ml-auto">
+              <Button size="lg">Approve</Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

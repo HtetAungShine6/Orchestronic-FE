@@ -84,17 +84,19 @@ export default function ResourceConfigSection({
                               <span className="font-medium text-foreground">
                                 Operating System:
                               </span>
-                              <p className="flex gap-1">
-                                <Image
-                                  src={os?.icon}
-                                  width={16}
-                                  height={16}
-                                  alt={`${os?.label} Icon`}
-                                />
-                                <span className="text-muted-foreground">
-                                  {os?.label}
-                                </span>
-                              </p>
+                              {os && (
+                                <p className="flex gap-1">
+                                  <Image
+                                    src={os?.icon}
+                                    width={16}
+                                    height={16}
+                                    alt={`${os?.label} Icon`}
+                                  />
+                                  <span className="text-muted-foreground">
+                                    {os?.label}
+                                  </span>
+                                </p>
+                              )}
                             </div>
                           </div>
                         </div>

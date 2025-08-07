@@ -22,7 +22,7 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
     (provider) => provider.value === data?.resources?.cloudProvider
   )
   return (
-    <Card>
+    <Card className="min-h-[91%] h-auto">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <p className="flex items-center text-xl font-bold">

@@ -1,4 +1,5 @@
 import { Resource } from "@/app/(dashboard)/resources/data/schema-resources"
+import { Role } from "@/types/role"
 import { faker } from "@faker-js/faker"
 
 import { clsx, type ClassValue } from "clsx"
@@ -76,4 +77,8 @@ export function toTitleCase(str: string): string {
     /\w\S*/g,
     (text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
   )
+}
+
+export function haveAdminOrIT(role?: Role): boolean {
+  return role === Role.Admin || role === Role.IT
 }
