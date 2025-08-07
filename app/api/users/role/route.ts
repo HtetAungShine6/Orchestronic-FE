@@ -2,10 +2,7 @@ import { authOptions } from "@/lib/auth-options"
 import { getServerSession } from "next-auth"
 import { NextRequest, NextResponse } from "next/server"
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> }
-) {
+export async function PATCH(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -13,25 +10,20 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { userId } = await params
     const body = await request.json()
-    const { role } = body
 
-    if (!role) {
+    if (!body.role) {
       return NextResponse.json({ error: "Role is required" }, { status: 400 })
     }
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/user/${userId}/role`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.user.backendAccessToken}`,
-        },
-        body: JSON.stringify({ role }),
-      }
-    )
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/role`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.user.backendAccessToken}`,
+      },
+      body: JSON.stringify(body),
+    })
 
     if (!res.ok) {
       const err = await res.json()

@@ -1,7 +1,16 @@
 "use client"
-import { changeRequestStatus, getRequestBySlug } from "@/app/api/requests/api"
+import {
+  changeRequestStatus,
+  getRequestBySlug,
+  RequestStatusResponse,
+} from "@/app/api/requests/api"
 import { ApiError } from "@/types/error"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
 import ResourceGroupCard from "./resource-group-card"
 import OrganizationCard from "./organization-card"
 import { Role } from "@/types/role"
@@ -163,59 +172,12 @@ export default function RequestDetail({ slug }: { slug: string }) {
         {haveAdminOrIT(session.data?.user.role) &&
           data?.status !== Status.Approved &&
           data?.status !== Status.Rejected && (
-            <div className="flex gap-4 ml-auto">
-              <AlertDialog>
-                <AlertDialogTrigger
-                  className={buttonVariants({ variant: "destructive" })}
-                >
-                  {approveMutation.isPending ? "Rejecting..." : "Reject"}
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will reject the request
-                      and notify the requester.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      className={buttonVariants({ variant: "destructive" })}
-                      onClick={() => handleReject()}
-                    >
-                      Reject
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-              <AlertDialog>
-                <AlertDialogTrigger
-                  className={buttonVariants({ variant: "default" })}
-                >
-                  {approveMutation.isPending ? "Approving..." : "Approve"}
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will approve the
-                      request and notify the requester.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => handleApprove()}>
-                      Continue
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+            <AdminITActionsButton
+              handleApprove={handleApprove}
+              handleReject={handleReject}
+              approveMutation={approveMutation}
+              rejectMutation={rejectMutation}
+            />
           )}
       </div>
       <div className="flex flex-col gap-8">
@@ -277,5 +239,81 @@ function StatusChangePopup({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+  )
+}
+
+function AdminITActionsButton({
+  handleApprove,
+  handleReject,
+  approveMutation,
+  rejectMutation,
+}: {
+  handleApprove: () => void
+  handleReject: () => void
+  approveMutation: UseMutationResult<
+    RequestStatusResponse,
+    Error,
+    {
+      requestId: string
+    },
+    unknown
+  >
+  rejectMutation: UseMutationResult<
+    RequestStatusResponse,
+    Error,
+    {
+      requestId: string
+    },
+    unknown
+  >
+}) {
+  return (
+    <div className="flex gap-4 ml-auto">
+      <AlertDialog>
+        <AlertDialogTrigger
+          className={buttonVariants({ variant: "destructive" })}
+        >
+          {rejectMutation.isPending ? "Rejecting..." : "Reject"}
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will reject the request and
+              notify the requester.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className={buttonVariants({ variant: "destructive" })}
+              onClick={() => handleReject()}
+            >
+              Reject
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog>
+        <AlertDialogTrigger className={buttonVariants({ variant: "default" })}>
+          {approveMutation.isPending ? "Approving..." : "Approve"}
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will approve the request and
+              notify the requester.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => handleApprove()}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   )
 }

@@ -27,7 +27,7 @@ export default function ResourcesTable({ pageSize = 10 }: ResourcesTableProps) {
       columns={columnsResources}
       filterColumn="name"
       pageSize={pageSize}
-      onRowClick={(row) => router.push(`/resources/${row.id}`)}
+      onRowClick={(row) => router.push(`/requests/${row.request.displayCode}`)}
     />
   )
 }

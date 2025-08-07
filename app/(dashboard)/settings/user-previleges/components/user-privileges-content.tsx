@@ -109,17 +109,43 @@ export default function UserPrivilegesContent() {
     }))
   }
 
-  const saveChanges = () => {
-    Object.entries(pendingUpdates).forEach(([userId, role]) => {
-      updateRoleMutation.mutate({ userId, role })
+  const saveChanges = (role?: Role) => {
+    const updatesToSave = role
+      ? Object.fromEntries(
+          Object.entries(pendingUpdates).filter(([userId]) => {
+            const user = users?.find((u) => u.id === userId)
+            return user?.role === role
+          })
+        )
+      : pendingUpdates
+
+    Object.entries(updatesToSave).forEach(([userId, newRole]) => {
+      updateRoleMutation.mutate({ userId, role: newRole })
     })
   }
 
-  const cancelChanges = () => {
-    setPendingUpdates({})
+  const cancelChanges = (role?: Role) => {
+    if (role) {
+      setPendingUpdates((prev) => {
+        const filtered = Object.fromEntries(
+          Object.entries(prev).filter(([userId]) => {
+            const user = users?.find((u) => u.id === userId)
+            return user?.role !== role
+          })
+        )
+        return filtered
+      })
+    } else {
+      setPendingUpdates({})
+    }
   }
 
-  const hasChanges = Object.keys(pendingUpdates).length > 0
+  const hasChangesForRole = (role: Role) => {
+    return Object.keys(pendingUpdates).some((userId) => {
+      const user = users?.find((u) => u.id === userId)
+      return user?.role === role
+    })
+  }
 
   if (isLoading) {
     return (
@@ -179,115 +205,126 @@ export default function UserPrivilegesContent() {
 
       {/* Users by Role Groups */}
       {(Object.entries(groupedUsers) as [Role, User[]][]).map(
-        ([role, roleUsers]) => (
-          <Card key={role}>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <CardTitle>
-                  {role} ({roleUsers.length})
-                </CardTitle>
-                <Badge className={roleColors[role]} variant="secondary">
-                  {role}
-                </Badge>
-              </div>
-              {hasChanges && (
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={cancelChanges}
-                    disabled={updateRoleMutation.isPending}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={saveChanges}
-                    disabled={updateRoleMutation.isPending}
-                  >
-                    {updateRoleMutation.isPending
-                      ? "Saving..."
-                      : "Save Changes"}
-                  </Button>
-                </div>
-              )}
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Change Role</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {roleUsers.map((user: User) => {
-                    const pendingRole = pendingUpdates[user.id]
-                    const currentRole = pendingRole || user.role
-                    const hasChanged = pendingRole && pendingRole !== user.role
+        ([role, roleUsers]) => {
+          const roleHasChanges = hasChangesForRole(role)
 
-                    return (
-                      <TableRow key={user.id}>
-                        <TableCell>
-                          <div className="flex items-center space-x-3">
-                            <Avatar>
-                              <AvatarFallback>
-                                {user.name
-                                  .split(" ")
-                                  .map((n: string) => n[0])
-                                  .join("")
-                                  .toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="font-medium">{user.name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {user.email}
-                        </TableCell>
-                        <TableCell>
-                          <Select
-                            value={currentRole}
-                            onValueChange={(value: Role) =>
-                              handleRoleChange(user.id, value)
-                            }
-                          >
-                            <SelectTrigger className="w-[130px]">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {roleOptions.map((role) => (
-                                <SelectItem key={role.value} value={role.value}>
-                                  {role.value}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          {hasChanged ? (
-                            <Badge
-                              variant="outline"
-                              className="text-orange-600"
+          return (
+            <Card key={role}>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <CardTitle>
+                    {role} ({roleUsers.length})
+                  </CardTitle>
+                  <Badge className={roleColors[role]} variant="secondary">
+                    {role}
+                  </Badge>
+                </div>
+                {roleHasChanges && (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => cancelChanges(role)}
+                      disabled={updateRoleMutation.isPending}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => saveChanges(role)}
+                      disabled={updateRoleMutation.isPending}
+                    >
+                      {updateRoleMutation.isPending
+                        ? "Saving..."
+                        : "Save Changes"}
+                    </Button>
+                  </div>
+                )}
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Change Role</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {roleUsers.map((user: User) => {
+                      const pendingRole = pendingUpdates[user.id]
+                      const currentRole = pendingRole || user.role
+                      const hasChanged =
+                        pendingRole && pendingRole !== user.role
+
+                      return (
+                        <TableRow key={user.id}>
+                          <TableCell>
+                            <div className="flex items-center space-x-3">
+                              <Avatar>
+                                <AvatarFallback>
+                                  {user.name
+                                    .split(" ")
+                                    .map((n: string) => n[0])
+                                    .join("")
+                                    .toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium">{user.name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {user.email}
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={currentRole}
+                              onValueChange={(value: Role) =>
+                                handleRoleChange(user.id, value)
+                              }
                             >
-                              Modified
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-green-600">
-                              Current
-                            </Badge>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        )
+                              <SelectTrigger className="w-[130px]">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {roleOptions.map((role) => (
+                                  <SelectItem
+                                    key={role.value}
+                                    value={role.value}
+                                  >
+                                    {role.value}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell>
+                            {hasChanged ? (
+                              <Badge
+                                variant="outline"
+                                className="text-orange-600"
+                              >
+                                Modified
+                              </Badge>
+                            ) : (
+                              <Badge
+                                variant="outline"
+                                className="text-green-600"
+                              >
+                                Current
+                              </Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          )
+        }
       )}
 
       {/* No results message */}

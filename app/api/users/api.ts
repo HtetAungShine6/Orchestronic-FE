@@ -16,13 +16,13 @@ export async function getUsers() {
   return res.json()
 }
 
-export async function updateUserRole(userId: string, role: Role) {
-  const res = await fetch(`/api/users/${userId}/role`, {
+export async function updateUserRole(id: string, role: Role) {
+  const res = await fetch(`/api/users/role`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ role }),
+    body: JSON.stringify({ id, role }),
   })
 
   if (!res.ok) {
