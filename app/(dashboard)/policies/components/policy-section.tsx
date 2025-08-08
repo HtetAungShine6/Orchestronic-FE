@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Role } from "@/types/role"
 import {
   Cpu,
   DatabaseZap,
@@ -24,6 +23,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { haveAdminOrIT } from "@/lib/utils"
 
 const memoryLimit = 32 // in GB
 const storageLimitHDD = 1 // in TB
@@ -95,7 +95,7 @@ function PolicyCard({ policy, index }: { policy: Policy; index: number }) {
           {policy.icon}
           <h3 className="font-medium">{policy.name}</h3>
         </div>
-        {session?.user?.role === Role.IT && (
+        {haveAdminOrIT(session?.user.role) && (
           <EditPolicyDialog policy={policy} />
         )}
       </div>
