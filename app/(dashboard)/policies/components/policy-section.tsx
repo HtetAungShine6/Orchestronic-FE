@@ -2,16 +2,9 @@
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import {
-  Cpu,
-  DatabaseZap,
-  HardDrive,
-  MemoryStick,
-  Network,
-  Pencil,
-} from "lucide-react"
+import { Cpu, Database, DatabaseZap, Pencil } from "lucide-react"
 import { useSession } from "next-auth/react"
-import { ReactNode } from "react"
+import { ReactNode, useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -24,69 +17,113 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { haveAdminOrIT } from "@/lib/utils"
+import Image from "next/image"
+import { AzureVMSizeCombobox } from "@/components/requests/resource-group-accordion-vm"
+import { VmSizeDto } from "@/types/request"
 
 const memoryLimit = 32 // in GB
-const storageLimitHDD = 1 // in TB
 const storageLimitSSD = 500 // in GB
 const cpuCoresLimit = 16 // in cores
-const networkBandwidthLimit = 1 // in Gbps
 
 interface Policy {
   icon: ReactNode
   name: string
   description: string
   max: string
+  filter?: ReactNode
 }
 
-const policies: Policy[] = [
-  {
-    icon: <MemoryStick size={16} />,
-    name: "Memory",
-    description: `Each team may request a maximum of ${memoryLimit}GB of RAM across all active environments.
-Requests exceeding this limit will be flagged for review and require project manager (PM) approval.`,
-    max: `${memoryLimit} GB`,
-  },
-  {
-    icon: <HardDrive size={16} />,
-    name: "Storage - Hard Disk Drive (HDD)",
-    description: `The maximum HDD storage allowed per project is ${storageLimitHDD}TB.
-Requests for additional HDD storage must be formally justified and approved by the PM.`,
-    max: `${storageLimitHDD} TB`,
-  },
-  {
-    icon: <DatabaseZap size={16} />,
-    name: "Storage - Solid State Drive (SSD)",
-    description: `Each project is allocated ${storageLimitSSD}GB of SSD storage.
-Requests above this limit will trigger a review and must receive PM approval.`,
-    max: `${storageLimitSSD} GB`,
-  },
-  {
-    icon: <Cpu size={16} />,
-    name: "CPU Cores",
-    description: `Teams can request up to ${cpuCoresLimit} CPU cores per environment.
-Any requests beyond this threshold will be reviewed by the operations team and require justification.`,
-    max: `${cpuCoresLimit} Cores`,
-  },
-  {
-    icon: <Network size={16} />,
-    name: "Network Bandwidth",
-    description: `Each project is allocated a maximum of ${networkBandwidthLimit}Gbps network bandwidth.
-Requests for higher bandwidth must be justified and approved by the PM.`,
-    max: `${networkBandwidthLimit} Gbps`,
-  },
-]
-
 export default function PolicySection() {
+  const [selectedValue, setSelectedValue] = useState<VmSizeDto | null>(null)
+
+  const policies: Policy[] = [
+    {
+      icon: <Cpu size={16} />,
+      name: "VM",
+      description: `Teams can request up to ${cpuCoresLimit} CPU cores per environment.
+  Any requests beyond this threshold will be reviewed by the operations team and require justification.`,
+      max: `${cpuCoresLimit} Cores`,
+      filter: (
+        <AzureVMSizeCombobox
+          selectedValue={selectedValue}
+          setSelectedValue={setSelectedValue}
+        />
+      ),
+    },
+    {
+      icon: <DatabaseZap size={16} />,
+      name: "Storage",
+      description: `Each project is allocated ${storageLimitSSD}GB of SSD storage.
+Requests above this limit will trigger a review and must receive PM approval.`,
+      max: `${storageLimitSSD} GB`,
+    },
+    {
+      icon: <Database size={16} />,
+      name: "Database",
+      description: `Each project can utilize up to ${memoryLimit}GB of memory for database operations.`,
+      max: `${memoryLimit} GB`,
+    },
+  ]
+
   return (
-    <div className="flex flex-col">
-      {policies.map((policy, index) => (
-        <PolicyCard key={policy.name} policy={policy} index={index} />
-      ))}
+    <div className="flex gap-8">
+      <div className="flex-1">
+        <div className="flex items-center gap-1 mb-4">
+          <Image
+            src="/icon/azure.svg"
+            alt="Azure Cloud Provider Icon"
+            width={24}
+            height={24}
+          />
+          <p>Azure</p>
+        </div>
+        <Separator className="mb-4" />
+        {policies.map((policy, index) => (
+          <PolicyCard
+            key={policy.name}
+            policy={policy}
+            index={index}
+            totalPolicies={policies.length}
+          />
+        ))}
+      </div>
+      <div className="flex items-stretch">
+        <Separator orientation="vertical" className="h-full" />
+      </div>
+      <div className="flex-1">
+        <div className="flex items-center gap-1 mb-4">
+          <Image
+            src="/icon/aws.svg"
+            alt="AWS Cloud Provider Icon"
+            width={24}
+            height={24}
+          />
+          <p>AWS</p>
+        </div>
+        <Separator className="mb-4" />
+
+        {policies.map((policy, index) => (
+          <PolicyCard
+            key={policy.name}
+            policy={policy}
+            index={index}
+            totalPolicies={policies.length}
+          />
+        ))}
+      </div>
     </div>
   )
 }
 
-function PolicyCard({ policy, index }: { policy: Policy; index: number }) {
+function PolicyCard({
+  policy,
+  index,
+  totalPolicies,
+}: {
+  policy: Policy
+  index: number
+  totalPolicies: number
+}) {
   const { data: session } = useSession()
   return (
     <div className="grid gap-3">
@@ -109,7 +146,7 @@ function PolicyCard({ policy, index }: { policy: Policy; index: number }) {
           <p>{policy.description}</p>
         </div>
       </div>
-      {index !== policies.length - 1 && (
+      {index !== totalPolicies - 1 && (
         <div className="my-6">
           <Separator />
         </div>
@@ -143,10 +180,18 @@ function EditPolicyDialog({ policy }: { policy: Policy }) {
             <Label>Description</Label>
             <Textarea defaultValue={policy.description} />
           </div>
-          <div className="grid gap-2">
-            <Label>Max Limit</Label>
-            <Input type="text" defaultValue={policy.max} />
-          </div>
+
+          {policy.filter ? (
+            <div className="grid gap-2">
+              <Label>Max Limit</Label>
+              {policy.filter}
+            </div>
+          ) : (
+            <div className="grid gap-2">
+              <Label>Max Limit</Label>
+              <Input type="text" defaultValue={policy.max} />
+            </div>
+          )}
           <Button type="submit" className="mt-4">
             Save Changes
           </Button>

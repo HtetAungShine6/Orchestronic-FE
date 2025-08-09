@@ -133,7 +133,7 @@ export function ResourceGroupAccordionVM({
                     <div className="flex justify-between gap-4">
                       <div className="grid gap-2">
                         <Label>VM Size</Label>
-                        <ComboboxDemo
+                        <AzureVMSizeCombobox
                           form={form}
                           vmIndex={i}
                           selectedValue={selectedValue}
@@ -208,21 +208,21 @@ export function ResourceGroupAccordionVM({
   )
 }
 
-interface ComboboxDemoProps {
-  form: UseFormReturn<z.infer<typeof requestFormSchema>>
-  vmIndex: number
+interface AzureVMSizeComboboxProps {
+  form?: UseFormReturn<z.infer<typeof requestFormSchema>>
+  vmIndex?: number
   onSelect?: (vmSize: VmSizeDto | null) => void
   selectedValue?: VmSizeDto | null
   setSelectedValue?: (vmSize: VmSizeDto | null) => void
 }
 
-export function ComboboxDemo({
+export function AzureVMSizeCombobox({
   form,
   vmIndex,
   onSelect,
   selectedValue,
   setSelectedValue,
-}: ComboboxDemoProps) {
+}: AzureVMSizeComboboxProps) {
   const [open, setOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
 
@@ -239,6 +239,7 @@ export function ComboboxDemo({
     const newSelection = selectedValue?.id === vmSize.id ? null : vmSize
     setSelectedValue?.(newSelection)
     if (newSelection) {
+      if (!form || vmIndex === undefined) return
       form.setValue(
         `resources.resourceConfig.vms.${vmIndex}.sizeId`,
         newSelection.id
