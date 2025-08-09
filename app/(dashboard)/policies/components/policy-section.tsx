@@ -34,7 +34,8 @@ interface Policy {
 }
 
 export default function PolicySection() {
-  const [selectedValue, setSelectedValue] = useState<VmSizeDto | null>(null)
+  const [selectedValue, setSelectedValue] = useState<VmSizeDto | undefined>()
+  console.log(selectedValue)
 
   const policies: Policy[] = [
     {
@@ -47,6 +48,7 @@ export default function PolicySection() {
         <AzureVMSizeCombobox
           selectedValue={selectedValue}
           setSelectedValue={setSelectedValue}
+          portal={false}
         />
       ),
     },

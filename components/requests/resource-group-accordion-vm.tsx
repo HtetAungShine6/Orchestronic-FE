@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { useEffect, useRef, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import {
   Card,
   CardContent,
@@ -49,14 +49,6 @@ async function fetchVmSizes(
   page: number,
   limit: number
 ): Promise<VmSizeDto[]> {
-  console.log(
-    "Fetching VM sizes with value:",
-    value,
-    "page:",
-    page,
-    "limit:",
-    limit
-  )
   const response = await fetch(
     `/api/vm-sizes?page=${page}&limit=${limit}&search=${value}`
   )
@@ -89,7 +81,8 @@ export function ResourceGroupAccordionVM({
   vmCount,
 }: Readonly<ResourceGroupAccordionProps>) {
   const lastVMRef = useRef<HTMLDivElement | null>(null)
-  const [selectedValue, setSelectedValue] = useState<VmSizeDto | null>(null)
+  const [selectedValue, setSelectedValue] = useState<VmSizeDto | undefined>()
+  console.log(selectedValue)
 
   useEffect(() => {
     if (lastVMRef.current) {
@@ -134,10 +127,14 @@ export function ResourceGroupAccordionVM({
                       <div className="grid gap-2">
                         <Label>VM Size</Label>
                         <AzureVMSizeCombobox
-                          form={form}
-                          vmIndex={i}
                           selectedValue={selectedValue}
                           setSelectedValue={setSelectedValue}
+                          handleSelect={(vmSize) => {
+                            form.setValue(
+                              `resources.resourceConfig.vms.${i}.sizeId`,
+                              vmSize.id
+                            )
+                          }}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -179,7 +176,7 @@ export function ResourceGroupAccordionVM({
                           disabled
                           placeholder="Auto-filled from VM size"
                           type="number"
-                          value={selectedValue?.numberOfCores}
+                          value={selectedValue?.numberOfCores?.toString() ?? ""}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -188,11 +185,10 @@ export function ResourceGroupAccordionVM({
                           disabled
                           placeholder="Auto-filled from VM size"
                           type="number"
-                          //TODO(jan): Handle decimal places correctly
                           value={
-                            selectedValue?.memoryInMB === undefined
-                              ? ""
-                              : (selectedValue.memoryInMB / 1024).toFixed(1)
+                            selectedValue?.memoryInMB !== undefined
+                              ? (selectedValue.memoryInMB / 1024).toFixed(1)
+                              : ""
                           }
                         />
                       </div>
@@ -209,19 +205,17 @@ export function ResourceGroupAccordionVM({
 }
 
 interface AzureVMSizeComboboxProps {
-  form?: UseFormReturn<z.infer<typeof requestFormSchema>>
-  vmIndex?: number
-  onSelect?: (vmSize: VmSizeDto | null) => void
-  selectedValue?: VmSizeDto | null
-  setSelectedValue?: (vmSize: VmSizeDto | null) => void
+  selectedValue: VmSizeDto | undefined
+  setSelectedValue: Dispatch<SetStateAction<VmSizeDto | undefined>>
+  portal?: boolean
+  handleSelect?: (vmSize: VmSizeDto) => void
 }
 
 export function AzureVMSizeCombobox({
-  form,
-  vmIndex,
-  onSelect,
   selectedValue,
   setSelectedValue,
+  portal = true,
+  handleSelect,
 }: AzureVMSizeComboboxProps) {
   const [open, setOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
@@ -234,20 +228,6 @@ export function AzureVMSizeCombobox({
     queryKey: ["azure-vm-sizes", searchValue],
     queryFn: () => fetchVmSizes(searchValue, 1, 20),
   })
-
-  const handleSelect = (vmSize: VmSizeDto) => {
-    const newSelection = selectedValue?.id === vmSize.id ? null : vmSize
-    setSelectedValue?.(newSelection)
-    if (newSelection) {
-      if (!form || vmIndex === undefined) return
-      form.setValue(
-        `resources.resourceConfig.vms.${vmIndex}.sizeId`,
-        newSelection.id
-      )
-    }
-    setOpen(false)
-    onSelect?.(newSelection)
-  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -264,7 +244,7 @@ export function AzureVMSizeCombobox({
           <ChevronsUpDown className="opacity-50 ml-2 h-4 w-4 shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[400px] p-0">
+      <PopoverContent portal={portal} className="w-[400px] p-0 z-50">
         <Command>
           <CommandInput
             placeholder="Search VM sizes..."
@@ -283,8 +263,12 @@ export function AzureVMSizeCombobox({
                 <CommandItem
                   key={vmSize.id}
                   value={vmSize.name}
-                  onSelect={() => handleSelect(vmSize)}
-                  className="flex items-start gap-3 py-3"
+                  onSelect={() => {
+                    handleSelect?.(vmSize)
+                    setSelectedValue(vmSize)
+                    setOpen(false)
+                  }}
+                  className="flex items-start gap-3 py-3 cursor-pointer"
                 >
                   <div className="flex-1">
                     <div className="font-medium">{vmSize.name}</div>
