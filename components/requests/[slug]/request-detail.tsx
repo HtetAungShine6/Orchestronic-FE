@@ -42,6 +42,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import FeedbackCard from "./feedback-card"
+import { Textarea } from "@/components/ui/textarea"
+import { MessageSquareText } from "lucide-react"
+import { Label } from "@/components/ui/label"
 
 export interface RequestDetail {
   id: string
@@ -53,6 +57,7 @@ export interface RequestDetail {
   resourcesId: string
   createdAt: Date
   updatedAt: Date
+  feedback?: string
   resources: {
     id: string
     name: string
@@ -208,6 +213,25 @@ export default function RequestDetail({ slug }: { slug: string }) {
             <OrganizationCard data={data} />
             <DescriptionCard data={data} />
           </div>
+          {/* Feedback card */}
+          {data?.feedback ||
+            (data?.status !== Status.Pending && (
+              <div className="col-span-3">
+                <FeedbackCard data={data} />
+              </div>
+            ))}
+          {data?.status === Status.Pending && (
+            <div className="grid gap-2 col-span-3">
+              <Label className="flex items-center gap-1 font-bold tracking-tight text-xl">
+                <MessageSquareText />
+                Feedback *
+              </Label>
+              <Textarea
+                className="h-40"
+                placeholder="Leave your feedback here..."
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

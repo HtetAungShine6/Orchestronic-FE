@@ -33,6 +33,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
 
 export function NavUser({
   user,
@@ -41,6 +42,7 @@ export function NavUser({
     name: string
     email: string
     avatar: string
+    role: string
   }
 }) {
   const { isMobile } = useSidebar()
@@ -66,6 +68,9 @@ export function NavUser({
                   {user.email}
                 </span>
               </div>
+              <Badge variant="default" className="text-xs">
+                {user.role}
+              </Badge>
               <IconDotsVertical className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>

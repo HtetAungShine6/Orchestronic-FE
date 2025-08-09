@@ -25,6 +25,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     name: session?.user?.name ?? "Unknown User",
     email: session?.user?.email ?? "unknown@example.com",
     avatar: "/default-avatar.png",
+    role: session?.user?.role ?? "guest",
   }
 
   return (

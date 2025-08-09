@@ -1,8 +1,13 @@
-- landing page *
+[x] landing page
 - create repository on Gitlab
 - implement RQ, Airflow, and Terraform
 - policies filter *
 - save cloud provider secret key *
 - create request with aws *
 - create request correctly to Terraform
-- create IT and Admin feedback of an request to developer *
+    Delay
+
+[x] create IT and Admin feedback of an request to developer *
+
+
+- What data Terraform need inorder to create for Azure and AWS
