@@ -8,6 +8,8 @@
     Delay
 
 [x] create IT and Admin feedback of an request to developer *
+- better loading scene
+    - when creating request and waiting
 
 
 - What data Terraform need inorder to create for Azure and AWS
