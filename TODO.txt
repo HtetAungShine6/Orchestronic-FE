@@ -8,7 +8,7 @@
 - create request correctly to Terraform
     Delay
 
-[x] create IT and Admin feedback of an request to developer *
+- create IT and Admin feedback of an request to developer *
 - better loading scene
     - when creating request and waiting
 

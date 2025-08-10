@@ -29,21 +29,24 @@ interface Policy {
   icon: ReactNode
   name: string
   description: string
-  max: string
+  max: string[]
   filter?: ReactNode
 }
 
 export default function PolicySection() {
+  //TODO(jan): call API
   const [selectedValue, setSelectedValue] = useState<VmSizeDto | undefined>()
-  console.log(selectedValue)
 
-  const policies: Policy[] = [
+  const azurePolicies: Policy[] = [
     {
       icon: <Cpu size={16} />,
       name: "VM",
       description: `Teams can request up to ${cpuCoresLimit} CPU cores per environment.
   Any requests beyond this threshold will be reviewed by the operations team and require justification.`,
-      max: `${cpuCoresLimit} Cores`,
+      max: [
+        `${selectedValue?.numberOfCores} vCPUs`,
+        `${Math.round((selectedValue?.memoryInMB ?? 0) / 1024)} GB of RAM`,
+      ],
       filter: (
         <AzureVMSizeCombobox
           selectedValue={selectedValue}
@@ -57,13 +60,46 @@ export default function PolicySection() {
       name: "Storage",
       description: `Each project is allocated ${storageLimitSSD}GB of SSD storage.
 Requests above this limit will trigger a review and must receive PM approval.`,
-      max: `${storageLimitSSD} GB`,
+      max: [`${storageLimitSSD} GB`],
     },
     {
       icon: <Database size={16} />,
       name: "Database",
       description: `Each project can utilize up to ${memoryLimit}GB of memory for database operations.`,
-      max: `${memoryLimit} GB`,
+      max: [`${memoryLimit} GB`],
+    },
+  ]
+
+  const awsPolicies: Policy[] = [
+    {
+      icon: <Cpu size={16} />,
+      name: "VM",
+      description: `Teams can request up to ${cpuCoresLimit} CPU cores per environment.
+  Any requests beyond this threshold will be reviewed by the operations team and require justification.`,
+      max: [
+        `${selectedValue?.numberOfCores} Cores`,
+        `${selectedValue?.memoryInMB} MB`,
+      ],
+      filter: (
+        <AzureVMSizeCombobox
+          selectedValue={selectedValue}
+          setSelectedValue={setSelectedValue}
+          portal={false}
+        />
+      ),
+    },
+    {
+      icon: <DatabaseZap size={16} />,
+      name: "Storage",
+      description: `Each project is allocated ${storageLimitSSD}GB of SSD storage.
+Requests above this limit will trigger a review and must receive PM approval.`,
+      max: [`${storageLimitSSD} GB`],
+    },
+    {
+      icon: <Database size={16} />,
+      name: "Database",
+      description: `Each project can utilize up to ${memoryLimit}GB of memory for database operations.`,
+      max: [`${memoryLimit} GB`],
     },
   ]
 
@@ -80,12 +116,12 @@ Requests above this limit will trigger a review and must receive PM approval.`,
           <p>Azure</p>
         </div>
         <Separator className="mb-4" />
-        {policies.map((policy, index) => (
+        {azurePolicies.map((policy, index) => (
           <PolicyCard
             key={policy.name}
             policy={policy}
             index={index}
-            totalPolicies={policies.length}
+            totalPolicies={azurePolicies.length}
           />
         ))}
       </div>
@@ -104,12 +140,12 @@ Requests above this limit will trigger a review and must receive PM approval.`,
         </div>
         <Separator className="mb-4" />
 
-        {policies.map((policy, index) => (
+        {awsPolicies.map((policy, index) => (
           <PolicyCard
             key={policy.name}
             policy={policy}
             index={index}
-            totalPolicies={policies.length}
+            totalPolicies={awsPolicies.length}
           />
         ))}
       </div>
@@ -141,7 +177,11 @@ function PolicyCard({
       <div className="flex justify-between">
         <div className="w-1/2">
           <p className="text-sm text-muted-foreground">Max:</p>
-          <p className="mt-2">{policy.max}</p>
+          {policy.max.map((maxValue, idx) => (
+            <p key={idx} className="mt-2">
+              {maxValue}
+            </p>
+          ))}
         </div>
         <div className="grid gap-2 w-1/2">
           <p className="text-sm text-muted-foreground">Description</p>

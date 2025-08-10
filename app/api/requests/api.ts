@@ -127,3 +127,27 @@ export async function changeRequestStatus(
 
   return res.json()
 }
+
+export async function updateRequestFeedback(
+  requestId: string,
+  feedback: string
+) {
+  const res = await fetch(`/api/requests/${requestId}/feedback`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ feedback }),
+  })
+
+  if (!res.ok) {
+    const err = await res.json()
+    throw new ApiError(
+      err.statusCode ?? res.status,
+      err.message ?? "Failed to update request feedback",
+      err.error ?? "Unknown error"
+    )
+  }
+
+  return res.json()
+}

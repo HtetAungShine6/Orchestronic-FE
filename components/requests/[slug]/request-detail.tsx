@@ -3,6 +3,7 @@ import {
   changeRequestStatus,
   getRequestBySlug,
   RequestStatusResponse,
+  updateRequestFeedback,
 } from "@/app/api/requests/api"
 import { ApiError } from "@/types/error"
 import {
@@ -98,9 +99,26 @@ export default function RequestDetail({ slug }: { slug: string }) {
   const queryClient = useQueryClient()
   const [showApprovePopup, setShowApprovePopup] = useState(false)
   const [showRejectPopup, setShowRejectPopup] = useState(false)
+  const [feedback, setFeedback] = useState<string>("")
+
   const { data, isLoading, error } = useQuery<RequestDetail>({
     queryKey: ["request", slug],
     queryFn: () => getRequestBySlug(slug),
+  })
+
+  const updateFeedback = useMutation({
+    mutationFn: ({
+      requestId,
+      feedback,
+    }: {
+      requestId: string
+      feedback: string
+    }) => updateRequestFeedback(requestId, feedback),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["request", slug],
+      })
+    },
   })
 
   const approveMutation = useMutation({
@@ -141,14 +159,22 @@ export default function RequestDetail({ slug }: { slug: string }) {
   })
 
   function handleApprove() {
-    if (data) {
+    if (data && feedback.trim()) {
       approveMutation.mutate({ requestId: data.id })
+      updateFeedback.mutate({
+        requestId: data.id,
+        feedback: feedback,
+      })
     }
   }
 
   function handleReject() {
-    if (data) {
+    if (data && feedback.trim()) {
       rejectMutation.mutate({ requestId: data.id })
+      updateFeedback.mutate({
+        requestId: data.id,
+        feedback: feedback,
+      })
     }
   }
 
@@ -182,6 +208,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
               handleReject={handleReject}
               approveMutation={approveMutation}
               rejectMutation={rejectMutation}
+              feedback={feedback}
             />
           )}
       </div>
@@ -214,12 +241,11 @@ export default function RequestDetail({ slug }: { slug: string }) {
             <DescriptionCard data={data} />
           </div>
           {/* Feedback card */}
-          {data?.feedback ||
-            (data?.status !== Status.Pending && (
-              <div className="col-span-3">
-                <FeedbackCard data={data} />
-              </div>
-            ))}
+          {data?.status !== Status.Pending && (
+            <div className="col-span-3">
+              <FeedbackCard data={data} />
+            </div>
+          )}
           {data?.status === Status.Pending && (
             <div className="grid gap-2 col-span-3">
               <Label className="flex items-center gap-1 font-bold tracking-tight text-xl">
@@ -227,8 +253,10 @@ export default function RequestDetail({ slug }: { slug: string }) {
                 Feedback *
               </Label>
               <Textarea
+                required
                 className="h-40"
                 placeholder="Leave your feedback here..."
+                onChange={(e) => setFeedback(e.target.value)}
               />
             </div>
           )}
@@ -271,6 +299,7 @@ function AdminITActionsButton({
   handleReject,
   approveMutation,
   rejectMutation,
+  feedback,
 }: {
   handleApprove: () => void
   handleReject: () => void
@@ -290,12 +319,16 @@ function AdminITActionsButton({
     },
     unknown
   >
+  feedback: string
 }) {
+  const isFeedbackEmpty = !feedback.trim()
+
   return (
     <div className="flex gap-4 ml-auto">
       <AlertDialog>
         <AlertDialogTrigger
           className={buttonVariants({ variant: "destructive" })}
+          disabled={isFeedbackEmpty || rejectMutation.isPending}
         >
           {rejectMutation.isPending ? "Rejecting..." : "Reject"}
         </AlertDialogTrigger>
@@ -319,7 +352,10 @@ function AdminITActionsButton({
         </AlertDialogContent>
       </AlertDialog>
       <AlertDialog>
-        <AlertDialogTrigger className={buttonVariants({ variant: "default" })}>
+        <AlertDialogTrigger
+          className={buttonVariants({ variant: "default" })}
+          disabled={isFeedbackEmpty || approveMutation.isPending}
+        >
           {approveMutation.isPending ? "Approving..." : "Approve"}
         </AlertDialogTrigger>
         <AlertDialogContent>

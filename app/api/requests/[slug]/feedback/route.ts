@@ -19,7 +19,7 @@ export async function PATCH(
     const body = await request.json()
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/request/${slug}/status`,
+      `${process.env.NEXT_PUBLIC_API_URL}/request/${slug}/feedback`,
       {
         method: "PATCH",
         headers: {
