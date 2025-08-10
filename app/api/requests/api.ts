@@ -26,6 +26,30 @@ export async function getRequests() {
   return res.json()
 }
 
+export async function getRequestsStatus(status: Status) {
+  const session = await getServerSession(authOptions)
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/request/status?status=${status as string}`,
+    {
+      headers: {
+        Authorization: `Bearer ${session?.user?.backendAccessToken}`,
+      },
+    }
+  )
+
+  if (!res.ok) {
+    const err = await res.json()
+    throw new ApiError(
+      err.statusCode ?? res.status,
+      err.message ?? "Failed to fetch requests",
+      err.error ?? "Unknown error"
+    )
+  }
+
+  return res.json()
+}
+
 export async function createRequest(data: z.infer<typeof requestFormSchema>) {
   const res = await fetch(`/api/requests`, {
     method: "POST",

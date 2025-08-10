@@ -29,6 +29,7 @@ import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
 
 interface DataTableProps<TData, TValue> {
+  prefilterStatus?: boolean
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   filterColumn: keyof TData
@@ -37,6 +38,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({
+  prefilterStatus = false,
   columns,
   data,
   filterColumn,
@@ -50,6 +52,16 @@ export function DataTable<TData, TValue>({
     []
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
+
+  React.useEffect(() => {
+    const hasStatusCol =
+      columns.find(
+        (col) => (col as { accessorKey?: string }).accessorKey === "status"
+      ) && prefilterStatus
+    if (hasStatusCol && columnFilters.length === 0) {
+      setColumnFilters([{ id: "status", value: ["Pending"] }])
+    }
+  }, [columnFilters.length, columns, prefilterStatus])
 
   const table = useReactTable({
     data,

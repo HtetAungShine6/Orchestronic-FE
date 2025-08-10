@@ -8,10 +8,14 @@ import { useQuery } from "@tanstack/react-query"
 import { useSession } from "next-auth/react"
 
 interface RequestsTableProps {
+  prefilterStatus?: boolean
   pageSize?: number
 }
 
-export default function RequestsTable({ pageSize = 10 }: RequestsTableProps) {
+export default function RequestsTable({
+  prefilterStatus = false,
+  pageSize = 10,
+}: RequestsTableProps) {
   const router = useRouter()
   const { data: session } = useSession()
 
@@ -27,6 +31,7 @@ export default function RequestsTable({ pageSize = 10 }: RequestsTableProps) {
 
   return (
     <DataTable
+      prefilterStatus={prefilterStatus}
       data={data}
       columns={columns}
       filterColumn="displayCode"

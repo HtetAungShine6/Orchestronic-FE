@@ -49,7 +49,7 @@ export default async function Page() {
           </Button>
         </div>
         <HydrationBoundary state={dehydrate(queryClient)}>
-          <RequestsTable pageSize={5} />
+          <RequestsTable pageSize={5} prefilterStatus={true} />
         </HydrationBoundary>
       </div>
 
