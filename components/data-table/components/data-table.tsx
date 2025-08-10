@@ -61,7 +61,7 @@ export function DataTable<TData, TValue>({
     if (hasStatusCol && columnFilters.length === 0) {
       setColumnFilters([{ id: "status", value: ["Pending"] }])
     }
-  }, [columnFilters.length, columns, prefilterStatus])
+  }, [])
 
   const table = useReactTable({
     data,
