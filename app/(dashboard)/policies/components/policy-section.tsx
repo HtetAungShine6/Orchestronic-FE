@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Cpu, Database, DatabaseZap, Pencil } from "lucide-react"
 import { useSession } from "next-auth/react"
-import { ReactNode, useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import {
   Dialog,
   DialogContent,
@@ -15,191 +15,427 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { haveAdminOrIT } from "@/lib/utils"
 import Image from "next/image"
 import { AzureVMSizeCombobox } from "@/components/requests/resource-group-accordion-vm"
-import { VmSizeDto } from "@/types/request"
-
-const memoryLimit = 32 // in GB
-const storageLimitSSD = 500 // in GB
-const cpuCoresLimit = 16 // in cores
-
-interface Policy {
-  icon: ReactNode
-  name: string
-  description: string
-  max: string[]
-  filter?: ReactNode
-}
+import {
+  DatabasePolicyDto,
+  StoragePolicyDto,
+  VMPolicyDto,
+  VmSizeDto,
+} from "@/types/request"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+  getPolicyDB,
+  getPolicyST,
+  getPolicyVM,
+  updatePolicyDB,
+  updatePolicyST,
+  updatePolicyVM,
+} from "@/app/api/policy/api"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { motion } from "framer-motion"
 
 export default function PolicySection() {
-  //TODO(jan): call API
-  const [selectedValue, setSelectedValue] = useState<VmSizeDto | undefined>()
-
-  const azurePolicies: Policy[] = [
-    {
-      icon: <Cpu size={16} />,
-      name: "VM",
-      description: `Teams can request up to ${cpuCoresLimit} CPU cores per environment.
-  Any requests beyond this threshold will be reviewed by the operations team and require justification.`,
-      max: [
-        `${selectedValue?.numberOfCores} vCPUs`,
-        `${Math.round((selectedValue?.memoryInMB ?? 0) / 1024)} GB of RAM`,
-      ],
-      filter: (
-        <AzureVMSizeCombobox
-          selectedValue={selectedValue}
-          setSelectedValue={setSelectedValue}
-          portal={false}
-        />
-      ),
-    },
-    {
-      icon: <DatabaseZap size={16} />,
-      name: "Storage",
-      description: `Each project is allocated ${storageLimitSSD}GB of SSD storage.
-Requests above this limit will trigger a review and must receive PM approval.`,
-      max: [`${storageLimitSSD} GB`],
-    },
-    {
-      icon: <Database size={16} />,
-      name: "Database",
-      description: `Each project can utilize up to ${memoryLimit}GB of memory for database operations.`,
-      max: [`${memoryLimit} GB`],
-    },
-  ]
-
-  const awsPolicies: Policy[] = [
-    {
-      icon: <Cpu size={16} />,
-      name: "VM",
-      description: `Teams can request up to ${cpuCoresLimit} CPU cores per environment.
-  Any requests beyond this threshold will be reviewed by the operations team and require justification.`,
-      max: [
-        `${selectedValue?.numberOfCores} Cores`,
-        `${selectedValue?.memoryInMB} MB`,
-      ],
-      filter: (
-        <AzureVMSizeCombobox
-          selectedValue={selectedValue}
-          setSelectedValue={setSelectedValue}
-          portal={false}
-        />
-      ),
-    },
-    {
-      icon: <DatabaseZap size={16} />,
-      name: "Storage",
-      description: `Each project is allocated ${storageLimitSSD}GB of SSD storage.
-Requests above this limit will trigger a review and must receive PM approval.`,
-      max: [`${storageLimitSSD} GB`],
-    },
-    {
-      icon: <Database size={16} />,
-      name: "Database",
-      description: `Each project can utilize up to ${memoryLimit}GB of memory for database operations.`,
-      max: [`${memoryLimit} GB`],
-    },
-  ]
+  const [activeTab, setActiveTab] = useState<"AZURE" | "AWS">("AZURE")
 
   return (
-    <div className="flex gap-8">
-      <div className="flex-1">
-        <div className="flex items-center gap-1 mb-4">
+    <Tabs
+      value={activeTab}
+      onValueChange={(value) => setActiveTab(value as "AZURE" | "AWS")}
+    >
+      <TabsList>
+        <TabsTrigger value="AZURE">
           <Image
             src="/icon/azure.svg"
             alt="Azure Cloud Provider Icon"
-            width={24}
-            height={24}
+            width={16}
+            height={16}
           />
           <p>Azure</p>
-        </div>
-        <Separator className="mb-4" />
-        {azurePolicies.map((policy, index) => (
-          <PolicyCard
-            key={policy.name}
-            policy={policy}
-            index={index}
-            totalPolicies={azurePolicies.length}
-          />
-        ))}
-      </div>
-      <div className="flex items-stretch">
-        <Separator orientation="vertical" className="h-full" />
-      </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-1 mb-4">
+        </TabsTrigger>
+        <TabsTrigger value="AWS">
           <Image
             src="/icon/aws.svg"
             alt="AWS Cloud Provider Icon"
-            width={24}
-            height={24}
+            width={16}
+            height={16}
           />
           <p>AWS</p>
-        </div>
-        <Separator className="mb-4" />
-
-        {awsPolicies.map((policy, index) => (
-          <PolicyCard
-            key={policy.name}
-            policy={policy}
-            index={index}
-            totalPolicies={awsPolicies.length}
-          />
-        ))}
-      </div>
-    </div>
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="AZURE" className="mt-6">
+        <motion.div
+          key="azure"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 20 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          <PolicyCardAzure activeTab={activeTab} />
+        </motion.div>
+      </TabsContent>
+      <TabsContent value="AWS" className="mt-6">
+        <motion.div
+          key="aws"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 20 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          <PolicyCardAWS activeTab={activeTab} />
+        </motion.div>
+      </TabsContent>
+    </Tabs>
   )
 }
 
-function PolicyCard({
-  policy,
-  index,
-  totalPolicies,
-}: {
-  policy: Policy
-  index: number
-  totalPolicies: number
-}) {
+function PolicyCardAzure({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
   const { data: session } = useSession()
+
+  const { data: dbData } = useQuery({
+    queryKey: ["policies-db", activeTab],
+    queryFn: () => getPolicyDB(activeTab),
+  })
+
+  const { data: stData } = useQuery({
+    queryKey: ["policies-st", activeTab],
+    queryFn: () => getPolicyST(activeTab),
+  })
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["policies-vm", activeTab],
+    queryFn: () => getPolicyVM(activeTab),
+  })
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>Error loading policies</div>
+
   return (
     <div className="grid gap-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
-          {policy.icon}
-          <h3 className="font-medium">{policy.name}</h3>
+          <Cpu size={16} />
+          <h3 className="font-medium">VM</h3>
         </div>
         {haveAdminOrIT(session?.user.role) && (
-          <EditPolicyDialog policy={policy} />
+          <EditPolicyDialog data={data} activeTab={activeTab} kind="vm" />
         )}
       </div>
       <div className="flex justify-between">
         <div className="w-1/2">
           <p className="text-sm text-muted-foreground">Max:</p>
-          {policy.max.map((maxValue, idx) => (
-            <p key={idx} className="mt-2">
-              {maxValue}
-            </p>
-          ))}
+          <p className="mt-2">{data?.name}</p>
+          <div className="text-muted-foreground text-sm">
+            <p>{data?.numberOfCores} vCPUs</p>
+            <p>{Math.round((data?.memoryInMB ?? 0) / 1024)} GB of RAM</p>
+          </div>
         </div>
         <div className="grid gap-2 w-1/2">
           <p className="text-sm text-muted-foreground">Description</p>
-          <p>{policy.description}</p>
+          <p>
+            Teams can request up to CPU cores per environment. Any requests
+            beyond this threshold will be reviewed by the operations team and
+            require justification.
+          </p>
         </div>
       </div>
-      {index !== totalPolicies - 1 && (
-        <div className="my-6">
-          <Separator />
+      <Separator className="my-4" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          <Database size={16} />
+          <h3 className="font-medium">Database</h3>
         </div>
-      )}
+        {haveAdminOrIT(session?.user.role) && (
+          <EditPolicyDialog data={dbData} activeTab={activeTab} kind="db" />
+        )}
+      </div>
+      <div className="flex justify-between">
+        <div className="w-1/2">
+          <p className="text-sm text-muted-foreground">Max:</p>
+          <p className="mt-2">{dbData?.maxStorage} GB</p>
+        </div>
+        <div className="grid gap-2 w-1/2">
+          <p className="text-sm text-muted-foreground">Description</p>
+          <p>
+            Teams can request up to CPU cores per environment. Any requests
+            beyond this threshold will be reviewed by the operations team and
+            require justification.
+          </p>
+        </div>
+      </div>
+      <Separator className="my-4" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          <DatabaseZap size={16} />
+          <h3 className="font-medium">Storage</h3>
+        </div>
+        {haveAdminOrIT(session?.user.role) && (
+          <EditPolicyDialog data={stData} activeTab={activeTab} kind="st" />
+        )}
+      </div>
+      <div className="flex justify-between">
+        <div className="w-1/2">
+          <p className="text-sm text-muted-foreground">Max:</p>
+          <p className="mt-2">{stData?.maxStorage} GB</p>
+        </div>
+        <div className="grid gap-2 w-1/2">
+          <p className="text-sm text-muted-foreground">Description</p>
+          <p>
+            Teams can request up to CPU cores per environment. Any requests
+            beyond this threshold will be reviewed by the operations team and
+            require justification.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
 
-function EditPolicyDialog({ policy }: { policy: Policy }) {
+function PolicyCardAWS({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
+  const { data: session } = useSession()
+
+  const { data: dbData } = useQuery({
+    queryKey: ["policies-db", activeTab],
+    queryFn: () => getPolicyDB(activeTab),
+  })
+
+  const { data: stData } = useQuery({
+    queryKey: ["policies-st", activeTab],
+    queryFn: () => getPolicyST(activeTab),
+  })
+
+  const {
+    data: vmData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["policies-vm", activeTab],
+    queryFn: () => getPolicyVM(activeTab),
+  })
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>Error loading policies</div>
+
   return (
-    <Dialog>
+    <div className="grid gap-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          <Cpu size={16} />
+          <h3 className="font-medium">VM</h3>
+        </div>
+        {haveAdminOrIT(session?.user.role) && (
+          <EditPolicyDialog data={vmData} activeTab={activeTab} kind="vm" />
+        )}
+      </div>
+      <div className="flex justify-between">
+        <div className="w-1/2">
+          <p className="text-sm text-muted-foreground">Max:</p>
+          <p className="mt-2">{vmData?.name}</p>
+          <div className="text-muted-foreground text-sm">
+            <p>{vmData?.numberOfCores} vCPUs</p>
+            <p>{Math.round((vmData?.memoryInMB ?? 0) / 1024)} GB of RAM</p>
+          </div>
+        </div>
+        <div className="grid gap-2 w-1/2">
+          <p className="text-sm text-muted-foreground">Description</p>
+          <p>
+            Teams can request up to CPU cores per environment. Any requests
+            beyond this threshold will be reviewed by the operations team and
+            require justification.
+          </p>
+        </div>
+      </div>
+      <Separator className="my-4" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          <Database size={16} />
+          <h3 className="font-medium">Database</h3>
+        </div>
+        {haveAdminOrIT(session?.user.role) && (
+          <EditPolicyDialog data={dbData} activeTab={activeTab} kind="db" />
+        )}
+      </div>
+      <div className="flex justify-between">
+        <div className="w-1/2">
+          <p className="text-sm text-muted-foreground">Max:</p>
+          <p className="mt-2">{dbData?.maxStorage} GB</p>
+        </div>
+        <div className="grid gap-2 w-1/2">
+          <p className="text-sm text-muted-foreground">Description</p>
+          <p>
+            Teams can request up to CPU cores per environment. Any requests
+            beyond this threshold will be reviewed by the operations team and
+            require justification.
+          </p>
+        </div>
+      </div>
+      <Separator className="my-4" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          <DatabaseZap size={16} />
+          <h3 className="font-medium">Storage</h3>
+        </div>
+        {haveAdminOrIT(session?.user.role) && (
+          <EditPolicyDialog data={stData} activeTab={activeTab} kind="st" />
+        )}
+      </div>
+      <div className="flex justify-between">
+        <div className="w-1/2">
+          <p className="text-sm text-muted-foreground">Max:</p>
+          <p className="mt-2">{stData?.maxStorage} GB</p>
+        </div>
+        <div className="grid gap-2 w-1/2">
+          <p className="text-sm text-muted-foreground">Description</p>
+          <p>
+            Teams can request up to CPU cores per environment. Any requests
+            beyond this threshold will be reviewed by the operations team and
+            require justification.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function EditPolicyDialog({
+  data,
+  activeTab,
+  kind,
+}: {
+  data?: VMPolicyDto | DatabasePolicyDto | StoragePolicyDto
+  activeTab: "AZURE" | "AWS"
+  kind: "vm" | "db" | "st"
+}) {
+  const [selectedVmSize, setSelectedVmSize] = useState<VmSizeDto | undefined>()
+  const [dbValue, setDBValue] = useState<string>("")
+  const [storageValue, setStorageValue] = useState<string>("")
+  const [open, setOpen] = useState(false)
+  const queryClient = useQueryClient()
+
+  // Type guard functions
+  const isVMPolicy = useCallback(
+    (policy: typeof data): policy is VMPolicyDto => {
+      return policy != null && "name" in policy && kind === "vm"
+    },
+    [kind]
+  )
+
+  const isDbPolicy = useCallback(
+    (policy: typeof data): policy is DatabasePolicyDto => {
+      return policy != null && "maxStorage" in policy && kind === "db"
+    },
+    [kind]
+  )
+
+  const isStoragePolicy = useCallback(
+    (policy: typeof data): policy is StoragePolicyDto => {
+      return policy != null && "maxStorage" in policy && kind === "st"
+    },
+    [kind]
+  )
+
+  // Initialize form values when dialog opens
+  useEffect(() => {
+    if (open && data) {
+      if (isVMPolicy(data)) {
+        // Set the initial VM size selection based on current policy
+        setSelectedVmSize({
+          id: data.name, // Use name as ID since VMPolicyDto might not have id
+          name: data.name,
+          numberOfCores: data.numberOfCores,
+          memoryInMB: data.memoryInMB,
+          osDiskSizeInMB: 0, // These might not be available in policy data
+          maxDataDiskCount: 0,
+        } as VmSizeDto)
+      } else if (isDbPolicy(data)) {
+        setDBValue(data.maxStorage.toString())
+      } else if (isStoragePolicy(data)) {
+        setStorageValue((data as StoragePolicyDto).maxStorage.toString())
+      }
+    }
+  }, [open, data, isVMPolicy, isDbPolicy, isStoragePolicy])
+
+  const updateVMPolicyMutation = useMutation({
+    mutationFn: (params: {
+      name: string
+      numberOfCores: number
+      memoryInMB: number
+      cloudProvider: string
+    }) => updatePolicyVM(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["policies-vm"] })
+      queryClient.invalidateQueries({ queryKey: ["policies-db"] })
+      queryClient.invalidateQueries({ queryKey: ["policies-st"] })
+      setOpen(false)
+    },
+    onError: (error) => {
+      console.error("Failed to update VM policy:", error)
+    },
+  })
+
+  const updateDBPolicyMutation = useMutation({
+    mutationFn: (params: { maxStorage: number; cloudProvider: string }) =>
+      updatePolicyDB(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["policies-vm"] })
+      queryClient.invalidateQueries({ queryKey: ["policies-db"] })
+      queryClient.invalidateQueries({ queryKey: ["policies-st"] })
+      setOpen(false)
+    },
+    onError: (error) => {
+      console.error("Failed to update DB policy:", error)
+    },
+  })
+
+  const updateSTPolicyMutation = useMutation({
+    mutationFn: (params: { maxStorage: number; cloudProvider: string }) =>
+      updatePolicyST(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["policies-vm"] })
+      queryClient.invalidateQueries({ queryKey: ["policies-db"] })
+      queryClient.invalidateQueries({ queryKey: ["policies-st"] })
+      setOpen(false)
+    },
+    onError: (error) => {
+      console.error("Failed to update Storage policy:", error)
+    },
+  })
+
+  const handleSave = () => {
+    if (isVMPolicy(data) && selectedVmSize) {
+      updateVMPolicyMutation.mutate({
+        name: selectedVmSize.name,
+        numberOfCores: selectedVmSize.numberOfCores,
+        memoryInMB: selectedVmSize.memoryInMB,
+        cloudProvider: activeTab,
+      })
+    } else if (isDbPolicy(data) && dbValue) {
+      const maxStorage = parseInt(dbValue)
+      if (!isNaN(maxStorage)) {
+        updateDBPolicyMutation.mutate({
+          maxStorage,
+          cloudProvider: activeTab,
+        })
+      }
+    } else if (isStoragePolicy(data) && storageValue) {
+      const maxStorage = parseInt(storageValue)
+      if (!isNaN(maxStorage)) {
+        updateSTPolicyMutation.mutate({
+          maxStorage,
+          cloudProvider: activeTab,
+        })
+      }
+    }
+  }
+
+  const isLoading =
+    updateVMPolicyMutation.isPending ||
+    updateDBPolicyMutation.isPending ||
+    updateSTPolicyMutation.isPending
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <Pencil /> Edit
@@ -215,27 +451,39 @@ function EditPolicyDialog({ policy }: { policy: Policy }) {
         </DialogHeader>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label>Name</Label>
-            <Input type="text" defaultValue={policy.name} />
+            <Label>Max Limit</Label>
+            {isVMPolicy(data) && (
+              <AzureVMSizeCombobox
+                portal={false}
+                selectedValue={selectedVmSize}
+                setSelectedValue={setSelectedVmSize}
+                defaultValue={data?.name}
+              />
+            )}
+            {isDbPolicy(data) && (
+              <Input
+                value={dbValue}
+                onChange={(e) => setDBValue(e.target.value)}
+                placeholder="Enter max database storage in GB"
+                type="number"
+              />
+            )}
+            {isStoragePolicy(data) && (
+              <Input
+                value={storageValue}
+                onChange={(e) => setStorageValue(e.target.value)}
+                placeholder="Enter max storage in GB"
+                type="number"
+              />
+            )}
           </div>
-          <div className="grid gap-2">
-            <Label>Description</Label>
-            <Textarea defaultValue={policy.description} />
-          </div>
-
-          {policy.filter ? (
-            <div className="grid gap-2">
-              <Label>Max Limit</Label>
-              {policy.filter}
-            </div>
-          ) : (
-            <div className="grid gap-2">
-              <Label>Max Limit</Label>
-              <Input type="text" defaultValue={policy.max} />
-            </div>
-          )}
-          <Button type="submit" className="mt-4">
-            Save Changes
+          <Button
+            type="button"
+            className="mt-4"
+            onClick={handleSave}
+            disabled={isLoading}
+          >
+            {isLoading ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </DialogContent>

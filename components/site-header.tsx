@@ -14,6 +14,8 @@ function getTitleFromPath(pathname: string): string {
     ...navData.operations,
   ]
 
+  if (pathname === "/account") return "Account"
+
   for (const item of allNavItems) {
     if (item.url !== "#" && pathname.startsWith(item.url)) {
       return item.title

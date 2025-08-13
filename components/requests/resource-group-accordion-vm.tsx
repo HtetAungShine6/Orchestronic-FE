@@ -209,6 +209,7 @@ interface AzureVMSizeComboboxProps {
   setSelectedValue: Dispatch<SetStateAction<VmSizeDto | undefined>>
   portal?: boolean
   handleSelect?: (vmSize: VmSizeDto) => void
+  defaultValue: string | undefined
 }
 
 export function AzureVMSizeCombobox({
@@ -216,6 +217,7 @@ export function AzureVMSizeCombobox({
   setSelectedValue,
   portal = true,
   handleSelect,
+  defaultValue,
 }: AzureVMSizeComboboxProps) {
   const [open, setOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
@@ -237,6 +239,7 @@ export function AzureVMSizeCombobox({
           role="combobox"
           aria-expanded={open}
           className="w-[216px] justify-between text-left"
+          defaultValue={defaultValue}
         >
           <span className="truncate">
             {selectedValue ? selectedValue.name : "Select VM Size..."}

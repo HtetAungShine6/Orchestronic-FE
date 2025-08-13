@@ -9,6 +9,8 @@ import { RequestDetail } from "./request-detail"
 import { Monitor, Database, HardDrive } from "lucide-react"
 import { operatingSystems } from "../resource-group-accordion-vm"
 import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Status } from "@/types/api"
 
 export default function ResourceConfigSection({
   data,
@@ -41,62 +43,69 @@ export default function ResourceConfigSection({
                         (item) => item.value === vm.os
                       )
                       return (
-                        <div
-                          key={`vm-${index}`}
-                          className="border rounded-lg p-4 bg-muted/50"
-                        >
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <span className="font-medium text-foreground">
-                                VM Name:
-                              </span>
-                              <p className="text-muted-foreground">{vm.name}</p>
+                        <div key={`vm-${index}`}>
+                          {data.status === Status.Approved && (
+                            <div className="flex mb-1">
+                              <Button className="ml-auto">Connect to VM</Button>
                             </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Size:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {vm.size.name}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                CPU Cores:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {vm.size.numberOfCores}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                RAM:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {(vm.size.memoryInMB / 1024).toFixed(1)} GB (
-                                <span className="text-xs">
-                                  {vm.size.memoryInMB} MB
+                          )}
+
+                          <div className="border rounded-lg p-4 bg-muted/50">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  VM Name:
                                 </span>
-                                )
-                              </p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Operating System:
-                              </span>
-                              {os && (
-                                <p className="flex gap-1">
-                                  <Image
-                                    src={os?.icon}
-                                    width={16}
-                                    height={16}
-                                    alt={`${os?.label} Icon`}
-                                  />
-                                  <span className="text-muted-foreground">
-                                    {os?.label}
-                                  </span>
+                                <p className="text-muted-foreground">
+                                  {vm.name}
                                 </p>
-                              )}
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Size:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {vm.size.name}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  CPU Cores:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {vm.size.numberOfCores}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  RAM:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {(vm.size.memoryInMB / 1024).toFixed(1)} GB (
+                                  <span className="text-xs">
+                                    {vm.size.memoryInMB} MB
+                                  </span>
+                                  )
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Operating System:
+                                </span>
+                                {os && (
+                                  <p className="flex gap-1">
+                                    <Image
+                                      src={os?.icon}
+                                      width={16}
+                                      height={16}
+                                      alt={`${os?.label} Icon`}
+                                    />
+                                    <span className="text-muted-foreground">
+                                      {os?.label}
+                                    </span>
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>

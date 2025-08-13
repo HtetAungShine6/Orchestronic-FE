@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+// import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useQuery } from "@tanstack/react-query"
 import { fuzzyFindUsersByEmail } from "@/app/api/user/api"
@@ -29,6 +29,7 @@ import z from "zod"
 import { IconTrash } from "@tabler/icons-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { getInitials } from "@/lib/utils"
+import { useSession } from "next-auth/react"
 
 interface CollaboratorsProps {
   form: UseFormReturn<z.infer<typeof requestFormSchema>>
@@ -40,6 +41,8 @@ export default function Collaborators({ form }: CollaboratorsProps) {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([])
   const debouncedSearchEmail = useDebounce(searchEmail, 500)
   const [filteredUsers, setFilteredUsers] = useState<User[]>([])
+
+  const { data: session } = useSession()
 
   const {
     data: users,
@@ -91,14 +94,14 @@ export default function Collaborators({ form }: CollaboratorsProps) {
     })
   }
 
-  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const value = event.target.value
+  // function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+  //   const value = event.target.value
 
-    const filtered = selectedUsers.filter((user) =>
-      user.name.toLowerCase().includes(value.toLowerCase())
-    )
-    setFilteredUsers(filtered)
-  }
+  //   const filtered = selectedUsers.filter((user) =>
+  //     user.name.toLowerCase().includes(value.toLowerCase())
+  //   )
+  //   setFilteredUsers(filtered)
+  // }
 
   return (
     <>
@@ -116,16 +119,21 @@ export default function Collaborators({ form }: CollaboratorsProps) {
             ) : users?.length === 0 ? (
               <CommandEmpty>No users found.</CommandEmpty>
             ) : (
-              users?.map((user: User) => (
-                <CommandItem
-                  className="cursor-pointer"
-                  onSelect={() => handleUserSelect(user)}
-                  key={user.email}
-                  value={user.email}
-                >
-                  {user.name} ({user.email})
-                </CommandItem>
-              ))
+              users?.map((user: User) => {
+                if (user.email === session?.user?.email) return null
+                if (selectedUsers.some((u) => u.email === user.email))
+                  return null
+                return (
+                  <CommandItem
+                    className="cursor-pointer"
+                    onSelect={() => handleUserSelect(user)}
+                    key={user.email}
+                    value={user.email}
+                  >
+                    {user.name} ({user.email})
+                  </CommandItem>
+                )
+              })
             )}
           </CommandList>
         </Command>
@@ -148,12 +156,12 @@ export default function Collaborators({ form }: CollaboratorsProps) {
           </CardAction>
         </CardHeader>
         <CardContent>
-          <Input
+          {/* <Input
             // value={searchEmail}
             onChange={handleInputChange}
             type="text"
             placeholder="Find a collaborator..."
-          />
+          /> */}
 
           {filteredUsers.length > 0 ? (
             <div className="flex flex-col gap-3 mt-4">
