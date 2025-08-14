@@ -1,5 +1,4 @@
 import { awsFormSchema } from "@/app/(dashboard)/settings/components/aws-drawer"
-import { azureFormSchema } from "@/app/(dashboard)/settings/components/azure-drawer"
 import { ApiError } from "@/types/error"
 import z from "zod"
 
