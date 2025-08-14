@@ -1,6 +1,6 @@
 "use client"
 
-import { updateCloudConfig } from "@/app/api/cloud/api"
+import { getCloudConfig, updateCloudConfig } from "@/app/api/cloud/api"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -20,8 +20,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { Eye, EyeOff } from "lucide-react"
 import Image from "next/image"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import z from "zod"
 
@@ -35,6 +37,17 @@ export const awsFormSchema = z.object({
 })
 
 export default function AwsDrawer() {
+  const [showPasswords, setShowPasswords] = useState({
+    clientId: false,
+    clientSecret: false,
+    subscriptionId: false,
+  })
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["cloudConfig", "AWS"],
+    queryFn: () => getCloudConfig("AWS"),
+  })
+
   const form = useForm<z.infer<typeof awsFormSchema>>({
     resolver: zodResolver(awsFormSchema),
     defaultValues: {
@@ -44,6 +57,17 @@ export default function AwsDrawer() {
       cloudProvider: "AWS",
     },
   })
+
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        clientId: data.clientId || "",
+        clientSecret: data.clientSecret || "",
+        subscriptionId: data.subscriptionId || "",
+        cloudProvider: "AWS",
+      })
+    }
+  }, [data, form])
 
   function onSubmit(values: z.infer<typeof awsFormSchema>) {
     updateConfigMutation.mutate(values)
@@ -76,71 +100,141 @@ export default function AwsDrawer() {
             Set up your AWS cloud provider configuration.
           </DrawerDescription>
         </DrawerHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col h-full p-4 pb-0"
-          >
-            <div className="space-y-4 flex-1">
-              <FormField
-                control={form.control}
-                name="clientId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Client ID</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Client ID"
-                        type="password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="subscriptionId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Subscription ID</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Subscription ID"
-                        type="password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="clientSecret"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Client Secret</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Client Secret"
-                        type="password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex justify-end mb-4">
-              <Button type="submit" className="w-full">
-                Save
-              </Button>
-            </div>
-          </form>
-        </Form>
+        {error ? (
+          <div>Error loading Azure config</div>
+        ) : isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col h-full p-4 pb-0"
+            >
+              <div className="space-y-4 flex-1">
+                <FormField
+                  control={form.control}
+                  name="clientId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Client ID</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            placeholder="Enter Client ID"
+                            type={showPasswords.clientId ? "text" : "password"}
+                            {...field}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() =>
+                              setShowPasswords((prev) => ({
+                                ...prev,
+                                clientId: !prev.clientId,
+                              }))
+                            }
+                          >
+                            {showPasswords.clientId ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="subscriptionId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Subscription ID</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            placeholder="Enter Subscription ID"
+                            type={
+                              showPasswords.subscriptionId ? "text" : "password"
+                            }
+                            {...field}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() =>
+                              setShowPasswords((prev) => ({
+                                ...prev,
+                                subscriptionId: !prev.subscriptionId,
+                              }))
+                            }
+                          >
+                            {showPasswords.subscriptionId ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="clientSecret"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Client Secret</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            placeholder="Enter Client Secret"
+                            type={
+                              showPasswords.clientSecret ? "text" : "password"
+                            }
+                            {...field}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() =>
+                              setShowPasswords((prev) => ({
+                                ...prev,
+                                clientSecret: !prev.clientSecret,
+                              }))
+                            }
+                          >
+                            {showPasswords.clientSecret ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex justify-end mb-4">
+                <Button type="submit" className="w-full">
+                  Save
+                </Button>
+              </div>
+            </form>
+          </Form>
+        )}
       </DrawerContent>
     </Drawer>
   )

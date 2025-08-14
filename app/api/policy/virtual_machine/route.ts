@@ -95,7 +95,6 @@ export async function GET(request: NextRequest) {
     const result = await res.json()
     return NextResponse.json(result)
   } catch (error) {
-    console.log(error)
     if (error instanceof ApiError) {
       return NextResponse.json(
         {

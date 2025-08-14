@@ -1,4 +1,5 @@
 import { awsFormSchema } from "@/app/(dashboard)/settings/components/aws-drawer"
+import { azureFormSchema } from "@/app/(dashboard)/settings/components/azure-drawer"
 import { ApiError } from "@/types/error"
 import z from "zod"
 
@@ -11,7 +12,37 @@ export async function updateCloudConfig(values: z.infer<typeof awsFormSchema>) {
     body: JSON.stringify({ ...values }),
   })
 
-  console.log(res)
+  if (!res.ok) {
+    const err = await res.json()
+    throw new ApiError(
+      err.statusCode ?? res.status,
+      err.message ?? "Failed to update config",
+      err.error ?? "Unknown error"
+    )
+  }
+
+  return res.json()
+}
+
+export interface CloudProviderSecret {
+  id: string
+  clientId: string
+  clientSecret: string
+  subscriptionId: string
+  tenantId?: string
+  userId: string
+  cloudProvider: "AZURE" | "AWS"
+}
+
+export async function getCloudConfig(
+  cloudProvider: "AZURE" | "AWS"
+): Promise<CloudProviderSecret> {
+  const res = await fetch(`/api/cloud?cloudProvider=${cloudProvider}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
 
   if (!res.ok) {
     const err = await res.json()

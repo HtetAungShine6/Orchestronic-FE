@@ -82,7 +82,6 @@ export function ResourceGroupAccordionVM({
 }: Readonly<ResourceGroupAccordionProps>) {
   const lastVMRef = useRef<HTMLDivElement | null>(null)
   const [selectedValue, setSelectedValue] = useState<VmSizeDto | undefined>()
-  console.log(selectedValue)
 
   useEffect(() => {
     if (lastVMRef.current) {
