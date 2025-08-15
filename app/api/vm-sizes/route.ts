@@ -19,9 +19,11 @@ export async function GET(request: Request) {
     const page = url.searchParams.get("page") || "1"
     const limit = url.searchParams.get("limit") || "10"
     const search = url.searchParams.get("search") || ""
+    const numberOfCores = url.searchParams.get("maxCores") || ""
+    const memoryInMB = url.searchParams.get("maxMemory") || ""
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/request/vm-sizes?page=${page}&limit=${limit}&search=${search}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/request/vm-sizes?page=${page}&limit=${limit}&search=${search}&maxCores=${numberOfCores}&maxMemory=${memoryInMB}`,
       {
         headers: {
           Authorization: `Bearer ${session.user.backendAccessToken}`,

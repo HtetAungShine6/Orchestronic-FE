@@ -43,14 +43,17 @@ import {
 } from "@/components/ui/popover"
 import { ApiError } from "@/types/error"
 import { PaginatedVmSizesDto, VmSizeDto } from "@/types/request"
+import { getPolicyVM } from "@/app/api/policy/api"
 
 async function fetchVmSizes(
   value: string,
   page: number,
   limit: number
 ): Promise<VmSizeDto[]> {
+  const policyVM = await getPolicyVM("AZURE")
+
   const response = await fetch(
-    `/api/vm-sizes?page=${page}&limit=${limit}&search=${value}`
+    `/api/vm-sizes?page=${page}&limit=${limit}&search=${value}&maxCores=${policyVM.numberOfCores}&maxMemory=${policyVM.memoryInMB}`
   )
 
   if (!response.ok) {

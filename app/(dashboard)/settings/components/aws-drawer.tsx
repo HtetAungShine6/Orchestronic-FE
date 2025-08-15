@@ -1,6 +1,10 @@
 "use client"
 
-import { getCloudConfig, updateCloudConfig } from "@/app/api/cloud/api"
+import {
+  getCloudConfig,
+  updateCloudConfig,
+  createCloudConfig,
+} from "@/app/api/cloud/api"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -70,15 +74,38 @@ export default function AwsDrawer() {
   }, [data, form])
 
   function onSubmit(values: z.infer<typeof awsFormSchema>) {
-    updateConfigMutation.mutate(values)
+    // If data exists, update (PATCH), otherwise create (POST)
+    if (data && data.id) {
+      updateConfigMutation.mutate({ values, id: data.id })
+    } else {
+      createConfigMutation.mutate(values)
+    }
   }
 
   const updateConfigMutation = useMutation({
-    mutationFn: (values: z.infer<typeof awsFormSchema>) =>
-      updateCloudConfig(values),
-    onSuccess: () => {},
+    mutationFn: ({
+      values,
+      id,
+    }: {
+      values: z.infer<typeof awsFormSchema>
+      id: string
+    }) => updateCloudConfig(values, id),
+    onSuccess: () => {
+      console.log("AWS config updated successfully")
+    },
     onError: (error) => {
       console.error("Failed to update AWS config:", error)
+    },
+  })
+
+  const createConfigMutation = useMutation({
+    mutationFn: (values: z.infer<typeof awsFormSchema>) =>
+      createCloudConfig(values),
+    onSuccess: () => {
+      console.log("AWS config created successfully")
+    },
+    onError: (error) => {
+      console.error("Failed to create AWS config:", error)
     },
   })
 
