@@ -48,13 +48,28 @@ import { getPolicyVM } from "@/app/api/policy/api"
 async function fetchVmSizes(
   value: string,
   page: number,
-  limit: number
+  limit: number,
+  usePolicyFilter: boolean
 ): Promise<VmSizeDto[]> {
-  const policyVM = await getPolicyVM("AZURE")
+  let maxCores = ""
+  let maxMemory = ""
 
-  const response = await fetch(
-    `/api/vm-sizes?page=${page}&limit=${limit}&search=${value}&maxCores=${policyVM.numberOfCores}&maxMemory=${policyVM.memoryInMB}`
-  )
+  if (usePolicyFilter) {
+    const policyVM = await getPolicyVM("AZURE")
+    maxCores = policyVM.numberOfCores.toString()
+    maxMemory = policyVM.memoryInMB.toString()
+  }
+
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+    search: value,
+  })
+
+  if (maxCores) params.append("maxCores", maxCores)
+  if (maxMemory) params.append("maxMemory", maxMemory)
+
+  const response = await fetch(`/api/vm-sizes?${params.toString()}`)
 
   if (!response.ok) {
     const err = await response.json()
@@ -129,6 +144,7 @@ export function ResourceGroupAccordionVM({
                       <div className="grid gap-2">
                         <Label>VM Size</Label>
                         <AzureVMSizeCombobox
+                          usePolicyFilter={true}
                           selectedValue={selectedValue}
                           setSelectedValue={setSelectedValue}
                           handleSelect={(vmSize) => {
@@ -212,6 +228,7 @@ interface AzureVMSizeComboboxProps {
   portal?: boolean
   handleSelect?: (vmSize: VmSizeDto) => void
   defaultValue?: string
+  usePolicyFilter?: boolean
 }
 
 export function AzureVMSizeCombobox({
@@ -220,6 +237,7 @@ export function AzureVMSizeCombobox({
   portal = true,
   handleSelect,
   defaultValue,
+  usePolicyFilter = false,
 }: AzureVMSizeComboboxProps) {
   const [open, setOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
@@ -230,7 +248,7 @@ export function AzureVMSizeCombobox({
     error,
   } = useQuery<VmSizeDto[]>({
     queryKey: ["azure-vm-sizes", searchValue],
-    queryFn: () => fetchVmSizes(searchValue, 1, 20),
+    queryFn: () => fetchVmSizes(searchValue, 1, 20, usePolicyFilter),
   })
 
   return (

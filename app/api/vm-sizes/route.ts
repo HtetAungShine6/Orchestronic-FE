@@ -22,8 +22,22 @@ export async function GET(request: Request) {
     const numberOfCores = url.searchParams.get("maxCores") || ""
     const memoryInMB = url.searchParams.get("maxMemory") || ""
 
+    const params = new URLSearchParams({
+      page,
+      limit,
+      search,
+    })
+
+    if (numberOfCores) {
+      params.append("maxCores", numberOfCores)
+    }
+
+    if (memoryInMB) {
+      params.append("maxMemory", memoryInMB)
+    }
+
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/request/vm-sizes?page=${page}&limit=${limit}&search=${search}&maxCores=${numberOfCores}&maxMemory=${memoryInMB}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/request/vm-sizes?${params.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${session.user.backendAccessToken}`,
