@@ -30,6 +30,8 @@ export async function PATCH(
       }
     )
 
+    console.log(res)
+
     if (!res.ok) {
       const err = await res.json()
       return NextResponse.json(

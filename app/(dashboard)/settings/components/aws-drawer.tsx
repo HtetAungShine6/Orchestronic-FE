@@ -5,6 +5,15 @@ import {
   updateCloudConfig,
   createCloudConfig,
 } from "@/app/api/cloud/api"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -47,6 +56,13 @@ export default function AwsDrawer() {
     subscriptionId: false,
   })
 
+  const [alerts, setAlerts] = useState({
+    showSuccessAlert: false,
+    showErrorAlert: false,
+    alertTitle: "",
+    alertDescription: "",
+  })
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["cloudConfig", "AWS"],
     queryFn: () => getCloudConfig("AWS"),
@@ -75,10 +91,12 @@ export default function AwsDrawer() {
 
   function onSubmit(values: z.infer<typeof awsFormSchema>) {
     // If data exists, update (PATCH), otherwise create (POST)
-    if (data && data.id) {
-      updateConfigMutation.mutate({ values, id: data.id })
-    } else {
-      createConfigMutation.mutate(values)
+    if (form.formState.isDirty) {
+      if (data && data.id) {
+        updateConfigMutation.mutate({ values, id: data.id })
+      } else {
+        createConfigMutation.mutate(values)
+      }
     }
   }
 
@@ -91,10 +109,21 @@ export default function AwsDrawer() {
       id: string
     }) => updateCloudConfig(values, id),
     onSuccess: () => {
-      console.log("AWS config updated successfully")
+      setAlerts({
+        showSuccessAlert: true,
+        showErrorAlert: false,
+        alertTitle: "Configuration Updated",
+        alertDescription:
+          "Your AWS cloud configuration has been successfully updated.",
+      })
     },
     onError: (error) => {
-      console.error("Failed to update AWS config:", error)
+      setAlerts({
+        showSuccessAlert: false,
+        showErrorAlert: true,
+        alertTitle: "Update Failed",
+        alertDescription: `Failed to update AWS configuration: ${error.message}`,
+      })
     },
   })
 
@@ -102,10 +131,21 @@ export default function AwsDrawer() {
     mutationFn: (values: z.infer<typeof awsFormSchema>) =>
       createCloudConfig(values),
     onSuccess: () => {
-      console.log("AWS config created successfully")
+      setAlerts({
+        showSuccessAlert: true,
+        showErrorAlert: false,
+        alertTitle: "Configuration Created",
+        alertDescription:
+          "Your AWS cloud configuration has been successfully created.",
+      })
     },
     onError: (error) => {
-      console.error("Failed to create AWS config:", error)
+      setAlerts({
+        showSuccessAlert: false,
+        showErrorAlert: true,
+        alertTitle: "Creation Failed",
+        alertDescription: `Failed to create AWS configuration: ${error.message}`,
+      })
     },
   })
 
@@ -255,14 +295,58 @@ export default function AwsDrawer() {
                 />
               </div>
               <div className="flex justify-end mb-4">
-                <Button type="submit" className="w-full">
-                  Save
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={!form.formState.isDirty}
+                >
+                  {data ? "Update" : "Create"}
                 </Button>
               </div>
             </form>
           </Form>
         )}
       </DrawerContent>
+
+      {/* Success Alert Dialog */}
+      <AlertDialog
+        open={alerts.showSuccessAlert}
+        onOpenChange={(open) =>
+          setAlerts((prev) => ({ ...prev, showSuccessAlert: open }))
+        }
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{alerts.alertTitle}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {alerts.alertDescription}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Error Alert Dialog */}
+      <AlertDialog
+        open={alerts.showErrorAlert}
+        onOpenChange={(open) =>
+          setAlerts((prev) => ({ ...prev, showErrorAlert: open }))
+        }
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{alerts.alertTitle}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {alerts.alertDescription}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Drawer>
   )
 }

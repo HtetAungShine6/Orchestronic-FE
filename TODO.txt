@@ -7,7 +7,7 @@
 
 - policies filter *
     [x] API for saving policies
-    - Filter
+    [x] Filter
 - save cloud provider secret key *
     - PATCH
 

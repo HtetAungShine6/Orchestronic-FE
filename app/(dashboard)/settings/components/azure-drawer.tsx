@@ -5,6 +5,15 @@ import {
   updateCloudConfig,
   createCloudConfig,
 } from "@/app/api/cloud/api"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -49,6 +58,13 @@ export default function AzureDrawer() {
     tenantId: false,
   })
 
+  const [alerts, setAlerts] = useState({
+    showSuccessAlert: false,
+    showErrorAlert: false,
+    alertTitle: "",
+    alertDescription: "",
+  })
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["cloudConfig", "AZURE"],
     queryFn: () => getCloudConfig("AZURE"),
@@ -79,10 +95,12 @@ export default function AzureDrawer() {
 
   function onSubmit(values: z.infer<typeof azureFormSchema>) {
     // If data exists, update (PATCH), otherwise create (POST)
-    if (data && data.id) {
-      updateConfigMutation.mutate({ values, id: data.id })
-    } else {
-      createConfigMutation.mutate(values)
+    if (form.formState.isDirty) {
+      if (data && data.id) {
+        updateConfigMutation.mutate({ values, id: data.id })
+      } else {
+        createConfigMutation.mutate(values)
+      }
     }
   }
 
@@ -95,10 +113,21 @@ export default function AzureDrawer() {
       id: string
     }) => updateCloudConfig(values, id),
     onSuccess: () => {
-      console.log("Azure config updated successfully")
+      setAlerts({
+        showSuccessAlert: true,
+        showErrorAlert: false,
+        alertTitle: "Configuration Updated",
+        alertDescription:
+          "Your Azure cloud configuration has been successfully updated.",
+      })
     },
     onError: (error) => {
-      console.error("Failed to update Azure config:", error)
+      setAlerts({
+        showSuccessAlert: false,
+        showErrorAlert: true,
+        alertTitle: "Update Failed",
+        alertDescription: `Failed to update Azure configuration: ${error.message}`,
+      })
     },
   })
 
@@ -106,10 +135,21 @@ export default function AzureDrawer() {
     mutationFn: (values: z.infer<typeof azureFormSchema>) =>
       createCloudConfig(values),
     onSuccess: () => {
-      console.log("Azure config created successfully")
+      setAlerts({
+        showSuccessAlert: true,
+        showErrorAlert: false,
+        alertTitle: "Configuration Created",
+        alertDescription:
+          "Your Azure cloud configuration has been successfully created.",
+      })
     },
     onError: (error) => {
-      console.error("Failed to create Azure config:", error)
+      setAlerts({
+        showSuccessAlert: false,
+        showErrorAlert: true,
+        alertTitle: "Creation Failed",
+        alertDescription: `Failed to create Azure configuration: ${error.message}`,
+      })
     },
   })
 
@@ -296,14 +336,58 @@ export default function AzureDrawer() {
                 />
               </div>
               <div className="flex justify-end mb-4">
-                <Button type="submit" className="w-full">
-                  Save
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={!form.formState.isDirty}
+                >
+                  {data ? "Update" : "Create"}
                 </Button>
               </div>
             </form>
           </Form>
         )}
       </DrawerContent>
+
+      {/* Success Alert Dialog */}
+      <AlertDialog
+        open={alerts.showSuccessAlert}
+        onOpenChange={(open) =>
+          setAlerts((prev) => ({ ...prev, showSuccessAlert: open }))
+        }
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{alerts.alertTitle}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {alerts.alertDescription}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Error Alert Dialog */}
+      <AlertDialog
+        open={alerts.showErrorAlert}
+        onOpenChange={(open) =>
+          setAlerts((prev) => ({ ...prev, showErrorAlert: open }))
+        }
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{alerts.alertTitle}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {alerts.alertDescription}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Drawer>
   )
 }
