@@ -4,18 +4,21 @@
 [x] Can’t add yourself into project collaborator
 [x] Change header of Account
 [x] Add “Connect SSH” Button
-
-- policies filter *
+[x] policies filter *
     [x] API for saving policies
     [x] Filter
-- save cloud provider secret key *
-    - PATCH
+[x] save cloud provider secret key *
+    [x] PATCH
 
 - create request with aws *
-- create repository on Gitlab
-- implement RQ, Airflow, and Terraform
-- create request correctly to Terraform
-    Delay
-- What data Terraform need inorder to create for Azure and AWS
 - better loading scene *
     - when creating request and waiting
+    
+- create repository on Gitlab
+- create request correctly to Terraform
+    Delay
+
+
+TonKhaw
+- implement RQ, Airflow, and Terraform
+- What data Terraform need inorder to create for Azure and AWS

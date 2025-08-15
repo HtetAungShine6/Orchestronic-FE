@@ -33,6 +33,7 @@ export default async function Page({
           <h2 className="text-2xl font-bold tracking-tight">{slug}</h2>
         </div>
       </div>
+      <h1 className="text-4xl">Still Working on it</h1>
     </div>
   )
 }

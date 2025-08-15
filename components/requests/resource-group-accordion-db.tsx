@@ -97,7 +97,7 @@ export function ResourceGroupAccordionDB({
                                 PostgreSQL
                               </SelectItem>
                               <SelectItem value="mysql">MySQL</SelectItem>
-                              <SelectItem value="mssql">SQL Server</SelectItem>
+                              <SelectItem value="sql">SQL Server</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>

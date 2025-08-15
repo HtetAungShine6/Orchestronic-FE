@@ -121,7 +121,12 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
           />
           <div className="grid gap-2">
             <Label htmlFor="resource-group-provider">Region</Label>
-            <Select defaultValue={regions[0].value}>
+            <Select
+              defaultValue={regions[0].value}
+              onValueChange={(value) =>
+                form.setValue("resources.region", value)
+              }
+            >
               <SelectTrigger className="w-[200px]">
                 <SelectValue />
               </SelectTrigger>

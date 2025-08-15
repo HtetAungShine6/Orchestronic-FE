@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 
 import { DataTableColumnHeader } from "@/components/data-table/components/data-table-column-header"
 import { Resource } from "../data/schema-resources"
-import { generateResources, toTitleCase } from "@/lib/utils"
+import { generateResources } from "@/lib/utils"
 import { cloudProviders, regions } from "@/components/requests/resource-group"
 import Image from "next/image"
 
@@ -32,8 +32,7 @@ export const columnsResources: ColumnDef<Resource>[] = [
     ),
     cell: ({ row }) => {
       const cloudProvider = cloudProviders.find(
-        (provider) =>
-          provider.label === toTitleCase(row.getValue("cloudProvider"))
+        (provider) => provider.value === row.getValue("cloudProvider")
       )
 
       if (!cloudProvider) {
