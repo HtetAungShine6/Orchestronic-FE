@@ -47,7 +47,6 @@ import FeedbackCard from "./feedback-card"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageSquareText } from "lucide-react"
 import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
 import { RequestPageSkeleton } from "./request-page-skeleton"
 
 export interface RequestDetail {
