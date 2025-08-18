@@ -13,7 +13,7 @@
 - create request with aws *
 - better loading scene *
     - when creating request and waiting
-- create repository on Gitlab
+[x] create repository on Gitlab
 - create request correctly to Terraform
     Delay
 

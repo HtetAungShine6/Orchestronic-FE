@@ -35,6 +35,7 @@ import {
 } from "@/app/api/policy/api"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
+import PolicySectionSkeleton from "./policy-section-skeleton"
 
 export default function PolicySection() {
   const [activeTab, setActiveTab] = useState<"AZURE" | "AWS">("AZURE")
@@ -108,7 +109,7 @@ function PolicyCardAzure({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
     queryFn: () => getPolicyVM(activeTab),
   })
 
-  if (isLoading) return <div>Loading...</div>
+  if (isLoading) return <PolicySectionSkeleton />
   if (error) return <div>Error loading policies</div>
 
   return (
@@ -214,7 +215,7 @@ function PolicyCardAWS({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
     queryFn: () => getPolicyVM(activeTab),
   })
 
-  if (isLoading) return <div>Loading...</div>
+  if (isLoading) return <PolicySectionSkeleton />
   if (error) return <div>Error loading policies</div>
 
   return (

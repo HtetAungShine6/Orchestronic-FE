@@ -47,6 +47,8 @@ import FeedbackCard from "./feedback-card"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageSquareText } from "lucide-react"
 import { Label } from "@/components/ui/label"
+import { Skeleton } from "@/components/ui/skeleton"
+import { RequestPageSkeleton } from "./request-page-skeleton"
 
 export interface RequestDetail {
   id: string
@@ -180,7 +182,8 @@ export default function RequestDetail({ slug }: { slug: string }) {
 
   const session = useSession()
 
-  if (isLoading) return <div>Loading...</div>
+  if (isLoading) return <RequestPageSkeleton />
+
   if (error instanceof ApiError) return <div>{error.message}</div>
 
   return (

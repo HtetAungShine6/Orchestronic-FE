@@ -44,6 +44,7 @@ import {
 import { ApiError } from "@/types/error"
 import { PaginatedVmSizesDto, VmSizeDto } from "@/types/request"
 import { getPolicyVM } from "@/app/api/policy/api"
+import PolicySectionSkeleton from "@/app/(dashboard)/policies/components/policy-section-skeleton"
 
 async function fetchVmSizes(
   value: string,
