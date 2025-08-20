@@ -71,6 +71,11 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
   const [storageCount, setStorageCount] = useState(0)
   const [databaseCount, setDatabaseCount] = useState(0)
   const repoName = useSelector((state: RootState) => state.repoName.value)
+  const [selectedCloudProvider, setSelectedCloudProvider] = useState(
+    cloudProviders[0].value
+  )
+
+  console.log(selectedCloudProvider)
 
   return (
     <Card>
@@ -94,7 +99,13 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
               <FormItem>
                 <FormLabel>Cloud Provider</FormLabel>
                 <FormControl>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => {
+                      field.onChange(value)
+                      setSelectedCloudProvider(value)
+                    }}
+                  >
                     <SelectTrigger className="w-[140px]">
                       <SelectValue />
                     </SelectTrigger>

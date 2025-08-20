@@ -86,7 +86,6 @@ async function fetchVmSizes(
 
 export const operatingSystems = [
   { value: "ubuntu", label: "Ubuntu", icon: "/icon/ubuntu.png" },
-  { value: "windows", label: "Windows", icon: "/icon/windows.png" },
 ]
 
 interface ResourceGroupAccordionProps {

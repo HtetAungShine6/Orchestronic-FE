@@ -70,6 +70,9 @@ export const columnsRepositories = (
           "RepositoryCollaborator"
         ) as Repository["RepositoryCollaborator"]
 
+        if (initials.length === 0)
+          return <span className="">No Collaborators</span>
+
         return (
           <div className="flex space-x-2">
             {initials.map((initial, index) => (

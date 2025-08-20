@@ -33,7 +33,9 @@ export default function RepositoriesTable({
       columns={columns}
       filterColumn="name"
       pageSize={pageSize}
-      onRowClick={(row) => router.push(`/repositories/${row.id}`)}
+      onRowClick={(row) =>
+        router.push(`${process.env.NEXT_PUBLIC_GITLAB_URL}/root/${row.name}`)
+      }
     />
   )
 }

@@ -25,6 +25,8 @@ import { UseFormReturn } from "react-hook-form"
 import { requestFormSchema } from "./client-request-form"
 import z from "zod"
 import { Input } from "@/components/ui/input"
+import { getPolicyDB } from "@/app/api/policy/api"
+import { useQuery } from "@tanstack/react-query"
 
 interface ResourceGroupAccordionProps {
   form: UseFormReturn<z.infer<typeof requestFormSchema>>
@@ -36,6 +38,11 @@ export function ResourceGroupAccordionDB({
   databaseCount,
 }: Readonly<ResourceGroupAccordionProps>) {
   const lastDBRef = useRef<HTMLDivElement | null>(null)
+
+  // const { data, isLoading, error } = useQuery({
+  //   queryKey: ["getPolicyDB"],
+  //   queryFn: () => getPolicyDB("AZURE"),
+  // })
 
   useEffect(() => {
     if (lastDBRef.current) {

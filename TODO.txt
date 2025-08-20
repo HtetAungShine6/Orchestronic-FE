@@ -10,6 +10,7 @@
 [x] save cloud provider secret key *
     [x] PATCH
 
+- according in create data is lost when more than 2
 - create request with aws *
 - better loading scene *
     - when creating request and waiting
@@ -24,6 +25,4 @@ TonKhaw
 
 
 
-gitlab:
-root
-Hello123!
+each project have each VPC and use ACL for storage
