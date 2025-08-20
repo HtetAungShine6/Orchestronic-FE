@@ -25,8 +25,8 @@ import { UseFormReturn } from "react-hook-form"
 import { requestFormSchema } from "./client-request-form"
 import z from "zod"
 import { Input } from "@/components/ui/input"
-import { getPolicyDB } from "@/app/api/policy/api"
-import { useQuery } from "@tanstack/react-query"
+// import { getPolicyDB } from "@/app/api/policy/api"
+// import { useQuery } from "@tanstack/react-query"
 
 interface ResourceGroupAccordionProps {
   form: UseFormReturn<z.infer<typeof requestFormSchema>>
