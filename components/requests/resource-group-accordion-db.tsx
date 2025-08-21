@@ -63,7 +63,7 @@ export function ResourceGroupAccordionDB({
               <AccordionTrigger className="cursor-pointer">
                 Database #{i + 1}
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent forceMount>
                 <Card>
                   <CardHeader>
                     <CardTitle>Database #{i + 1}</CardTitle>

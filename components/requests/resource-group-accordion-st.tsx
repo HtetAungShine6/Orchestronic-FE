@@ -58,7 +58,7 @@ export function ResourceGroupAccordionST({
               <AccordionTrigger className="cursor-pointer">
                 Storage #{i + 1}
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent forceMount>
                 <Card>
                   <CardHeader>
                     <CardTitle>Storage #{i + 1}</CardTitle>
