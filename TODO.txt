@@ -10,11 +10,12 @@
 [x] save cloud provider secret key *
     [x] PATCH
 
-- according in create data is lost when more than 2
-- create request with aws *
-- better loading scene *
-    - when creating request and waiting
+[x] according in create data is lost when more than 2
 [x] create repository on Gitlab
+[x] better loading scene 
+
+- when creating request and waiting
+- create request with aws *
 - create request correctly to Terraform
     Delay
 
