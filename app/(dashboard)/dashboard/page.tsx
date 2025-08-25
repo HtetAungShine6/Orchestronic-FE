@@ -1,37 +1,13 @@
+"use client"
+
 import RepositoriesTable from "@/app/(dashboard)/repositories/components/repositories-table"
 
 import { Button } from "@/components/ui/button"
 import { IconPlus } from "@tabler/icons-react"
 import Link from "next/link"
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query"
-import { getRequests } from "@/app/api/requests/api"
 import RequestsTable from "@/app/(dashboard)/requests/components/requests-table"
-import { getRepositories } from "@/app/api/repository/api"
-import { Metadata } from "next"
 
-export const metadata: Metadata = {
-  title: "Dashboard",
-  description:
-    "Welcome to your dashboard! Here you can manage your requests and repositories.",
-}
-
-export default async function Page() {
-  const queryClient = new QueryClient()
-
-  await queryClient.prefetchQuery({
-    queryKey: ["requests"],
-    queryFn: getRequests,
-  })
-
-  await queryClient.prefetchQuery({
-    queryKey: ["repositories"],
-    queryFn: getRepositories,
-  })
-
+export default function Page() {
   return (
     <>
       <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
@@ -48,9 +24,7 @@ export default async function Page() {
             </Link>
           </Button>
         </div>
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <RequestsTable pageSize={5} prefilterStatus={true} />
-        </HydrationBoundary>
+        <RequestsTable pageSize={5} prefilterStatus={true} />
       </div>
 
       <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
@@ -62,9 +36,7 @@ export default async function Page() {
             </p>
           </div>
         </div>
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <RepositoriesTable pageSize={5} />
-        </HydrationBoundary>
+        <RepositoriesTable pageSize={5} />
       </div>
     </>
   )

@@ -12,11 +12,12 @@ import {
 } from "@/components/ui/sidebar"
 import { usePathname } from "next/navigation"
 import { Role } from "@/types/role"
-import { Session } from "next-auth"
+import { useQuery } from "@tanstack/react-query"
+import { getUser } from "@/app/api/user/api"
+import Link from "next/link"
 
 export function NavSecondary({
   items,
-  session,
   ...props
 }: {
   items: {
@@ -25,12 +26,16 @@ export function NavSecondary({
     icon: Icon
     role?: Role[]
   }[]
-  session: Session | null
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const pathname = usePathname()
 
+  const { data: session } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
+
   const itemsFiltered = items.filter((item) =>
-    item.role?.includes(session?.user.role as Role)
+    item.role?.includes(session?.role as Role)
   )
 
   return (
@@ -44,10 +49,10 @@ export function NavSecondary({
                 isActive={pathname.startsWith(item.url)}
                 className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
               >
-                <a href={item.url}>
+                <Link href={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

@@ -7,14 +7,12 @@ const nextConfig: NextConfig = {
       new URL("https://flagsapi.com/**"),
     ],
   },
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: "/backend/:path*",
-  //       destination: "http://localhost:3001/:path*", // NestJS server
-  //     },
-  //   ]
-  // },
+  // rewrites: async () => [
+  //   {
+  //     source: "/api/:path*",
+  //     destination: "https://13fbad8cad05.ngrok-free.app/:path*",
+  //   },
+  // ],
 }
 
 export default nextConfig

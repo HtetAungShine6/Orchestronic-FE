@@ -1,13 +1,28 @@
+"use client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardHeader } from "@/components/ui/card"
 import { getInitials } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { authOptions } from "@/lib/auth-options"
-import { getServerSession } from "next-auth"
+import { getUser } from "@/app/api/user/api"
+import { useQuery } from "@tanstack/react-query"
 
-export default async function Page() {
-  const session = await getServerSession(authOptions)
-  console.log("Session:", session)
+export default function Page() {
+  const {
+    data: session,
+    isLoading: isLoadingUser,
+    error: errorUser,
+  } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
+
+  if (isLoadingUser) {
+    return <div>Loading...</div>
+  }
+
+  if (errorUser) {
+    return <div>Error fetching user data</div>
+  }
 
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
@@ -22,15 +37,15 @@ export default async function Page() {
         <CardHeader>
           <div className="flex items-center space-x-4">
             <Avatar className="h-20 w-20">
-              <AvatarImage src="" alt={session?.user.name} />
+              <AvatarImage src="" alt={session?.name} />
               <AvatarFallback className="text-lg">
-                {getInitials(session?.user.name || "")}
+                {getInitials(session?.name || "")}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h2 className="text-2xl font-bold">{session?.user.name}</h2>
-              <p className="text-muted-foreground">{session?.user.email}</p>
-              <Badge variant="default">{session?.user.role}</Badge>
+              <h2 className="text-2xl font-bold">{session?.name}</h2>
+              <p className="text-muted-foreground">{session?.email}</p>
+              <Badge variant="default">{session?.role}</Badge>
             </div>
           </div>
         </CardHeader>

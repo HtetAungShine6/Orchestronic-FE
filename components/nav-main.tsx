@@ -12,11 +12,12 @@ import {
 } from "@/components/ui/sidebar"
 
 import { Role } from "@/types/role"
-import { Session } from "next-auth"
+import { useQuery } from "@tanstack/react-query"
+import { getUser } from "@/app/api/user/api"
+import Link from "next/link"
 
 export function NavMain({
   items,
-  session,
 }: Readonly<{
   items: {
     title: string
@@ -24,12 +25,15 @@ export function NavMain({
     icon?: Icon
     role?: Role[]
   }[]
-  session: Session | null
 }>) {
   const pathname = usePathname()
+  const { data: session } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
 
   const itemsFiltered = items.filter((item) =>
-    item.role?.includes(session?.user.role as Role)
+    item.role?.includes(session?.role as Role)
   )
 
   return (
@@ -63,10 +67,10 @@ export function NavMain({
                 className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
                 asChild
               >
-                <a href={item.url}>
+                <Link href={item.url}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

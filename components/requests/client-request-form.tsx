@@ -8,7 +8,6 @@ import ResourceGroup, {
 import { Textarea } from "@/components/ui/textarea"
 import { RepoNameInput } from "@/components/requests/repo-name-input"
 
-import { Session } from "next-auth"
 import {
   Form,
   FormControl,
@@ -37,6 +36,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { createRequest } from "@/app/api/requests/api"
 import { useMutation } from "@tanstack/react-query"
+import { User } from "@/types/api"
 
 export const requestFormSchema = z.object({
   resources: resourceSchema,
@@ -62,7 +62,7 @@ export const requestFormSchema = z.object({
 
 interface ClientRequestFormProps {
   suggestedName: string
-  session: Session | null
+  session?: User
 }
 
 export default function ClientRequestForm({
@@ -125,7 +125,7 @@ export default function ClientRequestForm({
         >
           <RepoNameInput
             suggestedName={suggestedName}
-            ownerName={session?.user?.name ?? "Your Account"}
+            ownerName={session?.name ?? "Your Account"}
             form={requestForm}
           />
           <Collaborators form={requestForm} />

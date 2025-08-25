@@ -20,7 +20,7 @@ import {
 // import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useQuery } from "@tanstack/react-query"
-import { fuzzyFindUsersByEmail } from "@/app/api/user/api"
+import { fuzzyFindUsersByEmail, getUser } from "@/app/api/user/api"
 import { User } from "@/types/api"
 import { useDebounce } from "@/hooks/useDebounce"
 import { requestFormSchema } from "@/components/requests/client-request-form"
@@ -29,7 +29,6 @@ import z from "zod"
 import { IconTrash } from "@tabler/icons-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { getInitials } from "@/lib/utils"
-import { useSession } from "next-auth/react"
 
 interface CollaboratorsProps {
   form: UseFormReturn<z.infer<typeof requestFormSchema>>
@@ -42,7 +41,14 @@ export default function Collaborators({ form }: CollaboratorsProps) {
   const debouncedSearchEmail = useDebounce(searchEmail, 500)
   const [filteredUsers, setFilteredUsers] = useState<User[]>([])
 
-  const { data: session } = useSession()
+  const {
+    data: session,
+    isLoading: isLoadingUser,
+    error: errorUser,
+  } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
 
   const {
     data: users,
@@ -52,6 +58,14 @@ export default function Collaborators({ form }: CollaboratorsProps) {
     queryKey: ["userByEmail", debouncedSearchEmail],
     queryFn: () => fuzzyFindUsersByEmail(debouncedSearchEmail),
   })
+
+  if (isLoadingUser) {
+    return <div>Loading...</div>
+  }
+
+  if (errorUser) {
+    return <div>Error fetching user data</div>
+  }
 
   function handleUserSelect(user: User) {
     setSelectedUsers((prev) => {
@@ -120,7 +134,7 @@ export default function Collaborators({ form }: CollaboratorsProps) {
               <CommandEmpty>No users found.</CommandEmpty>
             ) : (
               users?.map((user: User) => {
-                if (user.email === session?.user?.email) return null
+                if (user.email === session?.email) return null
                 if (selectedUsers.some((u) => u.email === user.email))
                   return null
                 return (

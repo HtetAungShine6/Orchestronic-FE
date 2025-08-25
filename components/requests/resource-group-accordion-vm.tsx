@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Accordion,
   AccordionContent,
@@ -41,49 +43,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { ApiError } from "@/types/error"
-import { PaginatedVmSizesDto, VmSizeDto } from "@/types/request"
-import { getPolicyVM } from "@/app/api/policy/api"
+import { VmSizeDto } from "@/types/request"
 import React from "react"
-
-async function fetchVmSizes(
-  value: string,
-  page: number,
-  limit: number,
-  usePolicyFilter: boolean
-): Promise<VmSizeDto[]> {
-  let maxCores = ""
-  let maxMemory = ""
-
-  if (usePolicyFilter) {
-    const policyVM = await getPolicyVM("AZURE")
-    maxCores = policyVM.numberOfCores.toString()
-    maxMemory = policyVM.memoryInMB.toString()
-  }
-
-  const params = new URLSearchParams({
-    page: page.toString(),
-    limit: limit.toString(),
-    search: value,
-  })
-
-  if (maxCores) params.append("maxCores", maxCores)
-  if (maxMemory) params.append("maxMemory", maxMemory)
-
-  const response = await fetch(`/api/vm-sizes?${params.toString()}`)
-
-  if (!response.ok) {
-    const err = await response.json()
-    throw new ApiError(
-      err.statusCode ?? response.status,
-      err.message ?? "Failed to fetch VM sizes",
-      err.error ?? "Unknown error"
-    )
-  }
-
-  const data = (await response.json()) as PaginatedVmSizesDto
-  return data.data
-}
+import { fetchVmSizes } from "@/app/api/policy/api"
 
 export const operatingSystems = [
   { value: "ubuntu", label: "Ubuntu", icon: "/icon/ubuntu.png" },
@@ -117,8 +79,6 @@ export function ResourceGroupAccordionVM({
       lastVMRef.current.scrollIntoView({ behavior: "smooth", block: "start" })
     }
   }, [vmCount])
-
-  console.log(form.formState.errors)
 
   return (
     <div className="flex flex-col">

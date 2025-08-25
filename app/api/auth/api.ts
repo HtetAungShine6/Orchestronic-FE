@@ -1,22 +1,10 @@
-import { ApiError } from "@/types/error"
+"use client"
 
-export default async function authExchange(azureToken: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/exchange`, {
+export async function logout() {
+  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ azureToken }),
+    credentials: "include", // important to include cookies
   })
-
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Unknown error",
-      err.error ?? "An error occurred during authentication exchange"
-    )
-  }
-
-  return res.json()
+  // optionally redirect user
+  window.location.href = "/"
 }

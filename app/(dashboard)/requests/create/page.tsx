@@ -1,3 +1,4 @@
+"use client"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,21 +8,29 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { generateRepoName } from "@/lib/utils"
-import { Metadata } from "next"
-import { getServerSession } from "next-auth/next"
 
 import ClientRequestForm from "@/components/requests/client-request-form"
-import { authOptions } from "@/lib/auth-options"
+import { useQuery } from "@tanstack/react-query"
+import { getUser } from "@/app/api/user/api"
 
-export const metadata: Metadata = {
-  title: "New request",
-  description:
-    "Create a new request to provision infrastructure, deploy services, or access internal developer resources within the platform.",
-}
-
-export default async function Page() {
+export default function Page() {
   const suggestedName = generateRepoName()
-  const session = await getServerSession(authOptions)
+  const {
+    data: session,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error fetching user data</div>
+  }
 
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">

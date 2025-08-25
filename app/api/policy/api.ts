@@ -1,8 +1,10 @@
-import { ApiError } from "@/types/error"
+"use client"
+import { fetcher } from "@/lib/fetcher"
 import {
   DatabasePolicyDto,
   StoragePolicyDto,
   VMPolicyDto,
+  VmSizeDto,
 } from "@/types/request"
 
 export interface updatePolicyVM {
@@ -28,8 +30,9 @@ export async function updatePolicyVM({
   memoryInMB,
   cloudProvider,
 }: updatePolicyVM) {
-  const res = await fetch(`/api/policy/virtual_machine`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/policy/virtual_machine`, {
     method: "PATCH",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -40,155 +43,124 @@ export async function updatePolicyVM({
       cloudProvider,
     }),
   })
-
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Failed to update request feedback",
-      err.error ?? "Unknown error"
-    )
-  }
-
-  return res.json()
 }
+
 export async function updatePolicyDB({
   maxStorage,
   cloudProvider,
 }: updatePolicyDB) {
-  const res = await fetch(`/api/policy/database`, {
+  return fetcher(`/api/policy/database`, {
     method: "PATCH",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ maxStorage, cloudProvider }),
   })
-
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Failed to update request feedback",
-      err.error ?? "Unknown error"
-    )
-  }
-
-  return res.json()
 }
+
 export async function updatePolicyST({
   maxStorage,
   cloudProvider,
 }: updatePolicyST) {
-  const res = await fetch(`/api/policy/storage`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/policy/storage`, {
     method: "PATCH",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ maxStorage, cloudProvider }),
   })
-
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Failed to update request feedback",
-      err.error ?? "Unknown error"
-    )
-  }
-
-  return res.json()
 }
 
 export async function createPolicy() {
-  const res = await fetch(`/api/policy/virtual_machine`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/policy/virtual_machine`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({}),
   })
-
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Failed to update request feedback",
-      err.error ?? "Unknown error"
-    )
-  }
-
-  return res.json()
 }
 
 export async function getPolicyVM(cloudProvider: string): Promise<VMPolicyDto> {
-  const res = await fetch(
-    `/api/policy/virtual_machine?cloudProvider=${cloudProvider}`,
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/policy/virtual_machine?cloudProvider=${cloudProvider}`,
     {
-      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
     }
   )
-
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Failed to update request feedback",
-      err.error ?? "Unknown error"
-    )
-  }
-
-  return res.json()
 }
 
 export async function getPolicyDB(
   cloudProvider: string
 ): Promise<DatabasePolicyDto> {
-  const res = await fetch(
-    `/api/policy/database?cloudProvider=${cloudProvider}`,
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/policy/database?cloudProvider=${cloudProvider}`,
     {
       method: "GET",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
     }
   )
-
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Failed to update request feedback",
-      err.error ?? "Unknown error"
-    )
-  }
-
-  return res.json()
 }
 
 export async function getPolicyST(
   cloudProvider: string
 ): Promise<StoragePolicyDto> {
-  const res = await fetch(
-    `/api/policy/storage?cloudProvider=${cloudProvider}`,
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/policy/storage?cloudProvider=${cloudProvider}`,
     {
       method: "GET",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
     }
   )
+}
 
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Failed to update request feedback",
-      err.error ?? "Unknown error"
-    )
+export async function getVmSizes(params: URLSearchParams) {
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/request/vm-sizes?${params.toString()}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+}
+
+export async function fetchVmSizes(
+  value: string,
+  page: number,
+  limit: number,
+  usePolicyFilter: boolean
+): Promise<VmSizeDto[]> {
+  let maxCores = ""
+  let maxMemory = ""
+
+  if (usePolicyFilter) {
+    const policyVM = await getPolicyVM("AZURE")
+    maxCores = policyVM.numberOfCores.toString()
+    maxMemory = policyVM.memoryInMB.toString()
   }
 
-  return res.json()
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+    search: value,
+  })
+
+  if (maxCores) params.append("maxCores", maxCores)
+  if (maxMemory) params.append("maxMemory", maxMemory)
+
+  const response = await getVmSizes(params)
+
+  return response.data
 }

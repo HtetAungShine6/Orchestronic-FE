@@ -8,16 +8,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  // useSidebar,
 } from "@/components/ui/sidebar"
 import { usePathname } from "next/navigation"
-import { Session } from "next-auth"
 import { Role } from "@/types/role"
+import { useQuery } from "@tanstack/react-query"
+import { getUser } from "@/app/api/user/api"
+import Link from "next/link"
 
 export function NavDocuments({
   items,
   label,
-  session,
 }: Readonly<{
   items: {
     title: string
@@ -26,12 +26,16 @@ export function NavDocuments({
     role?: Role[]
   }[]
   label: string
-  session: Session | null
 }>) {
   const pathname = usePathname()
 
+  const { data: session } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
+
   const itemsFiltered = items.filter((item) =>
-    item.role?.includes(session?.user.role as Role)
+    item.role?.includes(session?.role as Role)
   )
 
   if (itemsFiltered.length === 0) {
@@ -42,56 +46,20 @@ export function NavDocuments({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>{label ?? "No label"}</SidebarGroupLabel>
       <SidebarMenu>
-        {itemsFiltered.map((item) => (
+        {items.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton
               asChild
               isActive={pathname.startsWith(item.url)}
               className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
             >
-              <a href={item.url}>
+              <Link href={item.url}>
                 <item.icon />
                 <span>{item.title}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction
-                  showOnHover
-                  className="data-[state=open]:bg-accent rounded-sm"
-                >
-                  <IconDots />
-                  <span className="sr-only">More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-24 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
-              >
-                <DropdownMenuItem>
-                  <IconFolder />
-                  <span>Open</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconShare3 />
-                  <span>Share</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive">
-                  <IconTrash />
-                  <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
           </SidebarMenuItem>
         ))}
-        {/* <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <IconDots className="text-sidebar-foreground/70" />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem> */}
       </SidebarMenu>
     </SidebarGroup>
   )

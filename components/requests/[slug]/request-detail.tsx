@@ -1,4 +1,5 @@
 "use client"
+
 import {
   changeRequestStatus,
   getRequestBySlug,
@@ -18,7 +19,6 @@ import { Role } from "@/types/role"
 import DescriptionCard from "./description-card"
 import { ResourceConfig } from "@/types/resource"
 import { VmSizeDto } from "@/types/request"
-import { useSession } from "next-auth/react"
 import { haveAdminOrIT } from "@/lib/utils"
 import {
   AlertDialog,
@@ -48,6 +48,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { MessageSquareText } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { RequestPageSkeleton } from "./request-page-skeleton"
+import { getUser } from "@/app/api/user/api"
 
 export interface RequestDetail {
   id: string
@@ -179,7 +180,17 @@ export default function RequestDetail({ slug }: { slug: string }) {
     }
   }
 
-  const session = useSession()
+  const {
+    data: session,
+    isLoading: isLoadingUser,
+    error: errorUser,
+  } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
+
+  if (isLoadingUser) return <p>Loading user data...</p>
+  if (errorUser) return <p>Error fetching user data...</p>
 
   if (isLoading) return <RequestPageSkeleton />
 
@@ -202,7 +213,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
           </Breadcrumb>
           <h2 className="text-2xl font-bold tracking-tight">{slug}</h2>
         </div>
-        {haveAdminOrIT(session.data?.user.role) &&
+        {haveAdminOrIT(session?.role) &&
           data?.status !== Status.Approved &&
           data?.status !== Status.Rejected && (
             <AdminITActionsButton

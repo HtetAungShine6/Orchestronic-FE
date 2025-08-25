@@ -24,7 +24,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { signOut } from "next-auth/react"
+// import { signOut } from "next-auth/react"
 import { getInitials } from "@/lib/utils"
 import {
   Tooltip,
@@ -34,18 +34,24 @@ import {
 } from "@/components/ui/tooltip"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
+import { logout } from "@/app/api/auth/api"
+import { getUser } from "@/app/api/user/api"
+import { useQuery } from "@tanstack/react-query"
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string
-    email: string
-    avatar: string
-    role: string
-  }
-}) {
+export function NavUser() {
   const { isMobile } = useSidebar()
+
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
+
+  if (isLoading) return null
+  if (error) return <div>Error loading user</div>
 
   return (
     <SidebarMenu>
@@ -59,17 +65,17 @@ export function NavUser({
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
                 <AvatarFallback className="rounded-lg">
-                  {getInitials(user.name)}
+                  {getInitials(user?.name || "")}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{user?.name}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
+                  {user?.email}
                 </span>
               </div>
               <Badge variant="default" className="text-xs">
-                {user.role}
+                {user?.role}
               </Badge>
               <IconDotsVertical className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -83,9 +89,9 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage src={""} alt={user?.name} />
                   <AvatarFallback className="rounded-lg">
-                    {getInitials(user.name)}
+                    {getInitials(user?.name || "")}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -93,14 +99,14 @@ export function NavUser({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span className="truncate font-medium">
-                          {user.name}
+                          {user?.name}
                         </span>
                       </TooltipTrigger>
-                      <TooltipContent>{user.name}</TooltipContent>
+                      <TooltipContent>{user?.name}</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                   <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
+                    {user?.email}
                   </span>
                 </div>
               </div>
@@ -123,10 +129,7 @@ export function NavUser({
               </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => signOut({ callbackUrl: "/" })}
-            >
+            <DropdownMenuItem className="cursor-pointer" onClick={logout}>
               <IconLogout />
               Log out
             </DropdownMenuItem>

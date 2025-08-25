@@ -1,3 +1,4 @@
+"use client"
 import NavBar from "@/components/landing-page/nav-bar"
 import { Button } from "@/components/ui/button"
 import {
@@ -8,9 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { authOptions } from "@/lib/auth-options"
-import { getServerSession } from "next-auth/next"
-import { redirect } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -28,13 +26,7 @@ import {
   Gauge,
 } from "lucide-react"
 
-export default async function Home() {
-  const session = await getServerSession(authOptions)
-
-  if (session) {
-    redirect("/dashboard")
-  }
-
+export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="container mx-auto px-4 mt-8">

@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Cpu, Database, DatabaseZap, Pencil } from "lucide-react"
-import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback } from "react"
 import {
   Dialog,
@@ -36,6 +35,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
 import PolicySectionSkeleton from "./policy-section-skeleton"
+import { getUser } from "@/app/api/user/api"
 
 export default function PolicySection() {
   const [activeTab, setActiveTab] = useState<"AZURE" | "AWS">("AZURE")
@@ -92,7 +92,14 @@ export default function PolicySection() {
 }
 
 function PolicyCardAzure({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
-  const { data: session } = useSession()
+  const {
+    data: session,
+    isLoading: isLoadingUser,
+    error: errorUser,
+  } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
 
   const { data: dbData } = useQuery({
     queryKey: ["policies-db", activeTab],
@@ -109,6 +116,14 @@ function PolicyCardAzure({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
     queryFn: () => getPolicyVM(activeTab),
   })
 
+  if (isLoadingUser) {
+    return <div>Loading...</div>
+  }
+
+  if (errorUser) {
+    return <div>Error fetching user data</div>
+  }
+
   if (isLoading) return <PolicySectionSkeleton />
   if (error) return <div>Error loading policies</div>
 
@@ -119,7 +134,7 @@ function PolicyCardAzure({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
           <Cpu size={16} />
           <h3 className="font-medium">VM</h3>
         </div>
-        {haveAdminOrIT(session?.user.role) && (
+        {haveAdminOrIT(session?.role) && (
           <EditPolicyDialog data={data} activeTab={activeTab} kind="vm" />
         )}
       </div>
@@ -147,7 +162,7 @@ function PolicyCardAzure({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
           <Database size={16} />
           <h3 className="font-medium">Database</h3>
         </div>
-        {haveAdminOrIT(session?.user.role) && (
+        {haveAdminOrIT(session?.role) && (
           <EditPolicyDialog data={dbData} activeTab={activeTab} kind="db" />
         )}
       </div>
@@ -171,7 +186,7 @@ function PolicyCardAzure({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
           <DatabaseZap size={16} />
           <h3 className="font-medium">Storage</h3>
         </div>
-        {haveAdminOrIT(session?.user.role) && (
+        {haveAdminOrIT(session?.role) && (
           <EditPolicyDialog data={stData} activeTab={activeTab} kind="st" />
         )}
       </div>
@@ -194,7 +209,10 @@ function PolicyCardAzure({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
 }
 
 function PolicyCardAWS({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
-  const { data: session } = useSession()
+  const { data: session } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
 
   const { data: dbData } = useQuery({
     queryKey: ["policies-db", activeTab],
@@ -225,7 +243,7 @@ function PolicyCardAWS({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
           <Cpu size={16} />
           <h3 className="font-medium">VM</h3>
         </div>
-        {haveAdminOrIT(session?.user.role) && (
+        {haveAdminOrIT(session?.role) && (
           <EditPolicyDialog data={vmData} activeTab={activeTab} kind="vm" />
         )}
       </div>
@@ -253,7 +271,7 @@ function PolicyCardAWS({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
           <Database size={16} />
           <h3 className="font-medium">Database</h3>
         </div>
-        {haveAdminOrIT(session?.user.role) && (
+        {haveAdminOrIT(session?.role) && (
           <EditPolicyDialog data={dbData} activeTab={activeTab} kind="db" />
         )}
       </div>
@@ -277,7 +295,7 @@ function PolicyCardAWS({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
           <DatabaseZap size={16} />
           <h3 className="font-medium">Storage</h3>
         </div>
-        {haveAdminOrIT(session?.user.role) && (
+        {haveAdminOrIT(session?.role) && (
           <EditPolicyDialog data={stData} activeTab={activeTab} kind="st" />
         )}
       </div>

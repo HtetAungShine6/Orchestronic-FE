@@ -1,34 +1,19 @@
+"use client"
+import { fetcher } from "@/lib/fetcher"
 import { Role } from "@/types/role"
 
 export async function getUsers() {
-  const res = await fetch("/api/users", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
+    headers: { "Content-Type": "application/json" },
   })
-
-  if (!res.ok) {
-    const error = await res.json()
-    throw new Error(error.message || "Failed to fetch users")
-  }
-
-  return res.json()
 }
 
 export async function updateUserRole(id: string, role: Role) {
-  const res = await fetch(`/api/users/role`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/user/role`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ id, role }),
   })
-
-  if (!res.ok) {
-    const error = await res.json()
-    throw new Error(error.message || "Failed to update user role")
-  }
-
-  return res.json()
 }

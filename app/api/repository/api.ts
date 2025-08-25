@@ -1,41 +1,23 @@
-import { authOptions } from "@/lib/auth-options"
-import { ApiError } from "@/types/error"
-import { getServerSession } from "next-auth"
+"use client"
+import { fetcher } from "@/lib/fetcher"
 
 export default async function checkRepositoryAvailability(name: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/repositories/available-repository?name=${encodeURIComponent(name)}`
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/repositories/available-repository?name=${encodeURIComponent(name)}`,
+    {
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
   )
-
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Unknown error",
-      err.error ?? "An error occurred while checking repository availability"
-    )
-  }
-
-  return res.json()
 }
 
 export async function getRepositories() {
-  const session = await getServerSession(authOptions)
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/repositories`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/repositories`, {
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${session?.user?.backendAccessToken}`,
     },
   })
-
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Unknown error",
-      err.error ?? "An error occurred while fetching repositories"
-    )
-  }
-
-  return res.json()
 }

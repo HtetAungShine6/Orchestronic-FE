@@ -15,19 +15,10 @@ import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import OrchestronicLogo from "./orchestronic-logo"
-import { useSession } from "next-auth/react"
 import { navData } from "@/lib/nav-config"
+import Link from "next/link"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession()
-
-  const user = {
-    name: session?.user?.name ?? "Unknown User",
-    email: session?.user?.email ?? "unknown@example.com",
-    avatar: "/default-avatar.png",
-    role: session?.user?.role ?? "guest",
-  }
-
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -37,35 +28,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="/dashboard">
-                {/* <IconInnerShadowTop className="!size-5" /> */}
+              <Link href="/dashboard">
                 <OrchestronicLogo size={20} />
                 <span className="text-base font-semibold">Orchestronic</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navData.navMain} session={session} />
-        <NavDocuments
-          items={navData.operations}
-          label="Operations"
-          session={session}
-        />
-        {/* <NavDocuments
-          items={navData.collaborations}
-          label="Collaboration"
-          session={session}
-        /> */}
-        <NavSecondary
-          items={navData.navSecondary}
-          className="mt-auto"
-          session={session}
-        />
+        <NavMain items={navData.navMain} />
+        <NavDocuments items={navData.operations} label="Operations" />
+        <NavSecondary items={navData.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )

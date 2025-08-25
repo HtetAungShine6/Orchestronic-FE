@@ -1,3 +1,4 @@
+"use client"
 import SettingsSection from "./components/settings-section"
 
 export default function Page() {

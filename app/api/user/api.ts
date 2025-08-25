@@ -1,43 +1,23 @@
-import { ApiError } from "@/types/error"
+"use client"
+
+import { fetcher } from "@/lib/fetcher"
+import { User } from "@/types/api"
 import { Role } from "@/types/role"
-import { User } from "next-auth"
 
 export async function getUserByEmail(email: string): Promise<User> {
-  const res = await fetch(
+  return fetcher(
     `${process.env.NEXT_PUBLIC_API_URL}/user/by-email?email=${encodeURIComponent(email)}`
   )
-
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Unknown error",
-      err.error ?? "An error occurred while fetching user by email"
-    )
-  }
-
-  return res.json()
 }
 
 export async function fuzzyFindUsersByEmail(email: string): Promise<User[]> {
-  const res = await fetch(
+  return fetcher(
     `${process.env.NEXT_PUBLIC_API_URL}/user/fuzzy-find-by-email?email=${encodeURIComponent(email)}`
   )
-
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode ?? res.status,
-      err.message ?? "Unknown error",
-      err.error ?? "An error occurred while fuzzy finding users by email"
-    )
-  }
-
-  return res.json()
 }
 
 export async function createUser(user: User) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -46,13 +26,10 @@ export async function createUser(user: User) {
       role: Role.Developer,
     }),
   })
-  if (!res.ok) {
-    const err = await res.json()
-    throw new ApiError(
-      err.statusCode || res.status,
-      err.message || "Unknown error",
-      err.error || "An error occurred while creating user"
-    )
-  }
-  return res.json()
+}
+
+export async function getUser(): Promise<User | undefined> {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/user/me`, {
+    headers: { "Content-Type": "application/json" },
+  })
 }
