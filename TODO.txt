@@ -20,6 +20,7 @@
 - create request correctly to Terraform
     Delay
 - Generate root account like GitLab for orchestronic
+http://139.180.129.226/api must be https for azure ad to callback
 
 
 TonKhaw
