@@ -15,6 +15,7 @@
 [x] better loading scene 
 
 - when creating request and waiting
+- Fix backend auth
 - create request with aws *
 - create request correctly to Terraform
     Delay
