@@ -12,6 +12,7 @@ import { generateRepoName } from "@/lib/utils"
 import ClientRequestForm from "@/components/requests/client-request-form"
 import { useQuery } from "@tanstack/react-query"
 import { getUser } from "@/app/api/user/api"
+import ClientRequestFormSkeleton from "../components/client-request-form-skeleton"
 
 export default function Page() {
   const suggestedName = generateRepoName()
@@ -25,7 +26,7 @@ export default function Page() {
   })
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <ClientRequestFormSkeleton />
   }
 
   if (error) {
