@@ -41,9 +41,14 @@ import { User } from "@/types/api"
 export const requestFormSchema = z.object({
   resources: resourceSchema,
   repository: z.object({
-    name: z.string().nonempty({
-      message: "Repository name is required",
-    }),
+    name: z
+      .string()
+      .regex(/^[a-z0-9]+$/, {
+        message:
+          "Repository name can only contain lowercase letters and numbers",
+      })
+      .min(3, { message: "Repository name must be at least 3 characters" })
+      .max(24, { message: "Repository name must be at most 24 characters" }),
     description: z.string().optional(),
     collaborators: z
       .array(

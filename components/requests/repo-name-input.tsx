@@ -2,8 +2,7 @@
 
 import { useState, useEffect, ReactNode } from "react"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { checkBlank, formatRepoName, validateFormat } from "@/lib/utils"
+import { formatRepoName } from "@/lib/utils"
 import { useDebounce } from "@/hooks/useDebounce"
 import { Label } from "@/components/ui/label"
 import checkRepositoryAvailability from "@/app/api/repository/api"
@@ -37,7 +36,7 @@ interface RepoNameInputProps {
 }
 
 export function RepoNameInput({
-  suggestedName,
+  // suggestedName,
   ownerName,
   form,
 }: RepoNameInputProps) {
@@ -67,25 +66,42 @@ export function RepoNameInput({
     if (repoName !== debouncedRepoName) return
 
     function checkAvailability(name: string) {
-      if (checkBlank(name)) {
-        setMessage(
-          <span className="text-muted-foreground text-xs">
-            ❌ Name cannot be blank
-          </span>
-        )
-        return
-      }
+      // if (checkBlank(name)) {
+      //   setMessage(
+      //     <span className="text-muted-foreground text-xs">
+      //       ❌ Name cannot be blank
+      //     </span>
+      //   )
+      //   return
+      // }
 
-      if (!validateFormat(name)) {
+      // if (!validateFormat(name)) {
+      //   setMessage(
+      //     <>
+      //       <span className="text-green-700 font-bold text-xs">
+      //         ✅ Your new repository will be created as {formatRepoName(name)}.
+      //       </span>
+      //       <br />
+      //       <span className="text-muted-foreground text-xs">
+      //         The repository name can only contain ASCII letters, digits, and
+      //         the characters ., -, and _.
+      //       </span>
+      //     </>
+      //   )
+      //   return
+      // }
+
+      const regex = /^[a-z0-9._-]+$/
+      if (!(regex.test(name) && name.length >= 3 && name.length <= 24)) {
         setMessage(
           <>
-            <span className="text-green-700 font-bold text-xs">
-              ✅ Your new repository will be created as {formatRepoName(name)}.
+            <span className="text-red-700 font-bold text-xs">
+              ❌ {name} is not available.
             </span>
             <br />
             <span className="text-muted-foreground text-xs">
-              The repository name can only contain ASCII letters, digits, and
-              the characters ., -, and _.
+              Repository names must be 3-24 characters long and may only include
+              lowercase letters, digits, and the symbols ., -, and _.
             </span>
           </>
         )
@@ -112,11 +128,11 @@ export function RepoNameInput({
     checkAvailability(debouncedRepoName)
   }, [data?.exists, debouncedRepoName, hasTyped, repoName])
 
-  function handleGenerate() {
-    setHasTyped(true)
-    dispatch(setRepoName(suggestedName))
-    form.clearErrors("repository.name")
-  }
+  // function handleGenerate() {
+  //   setHasTyped(true)
+  //   dispatch(setRepoName(suggestedName))
+  //   form.clearErrors("repository.name")
+  // }
 
   if (error) {
     return (
@@ -138,7 +154,7 @@ export function RepoNameInput({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex">
+        <div className="flex mb-3">
           <div className="h-full grid gap-4">
             <Label htmlFor="owner">Owner *</Label>
             <p className="font-medium">{ownerName}</p>
@@ -182,7 +198,7 @@ export function RepoNameInput({
             />
           </div>
         </div>
-        <p className="text-muted-foreground text-sm">
+        {/* <p className="text-muted-foreground text-sm">
           Great repository names are short and memorable. Need inspiration? How
           about{" "}
           <Button
@@ -195,7 +211,7 @@ export function RepoNameInput({
             {suggestedName}
           </Button>{" "}
           ?
-        </p>
+        </p> */}
         <FormField
           control={form.control}
           name="repository.description"
