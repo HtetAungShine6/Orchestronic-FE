@@ -14,4 +14,5 @@ export const roleAccessRules: Record<string, Role[]> = {
   "/requests": [Role.Admin, Role.Developer, Role.IT],
   "/monitoring": [Role.Admin, Role.Developer],
   "/get-help": [Role.Admin, Role.Developer, Role.IT],
+  "/account": [Role.Admin, Role.Developer, Role.IT],
 }
