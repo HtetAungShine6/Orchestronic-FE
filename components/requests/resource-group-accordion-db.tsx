@@ -42,8 +42,41 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Input } from "../ui/input"
 // import { getPolicyDB } from "@/app/api/policy/api"
 // import { useQuery } from "@tanstack/react-query"
+
+interface DatabaseEngine {
+  userOption: string
+  tier: string
+  vCores: number
+  ram: string
+  SKU: string
+}
+
+const databaseEngines: DatabaseEngine[] = [
+  {
+    userOption: "Small",
+    tier: "Burstable",
+    vCores: 1,
+    ram: "2 GB",
+    SKU: "B_Standard_B1ms",
+  },
+  {
+    userOption: "Medium",
+    tier: "General Purpose",
+    vCores: 2,
+    ram: "8 GB",
+    SKU: "GP_Standard_D2s_v3",
+  },
+  {
+    userOption: "Large",
+    tier: "Memeory Optimized",
+    vCores: 4,
+    ram: "16 GB",
+    SKU: "MO_Optimized_D4s_v3",
+  },
+]
 
 interface ResourceGroupAccordionProps {
   form: UseFormReturn<z.infer<typeof requestFormSchema>>
@@ -55,6 +88,9 @@ export function ResourceGroupAccordionDB({
   databaseCount,
 }: Readonly<ResourceGroupAccordionProps>) {
   const lastDBRef = useRef<HTMLDivElement | null>(null)
+  const [userOption, setUserOption] = React.useState<DatabaseEngine | null>(
+    null
+  )
 
   // const { data, isLoading, error } = useQuery({
   //   queryKey: ["getPolicyDB"],
@@ -90,17 +126,62 @@ export function ResourceGroupAccordionDB({
                   </CardHeader>
                   <CardContent className="grid gap-2">
                     <div className="grid gap-2">
-                      {/* <Label>Name</Label>
-                      <Input
-                        placeholder="e.g., web-server-1"
-                        onChange={(e) => {
-                          form.setValue(
-                            `resources.resourceConfig.db.${i}.name`,
-                            e.target.value
-                          )
-                        }}
-                      /> */}
-                      <div className="flex justify-between">
+                      <div className="grid grid-2">
+                        <div className="grid gap-2">
+                          <Label htmlFor={`db-engine-${i}`}>Name</Label>
+                          <Input
+                            placeholder="Enter name"
+                            onChange={(e) => {
+                              form.setValue(
+                                `resources.resourceConfig.dbs.${i}.name`,
+                                e.target.value
+                              )
+                            }}
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor={`db-engine-${i}`}>Tier / Size</Label>
+                          <Select
+                            onValueChange={(value) =>
+                              setUserOption(
+                                databaseEngines.find(
+                                  (engine) => engine.userOption === value
+                                ) || null
+                              )
+                            }
+                          >
+                            <SelectTrigger
+                              id={`db-engine-${i}`}
+                              className="w-[300px] h-[100px]"
+                            >
+                              <SelectValue placeholder="Choose DB engine" />
+                            </SelectTrigger>
+                            <SelectContent className="w-[300px] max-h-[300px]">
+                              {databaseEngines.map((engine) => (
+                                <SelectItem
+                                  key={engine.userOption}
+                                  value={engine.userOption}
+                                >
+                                  <div className="text-left">
+                                    <p>{engine.userOption}</p>
+                                    <p className="text-muted-foreground text-xs">
+                                      Tier: {engine.tier}
+                                    </p>
+                                    <p className="text-muted-foreground text-xs">
+                                      vCores: {engine.vCores}
+                                    </p>
+                                    <p className="text-muted-foreground text-xs">
+                                      RAM: {engine.ram}
+                                    </p>
+                                    <p className="text-muted-foreground text-xs">
+                                      SKU: {engine.SKU}
+                                    </p>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                         <div className="grid gap-2">
                           <Label htmlFor={`db-engine-${i}`}>
                             Database Engine
@@ -125,16 +206,54 @@ export function ResourceGroupAccordionDB({
                           </Select>
                         </div>
                         <div className="grid gap-2">
-                          <Label>Storage</Label>
-                          <DatabaseSizeCombobox
-                            onChange={(value) => {
-                              form.setValue(
-                                `resources.resourceConfig.dbs.${i}.storageGB`,
-                                value
-                              )
-                            }}
+                          <Label htmlFor={`db-engine-${i}`}>Username</Label>
+                          <Input placeholder="Enter username" />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor={`db-engine-${i}`}>Password</Label>
+                          <Input placeholder="Enter password" />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor={`db-engine-${i}`}>vCores</Label>
+                          <Input
+                            disabled
+                            placeholder="Auto-filled"
+                            type="number"
+                            value={userOption ? userOption.vCores : ""}
                           />
                         </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor={`db-engine-${i}`}>RAM (GB)</Label>
+                          <Input
+                            disabled
+                            placeholder="Auto-filled"
+                            type="number"
+                            value={userOption ? userOption.ram : ""}
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor={`db-engine-${i}`}>SKU</Label>
+                          <Input
+                            disabled
+                            placeholder="Auto-filled"
+                            value={userOption ? userOption.SKU : ""}
+                          />
+                        </div>
+                        {form.watch(
+                          `resources.resourceConfig.dbs.${i}.engine`
+                        ) === "postgres" && (
+                          <div className="grid gap-2">
+                            <Label>Storage</Label>
+                            <DatabaseSizeCombobox
+                              onChange={(value) => {
+                                form.setValue(
+                                  `resources.resourceConfig.dbs.${i}.storageGB`,
+                                  value
+                                )
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>

@@ -13,8 +13,22 @@ const vmSchema = z.object({
 })
 
 const dbSchema = z.object({
-  engine: z.string(),
-  storageGB: z.number().min(1, "Storage must be at least 1 GB"),
+  name: z.string().nonempty({
+    message: "Database name is required",
+  }),
+  engine: z.string().nonempty({
+    message: "Database engine is required",
+  }),
+  storageGB: z.number(),
+  skuName: z.string().nonempty({
+    message: "SKU name is required",
+  }),
+  username: z.string().nonempty({
+    message: "Username is required",
+  }),
+  password: z.string().nonempty({
+    message: "Password is required",
+  }),
 })
 
 const storageSchema = z.object({
