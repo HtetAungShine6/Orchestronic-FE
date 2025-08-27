@@ -41,24 +41,9 @@ export const cloudProviders = [
 ]
 export const regions = [
   {
-    value: "ap-southeast-1",
+    value: "southeastasia",
     label: "Asia Pacific (Singapore)",
     flag: "https://flagsapi.com/SG/flat/16.png",
-  },
-  {
-    value: "us-east-1",
-    label: "US East (N. Virginia)",
-    flag: "https://flagsapi.com/US/flat/16.png",
-  },
-  {
-    value: "us-west-2",
-    label: "US West (Oregon)",
-    flag: "https://flagsapi.com/US/flat/16.png",
-  },
-  {
-    value: "eu-west-1",
-    label: "EU (Ireland)",
-    flag: "https://flagsapi.com/IE/flat/16.png",
   },
 ]
 

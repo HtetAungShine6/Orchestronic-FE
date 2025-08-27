@@ -20,8 +20,6 @@
 - create request with aws * 
 - create request correctly to Terraform
     Delay
-- Generate root account like GitLab for orchestronic
-
 
 TonKhaw
 - implement RQ, Airflow, and Terraform
