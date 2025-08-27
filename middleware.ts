@@ -37,6 +37,7 @@ export default function middleware(req: NextRequest) {
   }
 
   // Redirect logged-in users visiting "/" to "/dashboard"
+  console.log(pathname, isLoggedIn)
   if (pathname === "/" && isLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", req.url))
   }
@@ -65,6 +66,7 @@ export default function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
+    "/",
     "/dashboard/:path*",
     "/get-help/:path*",
     "/monitoring/:path*",
@@ -74,5 +76,6 @@ export const config = {
     "/resources/:path*",
     "/settings/:path*",
     "/team/:path*",
+    "/account/:path*",
   ],
 }
