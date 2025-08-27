@@ -9,18 +9,18 @@
     [x] Filter
 [x] save cloud provider secret key *
     [x] PATCH
-
 [x] according in create data is lost when more than 2
 [x] create repository on Gitlab
 [x] better loading scene 
+[x] Fix backend auth
+[x] http://139.180.129.226/api must be https for azure ad to callback
+    [x] need ip
 
 - when creating request and waiting
-- Fix backend auth
-- create request with aws *
+- create request with aws * 
 - create request correctly to Terraform
     Delay
 - Generate root account like GitLab for orchestronic
-http://139.180.129.226/api must be https for azure ad to callback
 
 
 TonKhaw
