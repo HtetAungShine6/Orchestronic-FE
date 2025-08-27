@@ -61,6 +61,7 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
   )
 
   console.log(selectedCloudProvider)
+  console.log(form.formState.errors)
 
   return (
     <Card>
