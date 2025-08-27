@@ -28,6 +28,7 @@ export default function middleware(req: NextRequest) {
       const payload = JSON.parse(
         Buffer.from(token.split(".")[1], "base64").toString()
       )
+      console.log(payload)
       role = payload.role as Role
       isLoggedIn = true
     } catch {
@@ -36,8 +37,12 @@ export default function middleware(req: NextRequest) {
     }
   }
 
+  if (!role) {
+    return NextResponse.redirect(new URL("/login", req.url))
+  }
+
   // Redirect logged-in users visiting "/" to "/dashboard"
-  console.log(pathname, isLoggedIn)
+  console.log(pathname, isLoggedIn, role)
   if (pathname === "/" && isLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", req.url))
   }
