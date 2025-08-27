@@ -1,7 +1,6 @@
 "use client"
 
 import { DataTable } from "@/components/data-table/components/data-table"
-import { useRouter } from "next/navigation"
 import { columnsRepositories } from "./columns-repositories"
 import { getRepositories } from "@/app/api/repository/api"
 import { useQuery } from "@tanstack/react-query"
@@ -14,8 +13,6 @@ interface RepositoriesTableProps {
 export default function RepositoriesTable({
   pageSize = 10,
 }: RepositoriesTableProps) {
-  const router = useRouter()
-
   const { data: session } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
@@ -38,7 +35,11 @@ export default function RepositoriesTable({
       filterColumn="name"
       pageSize={pageSize}
       onRowClick={(row) =>
-        router.push(`${process.env.NEXT_PUBLIC_GITLAB_URL}/root/${row.name}`)
+        window.open(
+          `${process.env.NEXT_PUBLIC_GITLAB_URL}/root/${row.name}`,
+          "_blank",
+          "noopener,noreferrer"
+        )
       }
     />
   )
