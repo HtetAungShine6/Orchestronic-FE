@@ -5,6 +5,8 @@ import { columnsRepositories } from "./columns-repositories"
 import { getRepositories } from "@/app/api/repository/api"
 import { useQuery } from "@tanstack/react-query"
 import { getUser } from "@/app/api/user/api"
+import { RepositoryStatus } from "@/types/repo"
+import { useRouter } from "next/navigation"
 
 interface RepositoriesTableProps {
   pageSize?: number
@@ -13,6 +15,7 @@ interface RepositoriesTableProps {
 export default function RepositoriesTable({
   pageSize = 10,
 }: RepositoriesTableProps) {
+  const router = useRouter()
   const { data: session } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
@@ -34,13 +37,17 @@ export default function RepositoriesTable({
       columns={columns}
       filterColumn="name"
       pageSize={pageSize}
-      onRowClick={(row) =>
-        window.open(
-          `${process.env.NEXT_PUBLIC_GITLAB_URL}/root/${row.name}`,
-          "_blank",
-          "noopener,noreferrer"
-        )
-      }
+      onRowClick={(row) => {
+        if (row.status === RepositoryStatus.Created) {
+          return window.open(
+            `${process.env.NEXT_PUBLIC_GITLAB_URL}/root/${row.name}`,
+            "_blank",
+            "noopener,noreferrer"
+          )
+        } else {
+          return router.push(`/repositories-not-created`)
+        }
+      }}
     />
   )
 }

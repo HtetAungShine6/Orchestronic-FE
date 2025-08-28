@@ -34,7 +34,7 @@ import {
 import { buttonVariants } from "@/components/ui/button"
 import { Status } from "@/types/api"
 import { useState } from "react"
-import confetti from "canvas-confetti"
+// import confetti from "canvas-confetti"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -49,6 +49,7 @@ import { MessageSquareText } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { RequestPageSkeleton } from "./request-page-skeleton"
 import { getUser } from "@/app/api/user/api"
+import { RepositoryStatus } from "@/types/repo"
 
 export interface RequestDetail {
   id: string
@@ -75,6 +76,7 @@ export interface RequestDetail {
     id: string
     name: string
     description: string | null
+    status: RepositoryStatus
     resourcesId: string
     RepositoryCollaborator: {
       userId: string
@@ -87,7 +89,6 @@ export interface RequestDetail {
       }
       assignedAt: string
     }[]
-    status: "Pending" | "Approved" | "Rejected"
   }
   owner: {
     id: string
@@ -99,7 +100,7 @@ export interface RequestDetail {
 
 export default function RequestDetail({ slug }: { slug: string }) {
   const queryClient = useQueryClient()
-  const [showApprovePopup, setShowApprovePopup] = useState(false)
+  // const [showApprovePopup, setShowApprovePopup] = useState(false)
   const [showRejectPopup, setShowRejectPopup] = useState(false)
   const [feedback, setFeedback] = useState<string>("")
 
@@ -128,12 +129,12 @@ export default function RequestDetail({ slug }: { slug: string }) {
       changeRequestStatus(requestId, Status.Approved),
     onSuccess: (data) => {
       if (data.status === Status.Approved) {
-        confetti({
-          particleCount: 200,
-          spread: 70,
-          origin: { y: 0.6 },
-        })
-        setShowApprovePopup(true)
+        // confetti({
+        //   particleCount: 200,
+        //   spread: 70,
+        //   origin: { y: 0.6 },
+        // })
+        // setShowApprovePopup(true)
         queryClient.invalidateQueries({
           queryKey: ["request", slug],
         })
@@ -226,14 +227,14 @@ export default function RequestDetail({ slug }: { slug: string }) {
           )}
       </div>
       <div className="flex flex-col gap-8">
-        {showApprovePopup && (
+        {/* {showApprovePopup && (
           <StatusChangePopup
             showPopup={showApprovePopup}
             setShowPopup={setShowApprovePopup}
             title="Request Approved"
             description="The request has been successfully approved."
           />
-        )}
+        )} */}
         {showRejectPopup && (
           <StatusChangePopup
             showPopup={showRejectPopup}

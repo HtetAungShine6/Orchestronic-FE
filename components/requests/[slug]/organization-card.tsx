@@ -12,8 +12,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { getInitials } from "@/lib/utils"
 import { Repository } from "@/app/(dashboard)/repositories/data/schema-repository"
 import Link from "next/link"
+import { RepositoryStatus } from "@/types/repo"
 
 export default function OrganizationCard({ data }: { data?: RequestDetail }) {
+  const repoUrl =
+    data?.repository?.status === RepositoryStatus.Created
+      ? `${process.env.NEXT_PUBLIC_GITLAB_URL}/root/${data?.repository?.name}`
+      : `/repositories-not-created`
+  const isExternal = data?.repository?.status === RepositoryStatus.Created
+
   return (
     <Card>
       <CardHeader>
@@ -35,7 +42,9 @@ export default function OrganizationCard({ data }: { data?: RequestDetail }) {
           <div>
             <Link
               className="cursor-pointer hover:underline w-fit"
-              href={`/repositories/${data?.repository?.id}`}
+              href={repoUrl}
+              target={isExternal ? "_blank" : "_self"}
+              rel={isExternal ? "noopener noreferrer" : undefined}
             >
               <Label className="text-sm font-medium text-muted-foreground cursor-pointer">
                 Repository
