@@ -5,7 +5,7 @@ import {
   IconDotsVertical,
   IconLogout,
   // IconNotification,
-  IconUserCircle,
+  // IconUserCircle,
 } from "@tabler/icons-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -32,7 +32,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import Link from "next/link"
+// import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { logout } from "@/app/api/auth/api"
 import { getUser } from "@/app/api/user/api"
