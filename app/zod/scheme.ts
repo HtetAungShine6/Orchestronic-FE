@@ -19,7 +19,7 @@ const dbSchema = z.object({
   engine: z.string().nonempty({
     message: "Database engine is required",
   }),
-  storageGB: z.number(),
+  storageGB: z.number().optional(),
   skuName: z.string().nonempty({
     message: "SKU name is required",
   }),
@@ -32,8 +32,18 @@ const dbSchema = z.object({
 })
 
 const storageSchema = z.object({
-  type: z.string(),
-  capacityGB: z.number().min(1, "Size must be at least 1 GB"),
+  accessTier: z.string().nonempty({
+    message: "Access tier is required",
+  }),
+  name: z.string().nonempty({
+    message: "Name is required",
+  }),
+  kind: z.string().nonempty({
+    message: "Kind is required",
+  }),
+  sku: z.string().nonempty({
+    message: "SKU name is required",
+  }),
 })
 
 export const resourceSchema = z.object({

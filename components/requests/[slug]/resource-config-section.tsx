@@ -11,6 +11,7 @@ import { operatingSystems } from "../resource-group-accordion-vm"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Status } from "@/types/api"
+import { formatMB } from "@/lib/utils"
 
 export default function ResourceConfigSection({
   data,
@@ -158,7 +159,7 @@ export default function ResourceConfigSection({
                               Storage:
                             </span>
                             <p className="text-muted-foreground">
-                              {db.storageGB} GB
+                              {formatMB(db.storageGB)}
                             </p>
                           </div>
                         </div>
@@ -202,18 +203,34 @@ export default function ResourceConfigSection({
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
                             <span className="font-medium text-foreground">
-                              Storage Type:
+                              Name:
                             </span>
                             <p className="text-muted-foreground">
-                              {storage.type}
+                              {storage.name}
                             </p>
                           </div>
                           <div>
                             <span className="font-medium text-foreground">
-                              Capacity:
+                              SKU:
                             </span>
                             <p className="text-muted-foreground">
-                              {storage.capacityGB} GB
+                              {storage.sku}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="font-medium text-foreground">
+                              Access Tier:
+                            </span>
+                            <p className="text-muted-foreground">
+                              {storage.accessTier}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="font-medium text-foreground">
+                              Kind:
+                            </span>
+                            <p className="text-muted-foreground">
+                              {storage.kind}
                             </p>
                           </div>
                         </div>

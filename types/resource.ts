@@ -18,8 +18,10 @@ export interface DatabaseInstance {
 
 export interface StorageInstance {
   id: string
-  type: string
-  capacityGB: number
+  name: string
+  kind: string
+  sku: string
+  accessTier: string
   resourceConfigId: string
 }
 
@@ -28,4 +30,9 @@ export interface ResourceConfig {
   vms: VMInstance[]
   dbs: DatabaseInstance[]
   sts: StorageInstance[]
+}
+
+export enum Engine {
+  MySQL = "MySQL",
+  PostgreSQL = "PostgreSQL",
 }

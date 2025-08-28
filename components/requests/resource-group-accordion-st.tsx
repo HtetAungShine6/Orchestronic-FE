@@ -30,6 +30,77 @@ interface ResourceGroupAccordionProps {
   storageCount: number
 }
 
+interface StorageAccessTier {
+  label: string
+  description: string
+}
+
+const storageAccessTier: StorageAccessTier[] = [
+  {
+    label: "Hot",
+    description:
+      "Frequent access, higher cost for storage, lower cost for reads/writes",
+  },
+  {
+    label: "Cool",
+    description:
+      "Infrequent access, lower cost for storage, higher cost for reads/writes",
+  },
+]
+
+interface StorageSKU {
+  sku: string
+  description: string
+  recommended: string
+}
+
+const storageSKU: StorageSKU[] = [
+  {
+    sku: "Standard_LRS",
+    description: "Standard performance, Locally Redundant Storage (LRS)",
+    recommended: "Most common, low cost, good default",
+  },
+  {
+    sku: "Standard_GRS",
+    description: "Standard, Geo-Redundant Storage (GRS)",
+    recommended: "For disaster recovery across regions",
+  },
+  {
+    sku: "Standard_ZRS",
+    description: "Standard, Zone-Redundant Storage (ZRS)",
+    recommended: "Higher availability, within same region",
+  },
+  {
+    sku: "Premium_LRS",
+    description: "Premium SSD-based, locally redundant",
+    recommended: "For high-performance workloads",
+  },
+]
+
+interface StorageKind {
+  kind: string
+  description: string
+}
+
+const storageKind: StorageKind[] = [
+  {
+    kind: "StorageV2",
+    description: "General-purpose v2, supports latest features",
+  },
+  {
+    kind: "BlobStorage",
+    description: "Only Blob storage, hot/cool access tiers",
+  },
+  {
+    kind: "FileStorage",
+    description: "Premium file shares",
+  },
+  {
+    kind: "BlockBlobStorage",
+    description: "Premium block blob",
+  },
+]
+
 export function ResourceGroupAccordionST({
   form,
   storageCount,
@@ -68,40 +139,147 @@ export function ResourceGroupAccordionST({
                   </CardHeader>
                   <CardContent className="grid gap-2">
                     <div className="grid gap-2">
-                      <Label htmlFor={`storage-type-${i}`}>Storage Type</Label>
+                      <Label htmlFor={`storage-name-${i}`}>Name</Label>
+                      <Input
+                        id={`storage-name-${i}`}
+                        placeholder="e.g., mystorageaccount"
+                        onChange={(e) =>
+                          form.setValue(
+                            `resources.resourceConfig.sts.${i}.name`,
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                    <div className="flex justify-between gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor={`storage-access-tier-${i}`}>
+                          Access Tier
+                        </Label>
+                        <Select
+                          onValueChange={(value) =>
+                            form.setValue(
+                              `resources.resourceConfig.sts.${i}.accessTier`,
+                              value
+                            )
+                          }
+                        >
+                          <SelectTrigger
+                            id={`storage-access-tier-${i}`}
+                            className=" w-[213px]"
+                          >
+                            <SelectValue placeholder="Select access tier">
+                              {form.watch(
+                                `resources.resourceConfig.sts.${i}.accessTier`
+                              ) && (
+                                <span>
+                                  {form.watch(
+                                    `resources.resourceConfig.sts.${i}.accessTier`
+                                  )}
+                                </span>
+                              )}
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {storageAccessTier.map((accessTier) => (
+                              <SelectItem
+                                key={accessTier.label}
+                                value={accessTier.label}
+                              >
+                                <div className="flex flex-col text-left">
+                                  <span>{accessTier.label}</span>
+                                  <span className="text-muted-foreground text-xs">
+                                    {accessTier.description}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor={`storage-sku-${i}`}>SKU</Label>
+                        <Select
+                          onValueChange={(value) =>
+                            form.setValue(
+                              `resources.resourceConfig.sts.${i}.sku`,
+                              value
+                            )
+                          }
+                        >
+                          <SelectTrigger
+                            id={`storage-sku-${i}`}
+                            className=" w-[213px]"
+                          >
+                            <SelectValue placeholder="Select SKU">
+                              {form.watch(
+                                `resources.resourceConfig.sts.${i}.sku`
+                              ) && (
+                                <span>
+                                  {form.watch(
+                                    `resources.resourceConfig.sts.${i}.sku`
+                                  )}
+                                </span>
+                              )}
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {storageSKU.map((eachSku) => (
+                              <SelectItem key={eachSku.sku} value={eachSku.sku}>
+                                <div className="flex flex-col text-left">
+                                  <span>{eachSku.sku}</span>
+                                  <span className="text-muted-foreground text-xs">
+                                    {eachSku.description}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor={`storage-kind-${i}`}>Kind</Label>
                       <Select
                         onValueChange={(value) =>
                           form.setValue(
-                            `resources.resourceConfig.sts.${i}.type`,
+                            `resources.resourceConfig.sts.${i}.kind`,
                             value
                           )
                         }
                       >
-                        <SelectTrigger id={`storage-type-${i}`}>
-                          <SelectValue placeholder="Select storage type" />
+                        <SelectTrigger
+                          id={`storage-sku-${i}`}
+                          className=" w-[213px]"
+                        >
+                          <SelectValue placeholder="Select Kind">
+                            {form.watch(
+                              `resources.resourceConfig.sts.${i}.kind`
+                            ) && (
+                              <span>
+                                {form.watch(
+                                  `resources.resourceConfig.sts.${i}.kind`
+                                )}
+                              </span>
+                            )}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="blob">Blob Storage</SelectItem>
-                          <SelectItem value="file">File Storage</SelectItem>
-                          <SelectItem value="queue">Queue Storage</SelectItem>
-                          <SelectItem value="table">Table Storage</SelectItem>
+                          {storageKind.map((eachKind) => (
+                            <SelectItem
+                              key={eachKind.kind}
+                              value={eachKind.kind}
+                            >
+                              <div className="flex flex-col text-left">
+                                <span>{eachKind.kind}</span>
+                                <span className="text-muted-foreground text-xs">
+                                  {eachKind.description}
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
-                    </div>
-
-                    <div className="grid gap-2">
-                      <Label htmlFor={`storage-size-${i}`}>Storage Size</Label>
-                      <Input
-                        type="number"
-                        id={`storage-size-${i}`}
-                        placeholder="Enter storage size"
-                        onChange={(e) => {
-                          form.setValue(
-                            `resources.resourceConfig.sts.${i}.capacityGB`,
-                            Number(e.target.value)
-                          )
-                        }}
-                      />
                     </div>
                   </CardContent>
                 </Card>

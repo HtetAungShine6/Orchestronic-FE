@@ -43,6 +43,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Input } from "../ui/input"
+import { Engine } from "@/types/resource"
 // import { getPolicyDB } from "@/app/api/policy/api"
 // import { useQuery } from "@tanstack/react-query"
 
@@ -162,8 +163,12 @@ export function ResourceGroupAccordionDB({
                             <SelectValue placeholder="Choose DB engine" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="postgres">PostgreSQL</SelectItem>
-                            <SelectItem value="mysql">MySQL</SelectItem>
+                            <SelectItem value={Engine.PostgreSQL}>
+                              {Engine.PostgreSQL}
+                            </SelectItem>
+                            <SelectItem value={Engine.MySQL}>
+                              {Engine.MySQL}
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -280,7 +285,7 @@ export function ResourceGroupAccordionDB({
                       </div>
                       {form.watch(
                         `resources.resourceConfig.dbs.${i}.engine`
-                      ) === "postgres" && (
+                      ) === Engine.PostgreSQL && (
                         <div className="grid gap-2">
                           <Label>Storage</Label>
                           <DatabaseSizeCombobox

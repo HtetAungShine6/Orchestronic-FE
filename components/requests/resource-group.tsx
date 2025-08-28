@@ -59,9 +59,7 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
   const [selectedCloudProvider, setSelectedCloudProvider] = useState(
     cloudProviders[0].value
   )
-
   console.log(selectedCloudProvider)
-  console.log(form.formState.errors)
 
   return (
     <Card>

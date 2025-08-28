@@ -82,3 +82,9 @@ export function toTitleCase(str: string): string {
 export function haveAdminOrIT(role?: Role): boolean {
   return role === Role.Admin || role === Role.IT
 }
+
+export function formatMB(mb: number): string {
+  if (mb >= 1024 * 1024) return (mb / (1024 * 1024)).toFixed(2) + " TB"
+  if (mb >= 1024) return (mb / 1024).toFixed(2) + " GB"
+  return mb + " MB"
+}
