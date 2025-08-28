@@ -40,6 +40,10 @@ export default function middleware(req: NextRequest) {
     isLoggedIn = false
   }
 
+  if (pathname === "/login" && isLoggedIn) {
+    return NextResponse.redirect(new URL("/dashboard", req.url))
+  }
+
   // Redirect logged-in users visiting "/" to "/dashboard"
   if (pathname === "/" && isLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", req.url))
@@ -50,7 +54,7 @@ export default function middleware(req: NextRequest) {
     // any path that requires login
     for (const route of Object.keys(roleAccessRules)) {
       if (pathname === route || pathname.startsWith(`${route}/`)) {
-        return NextResponse.redirect(new URL("/", req.url))
+        return NextResponse.redirect(new URL("/login", req.url))
       }
     }
   }
@@ -70,6 +74,7 @@ export default function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     "/",
+    "/login",
     "/dashboard/:path*",
     "/get-help/:path*",
     "/monitoring/:path*",
