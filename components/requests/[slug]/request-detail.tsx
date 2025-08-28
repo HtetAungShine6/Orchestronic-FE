@@ -190,11 +190,10 @@ export default function RequestDetail({ slug }: { slug: string }) {
     queryFn: getUser,
   })
 
-  if (isLoadingUser) return <p>Loading user data...</p>
+  if (isLoadingUser) return <RequestPageSkeleton />
   if (errorUser) return <p>Error fetching user data...</p>
 
   if (isLoading) return <RequestPageSkeleton />
-
   if (error instanceof ApiError) return <div>{error.message}</div>
 
   return (
