@@ -50,7 +50,7 @@ export default function middleware(req: NextRequest) {
     // any path that requires login
     for (const route of Object.keys(roleAccessRules)) {
       if (pathname === route || pathname.startsWith(`${route}/`)) {
-        return NextResponse.redirect(new URL("/login", req.url))
+        return NextResponse.redirect(new URL("/", req.url))
       }
     }
   }
