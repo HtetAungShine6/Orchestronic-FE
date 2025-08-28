@@ -196,6 +196,8 @@ export default function RequestDetail({ slug }: { slug: string }) {
   if (isLoading) return <RequestPageSkeleton />
   if (error instanceof ApiError) return <div>{error.message}</div>
 
+  console.log(data?.feedback)
+
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
       <div className="flex items-center justify-between space-y-2">
@@ -254,25 +256,26 @@ export default function RequestDetail({ slug }: { slug: string }) {
             <DescriptionCard data={data} />
           </div>
           {/* Feedback card */}
-          {data?.status !== Status.Pending && (
+          {data?.status === Status.Approved && data?.feedback !== "" && (
             <div className="col-span-3">
               <FeedbackCard data={data} />
             </div>
           )}
-          {data?.status === Status.Pending && (
-            <div className="grid gap-2 col-span-3">
-              <Label className="flex items-center gap-1 font-bold tracking-tight text-xl">
-                <MessageSquareText />
-                Feedback *
-              </Label>
-              <Textarea
-                required
-                className="h-40"
-                placeholder="Leave your feedback here..."
-                onChange={(e) => setFeedback(e.target.value)}
-              />
-            </div>
-          )}
+          {data?.status === Status.Pending &&
+            (session?.role === Role.Admin || session?.role === Role.IT) && (
+              <div className="grid gap-2 col-span-3">
+                <Label className="flex items-center gap-1 font-bold tracking-tight text-xl">
+                  <MessageSquareText />
+                  Feedback *
+                </Label>
+                <Textarea
+                  required
+                  className="h-40"
+                  placeholder="Leave your feedback here..."
+                  onChange={(e) => setFeedback(e.target.value)}
+                />
+              </div>
+            )}
         </div>
       </div>
     </div>
