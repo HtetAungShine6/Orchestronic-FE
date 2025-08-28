@@ -13,6 +13,7 @@ const roleAccessRules: Record<string, Role[]> = {
   "/monitoring": [Role.Admin, Role.Developer],
   "/get-help": [Role.Admin, Role.Developer, Role.IT],
   "/account": [Role.Admin, Role.Developer, Role.IT],
+  "/infrastructure-analytics": [Role.Admin, Role.IT],
 }
 
 export default function middleware(req: NextRequest) {
@@ -85,5 +86,6 @@ export const config = {
     "/settings/:path*",
     "/team/:path*",
     "/account/:path*",
+    "/infrastructure-analytics/:path*",
   ],
 }

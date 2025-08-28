@@ -26,15 +26,15 @@ export const navData = {
       role: [Role.Admin, Role.Developer, Role.IT],
     },
     {
-      title: "Repositories",
-      url: "/repositories",
-      icon: IconFolder,
-      role: [Role.Admin, Role.Developer, Role.IT],
-    },
-    {
       title: "Resources",
       url: "/resources",
       icon: IconPackages,
+      role: [Role.Admin, Role.Developer, Role.IT],
+    },
+    {
+      title: "Repositories",
+      url: "/repositories",
+      icon: IconFolder,
       role: [Role.Admin, Role.Developer, Role.IT],
     },
   ],
@@ -54,16 +54,16 @@ export const navData = {
   ],
   operations: [
     {
-      title: "Monitoring",
-      url: "/monitoring",
-      icon: IconCloudSearch,
-      role: [Role.Admin, Role.Developer],
-    },
-    {
       title: "Policies",
       url: "/policies",
       icon: IconShield,
       role: [Role.Admin, Role.Developer, Role.IT],
+    },
+    {
+      title: "Infrastructure",
+      url: "/infrastructure",
+      icon: IconCloudSearch,
+      role: [Role.Admin, Role.Developer],
     },
   ],
   collaborations: [

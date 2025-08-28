@@ -55,7 +55,7 @@ export const getColumnsRequests = (userRole?: Role): ColumnDef<Request>[] => {
       cell: ({ row }) => {
         const formatted = format(
           new Date(row.getValue("createdAt")),
-          "EEE, dd MMM, HH:mm"
+          "EEE, dd MMM yyyy, HH:mm"
         )
         return (
           <div className="flex space-x-2">

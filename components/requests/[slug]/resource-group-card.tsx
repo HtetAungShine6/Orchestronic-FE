@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { cloudProviders } from "../resource-group"
+import { cloudProviders, regions } from "../resource-group"
 import { IconPackages } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
@@ -21,6 +21,7 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
   const cloudProvider = cloudProviders.find(
     (provider) => provider.value === data?.resources?.cloudProvider
   )
+  const region = regions.find((r) => r.value === data?.resources?.region)
   return (
     <Card className="h-full">
       <CardHeader>
@@ -39,7 +40,7 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-4 gap-4">
-          <div>
+          <div className="">
             <Label className="text-sm font-medium text-muted-foreground">
               Name
             </Label>
@@ -59,11 +60,19 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
               {cloudProvider?.label}
             </p>
           </div>
-          <div>
+          <div className="">
             <Label className="text-sm font-medium text-muted-foreground">
               Region
             </Label>
-            <p>{data?.resources?.region}</p>
+            <div className="flex items-center gap-1">
+              <Image
+                src={region?.flag || "/default-icon.png"}
+                alt={region?.label || "None"}
+                width={16}
+                height={16}
+              />
+              <p className="truncate">{region?.label}</p>
+            </div>
           </div>
           <div>
             <Label className="text-sm font-medium text-muted-foreground">
@@ -71,7 +80,7 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
             </Label>
             <p>
               {data?.createdAt &&
-                format(new Date(data.createdAt), "EEE, dd MMM, HH:mm")}
+                format(new Date(data.createdAt), "EEE, dd MMM yyyy, HH:mm")}
             </p>
           </div>
         </div>

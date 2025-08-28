@@ -27,6 +27,11 @@ import {
 
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 interface DataTableProps<TData, TValue> {
   prefilterStatus?: boolean
@@ -116,23 +121,29 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="h-12"
-                  onClick={() => onRowClick?.(row.original)}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <TableCell className="cursor-pointer" key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
+                <Tooltip key={row.id}>
+                  <TooltipTrigger asChild>
+                    <TableRow
+                      data-state={row.getIsSelected() && "selected"}
+                      className="h-12"
+                      onClick={() => onRowClick?.(row.original)}
+                    >
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <TableCell className="cursor-pointer" key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        )
+                      })}
+                    </TableRow>
+                  </TooltipTrigger>
+                  <TooltipContent side="left">
+                    <p>Click to open GitLab</p>
+                  </TooltipContent>
+                </Tooltip>
               ))
             ) : (
               <TableRow>

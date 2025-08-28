@@ -109,16 +109,19 @@ export function NavUser() {
                     {user?.email}
                   </span>
                 </div>
+                <Badge variant="default" className="text-xs">
+                  {user?.role}
+                </Badge>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem asChild className="cursor-pointer">
+              {/* <DropdownMenuItem asChild className="cursor-pointer">
                 <Link href="/account">
                   <IconUserCircle />
                   Account
                 </Link>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               {/* <DropdownMenuItem>
                 <IconCreditCard />
                 Billing
@@ -128,7 +131,7 @@ export function NavUser() {
                 Notifications
               </DropdownMenuItem> */}
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator /> */}
             <DropdownMenuItem className="cursor-pointer" onClick={logout}>
               <IconLogout />
               Log out
