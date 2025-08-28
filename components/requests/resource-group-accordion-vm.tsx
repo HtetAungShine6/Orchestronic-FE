@@ -46,6 +46,7 @@ import {
 import { VmSizeDto } from "@/types/request"
 import React from "react"
 import { fetchVmSizes } from "@/app/api/policy/api"
+import { getPriceOfVM } from "@/app/api/requests/api"
 
 export const operatingSystems = [
   { value: "ubuntu", label: "Ubuntu", icon: "/icon/ubuntu.png" },
@@ -115,6 +116,28 @@ interface VMAccordionItemProps {
 
 const VMAccordionItem = React.forwardRef<HTMLDivElement, VMAccordionItemProps>(
   ({ form, index, selectedVmSize, setSelectedVmSize }, ref) => {
+    const { data, isLoading, error } = useQuery({
+      queryKey: [
+        "vmPrice",
+        selectedVmSize?.name,
+        form.getValues("resources.region"),
+      ],
+      queryFn: () =>
+        getPriceOfVM(
+          selectedVmSize?.name || "",
+          form.getValues("resources.region")
+        ),
+      enabled: !!selectedVmSize && !!form.getValues("resources.region"),
+    })
+
+    const priceItem = data?.Items.find(
+      (item) =>
+        item.armSkuName === selectedVmSize?.name &&
+        !item.productName.toLowerCase().includes("windows")
+    )
+
+    const price = priceItem?.retailPrice
+    const currency = priceItem?.currencyCode
     return (
       <AccordionItem value={`virtual-machine-${index}`} ref={ref}>
         <AccordionTrigger className="cursor-pointer">
@@ -122,11 +145,24 @@ const VMAccordionItem = React.forwardRef<HTMLDivElement, VMAccordionItemProps>(
         </AccordionTrigger>
         <AccordionContent forceMount>
           <Card>
-            <CardHeader>
-              <CardTitle>VM #{index + 1}</CardTitle>
-              <CardDescription>
-                Configure virtual machine settings
-              </CardDescription>
+            <CardHeader className="flex justify-between items-center">
+              <div>
+                <CardTitle>VM #{index + 1}</CardTitle>
+                <CardDescription>
+                  Configure virtual machine settings
+                </CardDescription>
+              </div>
+              <div>
+                <CardDescription>
+                  {isLoading
+                    ? "Calculating price..."
+                    : error
+                      ? "Error loading price"
+                      : price != null && currency
+                        ? `${(price * 24 * 30).toFixed(2)} ${currency} / month`
+                        : "No price available"}
+                </CardDescription>
+              </div>
             </CardHeader>
             <CardContent className="grid gap-2">
               {/* Name Input */}

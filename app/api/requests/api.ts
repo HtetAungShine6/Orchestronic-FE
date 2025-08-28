@@ -3,6 +3,7 @@
 import { requestFormSchema } from "@/components/requests/client-request-form"
 import { fetcher } from "@/lib/fetcher"
 import { Status } from "@/types/api"
+import { AzureRetailPriceResponse } from "@/types/request"
 import z from "zod"
 
 export async function getRequests() {
@@ -92,4 +93,25 @@ export async function updateRequestFeedback(
       body: JSON.stringify({ feedback }),
     }
   )
+}
+
+export async function getPriceOfVM(
+  vmSize: string,
+  region: string
+): Promise<AzureRetailPriceResponse> {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/resource/vm-price?vmSize=${vmSize}&region=${region}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch price: ${response.statusText}`)
+  }
+
+  return response.json()
 }
