@@ -37,7 +37,7 @@ export default function middleware(req: NextRequest) {
   }
 
   if (!role) {
-    return NextResponse.redirect(new URL("/login", req.url))
+    isLoggedIn = false
   }
 
   // Redirect logged-in users visiting "/" to "/dashboard"
