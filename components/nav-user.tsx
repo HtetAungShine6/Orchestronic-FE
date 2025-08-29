@@ -37,6 +37,7 @@ import { Badge } from "@/components/ui/badge"
 import { logout } from "@/app/api/auth/api"
 import { getUser } from "@/app/api/user/api"
 import { useQuery } from "@tanstack/react-query"
+import { Role } from "@/types/role"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -75,7 +76,9 @@ export function NavUser() {
                 </span>
               </div>
               <Badge variant="default" className="text-xs">
-                {user?.role.slice(0, 3)}
+                {user?.role === Role.Developer
+                  ? user?.role.slice(0, 3)
+                  : user?.role}
               </Badge>
               <IconDotsVertical className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -110,7 +113,9 @@ export function NavUser() {
                   </span>
                 </div>
                 <Badge variant="default" className="text-xs">
-                  {user?.role.slice(0, 3)}
+                  {user?.role === Role.Developer
+                    ? user?.role.slice(0, 3)
+                    : user?.role}
                 </Badge>
               </div>
             </DropdownMenuLabel>
