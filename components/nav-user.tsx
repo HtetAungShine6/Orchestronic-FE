@@ -75,7 +75,7 @@ export function NavUser() {
                 </span>
               </div>
               <Badge variant="default" className="text-xs">
-                {user?.role}
+                {user?.role.slice(0, 3)}
               </Badge>
               <IconDotsVertical className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -110,7 +110,7 @@ export function NavUser() {
                   </span>
                 </div>
                 <Badge variant="default" className="text-xs">
-                  {user?.role}
+                  {user?.role.slice(0, 3)}
                 </Badge>
               </div>
             </DropdownMenuLabel>

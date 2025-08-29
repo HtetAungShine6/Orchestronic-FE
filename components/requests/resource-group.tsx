@@ -45,6 +45,11 @@ export const regions = [
     label: "Asia Pacific (Singapore)",
     flag: "https://flagsapi.com/SG/flat/16.png",
   },
+  {
+    value: "eastus",
+    label: "US East (Virginia)",
+    flag: "https://flagsapi.com/US/flat/16.png",
+  },
 ]
 
 interface ResourceGroupProps {
