@@ -120,31 +120,53 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <Tooltip key={row.id}>
-                  <TooltipTrigger asChild>
-                    <TableRow
-                      data-state={row.getIsSelected() && "selected"}
-                      className="h-12"
-                      onClick={() => onRowClick?.(row.original)}
-                    >
-                      {row.getVisibleCells().map((cell) => {
-                        return (
+              table.getRowModel().rows.map((row) => {
+                const isRepository = row
+                  .getVisibleCells()
+                  .some(
+                    (cell) => cell.column.columnDef.meta?.title === "Repository"
+                  )
+
+                return isRepository ? (
+                  <Tooltip key={row.id}>
+                    <TooltipTrigger asChild>
+                      <TableRow
+                        data-state={row.getIsSelected() && "selected"}
+                        className="h-12"
+                        onClick={() => onRowClick?.(row.original)}
+                      >
+                        {row.getVisibleCells().map((cell) => (
                           <TableCell className="cursor-pointer" key={cell.id}>
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()
                             )}
                           </TableCell>
-                        )
-                      })}
-                    </TableRow>
-                  </TooltipTrigger>
-                  <TooltipContent side="left">
-                    <p>Click to open GitLab</p>
-                  </TooltipContent>
-                </Tooltip>
-              ))
+                        ))}
+                      </TableRow>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                      <p>Click to open GitLab</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="h-12"
+                    onClick={() => onRowClick?.(row.original)}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell className="cursor-pointer" key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                )
+              })
             ) : (
               <TableRow>
                 <TableCell

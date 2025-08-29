@@ -168,7 +168,7 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
           <div className="">
             <div className="flex gap-6">
               <Label htmlFor="storage" className="w-60">
-                Storage Accounts
+                Storage
               </Label>
               <Input
                 id="storage"
