@@ -53,6 +53,7 @@ interface DatabaseEngine {
   vCores: number
   ram: string
   SKU: string
+  price: string
 }
 
 const databaseEngines: DatabaseEngine[] = [
@@ -62,6 +63,7 @@ const databaseEngines: DatabaseEngine[] = [
     vCores: 1,
     ram: "2 GB",
     SKU: "B_Standard_B1ms",
+    price: "18.98/month",
   },
   {
     userOption: "Medium",
@@ -69,13 +71,15 @@ const databaseEngines: DatabaseEngine[] = [
     vCores: 2,
     ram: "8 GB",
     SKU: "GP_Standard_D2s_v3",
+    price: "171.550/month",
   },
   {
     userOption: "Large",
-    tier: "Memeory Optimized",
+    tier: "Memory Optimized",
     vCores: 4,
     ram: "16 GB",
     SKU: "MO_Optimized_D4s_v3",
+    price: "343.100/month",
   },
 ]
 
@@ -123,11 +127,16 @@ export function ResourceGroupAccordionDB({
               </AccordionTrigger>
               <AccordionContent forceMount>
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Database #{i + 1}</CardTitle>
-                    <CardDescription>
-                      Configure database settings
-                    </CardDescription>
+                  <CardHeader className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Database #{i + 1}</CardTitle>
+                      <CardDescription>
+                        Configure database settings
+                      </CardDescription>
+                    </div>
+                    <div>
+                      <CardDescription>{userOption?.price}</CardDescription>
+                    </div>
                   </CardHeader>
                   <CardContent className="grid gap-2">
                     <div className="flex justify-between gap-4">

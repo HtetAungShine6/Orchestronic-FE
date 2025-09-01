@@ -31,8 +31,56 @@ interface ResourceGroupAccordionProps {
 }
 
 interface StorageAccessTier {
-  label: string
+  label: "Hot" | "Cool"
   description: string
+}
+
+interface StoragePrice {
+  tier: "Hot" | "Cool"
+  price: string
+}
+
+const storagePrices: Record<string, StoragePrice[]> = {
+  Standard_LRS: [
+    {
+      tier: "Hot",
+      price: "0.02 per GB/month",
+    },
+    {
+      tier: "Cool",
+      price: "0.011 per GB/month",
+    },
+  ],
+  Standard_GRS: [
+    {
+      tier: "Hot",
+      price: "0.04 per GB/month",
+    },
+    {
+      tier: "Cool",
+      price: "0.022 per GB/month",
+    },
+  ],
+  Standard_ZRS: [
+    {
+      tier: "Hot",
+      price: "0.025 per GB/month",
+    },
+    {
+      tier: "Cool",
+      price: "0.0138 per GB/month",
+    },
+  ],
+  Premium_LRS: [
+    {
+      tier: "Hot",
+      price: "0.195 per GB/month",
+    },
+    {
+      tier: "Cool",
+      price: "0.195 per GB/month",
+    },
+  ],
 }
 
 const storageAccessTier: StorageAccessTier[] = [
@@ -116,6 +164,14 @@ export function ResourceGroupAccordionST({
     }
   }, [storageCount])
 
+  const storagePrice = storagePrices[
+    form.watch(`resources.resourceConfig.sts.${storageCount - 1}.sku`)
+  ]?.find(
+    (price) =>
+      price.tier ===
+      form.watch(`resources.resourceConfig.sts.${storageCount - 1}.accessTier`)
+  )
+
   return (
     <div className="grid gap-6">
       {storageCount > 0 && (
@@ -131,11 +187,16 @@ export function ResourceGroupAccordionST({
               </AccordionTrigger>
               <AccordionContent forceMount>
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Storage #{i + 1}</CardTitle>
-                    <CardDescription>
-                      Configure storage settings
-                    </CardDescription>
+                  <CardHeader className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Storage #{i + 1}</CardTitle>
+                      <CardDescription>
+                        Configure storage settings
+                      </CardDescription>
+                    </div>
+                    <div>
+                      <CardDescription>{storagePrice?.price}</CardDescription>
+                    </div>
                   </CardHeader>
                   <CardContent className="grid gap-2">
                     <div className="grid gap-2">
