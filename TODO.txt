@@ -16,8 +16,9 @@
 [x] http://139.180.129.226/api must be https for azure ad to callback
     [x] need ip
 [x] Repo link to gitlab
+[x] Admin doesn;'t know why i can't approve without typing feedback
 
-- Admin doesn;'t know why i can't approve without typing feedback
+
 - if change role to Admin, can't access admin stuff, force logout
 - when creating request and waiting
 - create request with aws * 

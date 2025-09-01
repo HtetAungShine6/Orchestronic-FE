@@ -31,7 +31,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Status } from "@/types/api"
 import { useState } from "react"
 // import confetti from "canvas-confetti"
@@ -231,6 +231,33 @@ export default function RequestDetail({ slug }: { slug: string }) {
               feedback={feedback}
             />
           )}
+        {haveAdminOrIT(session?.role) && data?.status === Status.Approved && (
+          <AlertDialog>
+            <AlertDialogTrigger
+              className={buttonVariants({ variant: "destructive" })}
+            >
+              {rejectMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will delete the resource
+                  group associated with this request.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className={buttonVariants({ variant: "destructive" })}
+                  onClick={() => handleReject()}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </div>
       <div className="flex flex-col gap-8">
         {/* {showApprovePopup && (
