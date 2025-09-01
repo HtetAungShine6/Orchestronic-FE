@@ -49,7 +49,7 @@ export default function OrganizationCard({ data }: { data?: RequestDetail }) {
               <Label className="text-sm font-medium text-muted-foreground cursor-pointer">
                 Repository
               </Label>
-              <p>{data?.repository?.name}</p>
+              <p className="truncate">{data?.repository?.name}</p>
             </Link>
           </div>
           <div>
