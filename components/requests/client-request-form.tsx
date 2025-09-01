@@ -98,6 +98,13 @@ export default function ClientRequestForm({
       resources: {
         cloudProvider: cloudProviders[0].value,
         region: regions[0].value,
+        resourceConfig: {
+          sts: [
+            {
+              name: "",
+            },
+          ],
+        },
       },
     },
   })

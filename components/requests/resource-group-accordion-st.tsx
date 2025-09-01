@@ -23,6 +23,13 @@ import {
 } from "@/components/ui/select"
 import { UseFormReturn } from "react-hook-form"
 import { requestFormSchema } from "./client-request-form"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import z from "zod"
 
 interface ResourceGroupAccordionProps {
@@ -200,16 +207,21 @@ export function ResourceGroupAccordionST({
                   </CardHeader>
                   <CardContent className="grid gap-2">
                     <div className="grid gap-2">
-                      <Label htmlFor={`storage-name-${i}`}>Name</Label>
-                      <Input
-                        id={`storage-name-${i}`}
-                        placeholder="e.g., mystorageaccount"
-                        onChange={(e) =>
-                          form.setValue(
-                            `resources.resourceConfig.sts.${i}.name`,
-                            e.target.value
-                          )
-                        }
+                      <FormField
+                        control={form.control}
+                        name={`resources.resourceConfig.sts.${i}.name`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Name</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g., mystorageaccount"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
                     </div>
                     <div className="flex justify-between gap-4">
