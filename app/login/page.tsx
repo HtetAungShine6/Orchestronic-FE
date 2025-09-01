@@ -21,7 +21,7 @@ export default function Page() {
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-4">
       <Button onClick={loginWithAzure} disabled={loading}>
-        {loading ? "Redirecting..." : "Login with Azure"}
+        {loading ? "Redirecting..." : "Login with Microsoft"}
       </Button>
       {error && <div className="text-red-500 text-sm">{error}</div>}
     </div>
