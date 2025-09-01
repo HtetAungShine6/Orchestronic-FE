@@ -50,6 +50,11 @@ import { Label } from "@/components/ui/label"
 import { RequestPageSkeleton } from "./request-page-skeleton"
 import { getUser } from "@/app/api/user/api"
 import { RepositoryStatus } from "@/types/repo"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export interface RequestDetail {
   id: string
@@ -342,12 +347,24 @@ function AdminITActionsButton({
   return (
     <div className="flex gap-4 ml-auto">
       <AlertDialog>
-        <AlertDialogTrigger
-          className={buttonVariants({ variant: "destructive" })}
-          disabled={isFeedbackEmpty || rejectMutation.isPending}
-        >
-          {rejectMutation.isPending ? "Rejecting..." : "Reject"}
-        </AlertDialogTrigger>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span>
+              <AlertDialogTrigger
+                className={buttonVariants({ variant: "destructive" })}
+                disabled={isFeedbackEmpty || rejectMutation.isPending}
+                title={isFeedbackEmpty ? "Please provide feedback" : ""}
+              >
+                {rejectMutation.isPending ? "Rejecting..." : "Reject"}
+              </AlertDialogTrigger>
+            </span>
+          </TooltipTrigger>
+          {isFeedbackEmpty && (
+            <TooltipContent>
+              <p>Please provide feedback</p>
+            </TooltipContent>
+          )}
+        </Tooltip>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -368,12 +385,23 @@ function AdminITActionsButton({
         </AlertDialogContent>
       </AlertDialog>
       <AlertDialog>
-        <AlertDialogTrigger
-          className={buttonVariants({ variant: "default" })}
-          disabled={isFeedbackEmpty || approveMutation.isPending}
-        >
-          {approveMutation.isPending ? "Approving..." : "Approve"}
-        </AlertDialogTrigger>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span>
+              <AlertDialogTrigger
+                className={buttonVariants({ variant: "default" })}
+                disabled={isFeedbackEmpty || approveMutation.isPending}
+              >
+                {approveMutation.isPending ? "Approving..." : "Approve"}
+              </AlertDialogTrigger>
+            </span>
+          </TooltipTrigger>
+          {isFeedbackEmpty && (
+            <TooltipContent>
+              <p>Please provide feedback</p>
+            </TooltipContent>
+          )}
+        </Tooltip>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
