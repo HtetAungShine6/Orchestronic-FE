@@ -43,7 +43,7 @@ export const requestFormSchema = z.object({
   repository: z.object({
     name: z
       .string()
-      .regex(/^[a-z0-9._-]+$/, {
+      .regex(/^[a-z0-9]+$/, {
         message:
           "Repository name can only contain lowercase letters and numbers",
       })
