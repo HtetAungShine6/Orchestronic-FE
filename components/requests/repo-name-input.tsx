@@ -91,8 +91,8 @@ export function RepoNameInput({
       //   return
       // }
 
-      const regex = /^[a-z0-9]+$/
-      if (!regex.test(name) && name.length >= 3 && name.length <= 24) {
+      const regex = /^[a-z0-9._-]+$/
+      if (!(regex.test(name) && name.length >= 3 && name.length <= 24)) {
         setMessage(
           <>
             <span className="text-red-700 font-bold text-xs">
@@ -101,7 +101,7 @@ export function RepoNameInput({
             <br />
             <span className="text-muted-foreground text-xs">
               Repository names must be 3-24 characters long and may only include
-              lowercase letters and digits.
+              lowercase letters, digits, and the symbols ., -, and _.
             </span>
           </>
         )
