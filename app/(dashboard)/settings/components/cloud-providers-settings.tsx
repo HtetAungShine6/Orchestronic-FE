@@ -13,7 +13,7 @@ export default function CloudProvidersSettings() {
     <Accordion type="single" collapsible className="w-1/2">
       <AccordionItem value="cloud-providers">
         <AccordionTrigger className="cursor-pointer">
-          Cloud Providers
+          Cloud Credentials
         </AccordionTrigger>
         <AccordionContent className="pl-4 space-y-4">
           <AzureDrawer />
