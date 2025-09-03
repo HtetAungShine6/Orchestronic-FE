@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/components/data-table/components/data-table-column-header"
 import { Resource } from "../data/schema-resources"
 import { generateResources } from "@/lib/utils"
-import { cloudProviders, regions } from "@/components/requests/resource-group"
+import { cloudProviders, regions } from "@/types/resource"
 import Image from "next/image"
 
 export const columnsResources: ColumnDef<Resource>[] = [
@@ -58,7 +58,15 @@ export const columnsResources: ColumnDef<Resource>[] = [
       <DataTableColumnHeader column={column} title="Region" />
     ),
     cell: ({ row }) => {
-      const region = regions.find((r) => r.value === row.getValue("region"))
+      let region
+      const cloudProvider = cloudProviders.find(
+        (provider) => provider.value === row.getValue("cloudProvider")
+      )
+      if (cloudProvider) {
+        region = regions[cloudProvider.value].find(
+          (r) => r.value === row.getValue("region")
+        )
+      }
       return (
         <div className="flex space-x-2">
           <span className="flex items-center gap-2">

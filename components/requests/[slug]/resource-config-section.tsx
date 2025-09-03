@@ -12,6 +12,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Status } from "@/types/api"
 import { formatMB } from "@/lib/utils"
+import { Engine } from "@/types/resource"
 
 export default function ResourceConfigSection({
   data,
@@ -150,18 +151,42 @@ export default function ResourceConfigSection({
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
                             <span className="font-medium text-foreground">
+                              Name:
+                            </span>
+                            <p className="text-muted-foreground">{db.name}</p>
+                          </div>
+                          <div>
+                            <span className="font-medium text-foreground">
                               Database Engine:
                             </span>
                             <p className="text-muted-foreground">{db.engine}</p>
                           </div>
                           <div>
                             <span className="font-medium text-foreground">
-                              Storage:
+                              Username:
                             </span>
                             <p className="text-muted-foreground">
-                              {formatMB(db.storageGB)}
+                              {db.username}
                             </p>
                           </div>
+                          <div>
+                            <span className="font-medium text-foreground">
+                              Password:
+                            </span>
+                            <p className="text-muted-foreground">
+                              {db.password}
+                            </p>
+                          </div>
+                          {db.engine === Engine.PostgreSQL && (
+                            <div>
+                              <span className="font-medium text-foreground">
+                                Storage:
+                              </span>
+                              <p className="text-muted-foreground">
+                                {formatMB(db.storageGB)}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}

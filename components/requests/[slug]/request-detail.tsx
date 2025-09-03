@@ -17,7 +17,7 @@ import ResourceGroupCard from "./resource-group-card"
 import OrganizationCard from "./organization-card"
 import { Role } from "@/types/role"
 import DescriptionCard from "./description-card"
-import { ResourceConfig } from "@/types/resource"
+import { CloudProvider, ResourceConfig } from "@/types/resource"
 import { VmSizeDto } from "@/types/request"
 import { haveAdminOrIT } from "@/lib/utils"
 import {
@@ -70,7 +70,7 @@ export interface RequestDetail {
   resources: {
     id: string
     name: string
-    cloudProvider: string
+    cloudProvider: CloudProvider
     region: string
     size: VmSizeDto
     sizeId: string

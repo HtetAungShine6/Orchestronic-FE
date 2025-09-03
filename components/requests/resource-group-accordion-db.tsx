@@ -44,6 +44,14 @@ import {
 } from "@/components/ui/popover"
 import { Input } from "../ui/input"
 import { Engine } from "@/types/resource"
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form"
 // import { getPolicyDB } from "@/app/api/policy/api"
 // import { useQuery } from "@tanstack/react-query"
 
@@ -141,122 +149,164 @@ export function ResourceGroupAccordionDB({
                   <CardContent className="grid gap-2">
                     <div className="flex justify-between gap-4">
                       <div className="grid gap-2">
-                        <Label htmlFor={`db-engine-${i}`}>Name</Label>
-                        <Input
-                          className="w-[216px]"
-                          placeholder="Enter name"
-                          onChange={(e) => {
-                            form.setValue(
-                              `resources.resourceConfig.dbs.${i}.name`,
-                              e.target.value
-                            )
-                          }}
+                        <FormField
+                          control={form.control}
+                          name={`resources.resourceConfig.dbs.${i}.name`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Name</FormLabel>
+                              <FormControl>
+                                <Input
+                                  className="w-[216px]"
+                                  placeholder="Enter name"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormDescription />
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor={`db-engine-${i}`}>
-                          Database Engine
-                        </Label>
-                        <Select
-                          onValueChange={(value) =>
-                            form.setValue(
-                              `resources.resourceConfig.dbs.${i}.engine`,
-                              value
-                            )
-                          }
-                        >
-                          <SelectTrigger
-                            id={`db-engine-${i}`}
-                            className="w-[216px]"
-                          >
-                            <SelectValue placeholder="Choose DB engine" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value={Engine.PostgreSQL}>
-                              {Engine.PostgreSQL}
-                            </SelectItem>
-                            <SelectItem value={Engine.MySQL}>
-                              {Engine.MySQL}
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <FormField
+                          control={form.control}
+                          name={`resources.resourceConfig.dbs.${i}.engine`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Database Engine</FormLabel>
+                              <FormControl>
+                                <Select
+                                  onValueChange={(value) =>
+                                    field.onChange(value as Engine)
+                                  }
+                                >
+                                  <SelectTrigger
+                                    id={`db-engine-${i}`}
+                                    className="w-[216px]"
+                                  >
+                                    <SelectValue placeholder="Choose DB engine" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value={Engine.PostgreSQL}>
+                                      {Engine.PostgreSQL}
+                                    </SelectItem>
+                                    <SelectItem value={Engine.MySQL}>
+                                      {Engine.MySQL}
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormDescription />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor={`db-engine-${i}`}>Tier / Size</Label>
-                      <Select
-                        onValueChange={(value) => {
-                          const selected = databaseEngines.find(
-                            (engine) => engine.userOption === value
-                          )
-                          setUserOption(selected || null)
-                          form.setValue(
-                            `resources.resourceConfig.dbs.${i}.skuName`,
-                            selected?.SKU || ""
-                          )
-                        }}
-                      >
-                        <SelectTrigger id={`db-engine-${i}`} className="w-full">
-                          <SelectValue placeholder="Choose DB engine" />
-                        </SelectTrigger>
-                        <SelectContent className="w-full">
-                          {databaseEngines.map((engine) => (
-                            <SelectItem
-                              key={engine.userOption}
-                              value={engine.userOption}
-                            >
-                              <p>{engine.userOption}</p>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormField
+                        control={form.control}
+                        name={`resources.resourceConfig.dbs.${i}.skuName`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tier / Size</FormLabel>
+                            <FormControl>
+                              <Select
+                                onValueChange={(value) => {
+                                  const selected = databaseEngines.find(
+                                    (engine) => engine.userOption === value
+                                  )
+                                  setUserOption(selected || null)
+                                  field.onChange(selected?.SKU || "")
+                                }}
+                              >
+                                <SelectTrigger
+                                  id={`db-engine-${i}`}
+                                  className="w-full"
+                                >
+                                  <SelectValue placeholder="Choose DB engine" />
+                                </SelectTrigger>
+                                <SelectContent className="w-full">
+                                  {databaseEngines.map((engine) => (
+                                    <SelectItem
+                                      key={engine.userOption}
+                                      value={engine.userOption}
+                                    >
+                                      <p>{engine.userOption}</p>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormDescription />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                     <div className="flex justify-between gap-4">
                       <div className="grid gap-2">
-                        <Label htmlFor={`db-engine-${i}`}>Username</Label>
-                        <Input
-                          placeholder="Enter username"
-                          onChange={(e) =>
-                            form.setValue(
-                              `resources.resourceConfig.dbs.${i}.username`,
-                              e.target.value
-                            )
-                          }
+                        <FormField
+                          control={form.control}
+                          name={`resources.resourceConfig.dbs.${i}.username`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Username</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Enter username"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormDescription />
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor={`db-engine-${i}`}>Password</Label>
-                        <div className="relative">
-                          <Input
-                            placeholder="Enter password"
-                            type={showPasswordArr[i] ? "text" : "password"}
-                            onChange={(e) =>
-                              form.setValue(
-                                `resources.resourceConfig.dbs.${i}.password`,
-                                e.target.value
-                              )
-                            }
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                            onClick={() =>
-                              setShowPasswordArr((prev) => {
-                                const arr = [...prev]
-                                arr[i] = !arr[i]
-                                return arr
-                              })
-                            }
-                          >
-                            {showPasswordArr[i] ? (
-                              <EyeOff className="h-4 w-4" />
-                            ) : (
-                              <Eye className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </div>
+                        <FormField
+                          control={form.control}
+                          name={`resources.resourceConfig.dbs.${i}.password`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Password</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <Input
+                                    placeholder="Enter password"
+                                    type={
+                                      showPasswordArr[i] ? "text" : "password"
+                                    }
+                                    {...field}
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                    onClick={() =>
+                                      setShowPasswordArr((prev) => {
+                                        const arr = [...prev]
+                                        arr[i] = !arr[i]
+                                        return arr
+                                      })
+                                    }
+                                  >
+                                    {showPasswordArr[i] ? (
+                                      <EyeOff className="h-4 w-4" />
+                                    ) : (
+                                      <Eye className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                </div>
+                              </FormControl>
+                              <FormDescription />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                     </div>
                     <div className="flex justify-between gap-4">
@@ -296,14 +346,23 @@ export function ResourceGroupAccordionDB({
                         `resources.resourceConfig.dbs.${i}.engine`
                       ) === Engine.PostgreSQL && (
                         <div className="grid gap-2">
-                          <Label>Storage</Label>
-                          <DatabaseSizeCombobox
-                            onChange={(value) => {
-                              form.setValue(
-                                `resources.resourceConfig.dbs.${i}.storageGB`,
-                                value
-                              )
-                            }}
+                          <FormField
+                            control={form.control}
+                            name={`resources.resourceConfig.dbs.${i}.storageGB`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Storage</FormLabel>
+                                <FormControl>
+                                  <DatabaseSizeCombobox
+                                    onChange={(value) => {
+                                      field.onChange(value)
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormDescription />
+                                <FormMessage />
+                              </FormItem>
+                            )}
                           />
                         </div>
                       )}

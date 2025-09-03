@@ -47,9 +47,18 @@ import { VmSizeDto } from "@/types/request"
 import React from "react"
 import { fetchVmSizes } from "@/app/api/policy/api"
 import { getPriceOfVM } from "@/app/api/requests/api"
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form"
 
 export const operatingSystems = [
-  { value: "ubuntu", label: "Ubuntu", icon: "/icon/ubuntu.png" },
+  { value: "ubuntu", label: "Ubuntu 20.04 LTS", icon: "/icon/ubuntu.png" },
+  // { value: "ubuntu", label: "Ubuntu 22.04 LTS", icon: "/icon/ubuntu.png" },
 ]
 
 interface ResourceGroupAccordionProps {
@@ -165,64 +174,83 @@ const VMAccordionItem = React.forwardRef<HTMLDivElement, VMAccordionItemProps>(
               </div>
             </CardHeader>
             <CardContent className="grid gap-2">
-              {/* Name Input */}
-              <Label>Name</Label>
-              <Input
-                placeholder="e.g., web-server-1"
-                onChange={(e) =>
-                  form.setValue(
-                    `resources.resourceConfig.vms.${index}.name`,
-                    e.target.value
-                  )
-                }
+              <FormField
+                control={form.control}
+                name={`resources.resourceConfig.vms.${index}.name`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., web-server-1" {...field} />
+                    </FormControl>
+                    <FormDescription />
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
 
               {/* VM Size and OS */}
               <div className="flex justify-between gap-4">
                 <div className="grid gap-2">
-                  <Label>VM Size</Label>
-                  <AzureVMSizeCombobox
-                    usePolicyFilter={true}
-                    selectedValue={selectedVmSize}
-                    setSelectedValue={setSelectedVmSize}
-                    handleSelect={(vmSize) => {
-                      setSelectedVmSize(vmSize)
-                      form.setValue(
-                        `resources.resourceConfig.vms.${index}.sizeId`,
-                        vmSize.id
-                      )
-                    }}
+                  <FormField
+                    control={form.control}
+                    name={`resources.resourceConfig.vms.${index}.sizeId`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>VM Size</FormLabel>
+                        <FormControl>
+                          <AzureVMSizeCombobox
+                            usePolicyFilter={true}
+                            selectedValue={selectedVmSize}
+                            setSelectedValue={setSelectedVmSize}
+                            handleSelect={(vmSize) => {
+                              setSelectedVmSize(vmSize)
+                              field.onChange(vmSize.id)
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Operating System</Label>
-                  <Select
-                    onValueChange={(value) =>
-                      form.setValue(
-                        `resources.resourceConfig.vms.${index}.os`,
-                        value
-                      )
-                    }
-                  >
-                    <SelectTrigger className="w-54">
-                      <SelectValue placeholder="Choose OS" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {operatingSystems.map((os) => (
-                        <SelectItem key={os.value} value={os.value}>
-                          <div className="flex items-center gap-2">
-                            <Image
-                              src={os.icon}
-                              width={16}
-                              height={16}
-                              alt={`${os.label} icon`}
-                            />
-                            {os.label}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormField
+                    control={form.control}
+                    name={`resources.resourceConfig.vms.${index}.os`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Operating System</FormLabel>
+                        <FormControl>
+                          <Select
+                            onValueChange={(value) => field.onChange(value)}
+                          >
+                            <SelectTrigger className="w-54">
+                              <SelectValue placeholder="Choose OS" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {operatingSystems.map((os) => (
+                                <SelectItem key={os.label} value={os.value}>
+                                  <div className="flex items-center gap-2">
+                                    <Image
+                                      src={os.icon}
+                                      width={16}
+                                      height={16}
+                                      alt={`${os.label} icon`}
+                                    />
+                                    {os.label}
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
 

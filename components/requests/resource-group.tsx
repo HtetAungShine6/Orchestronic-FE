@@ -34,23 +34,8 @@ import {
 import { ResourceGroupAccordionST } from "./resource-group-accordion-st"
 import { ResourceGroupAccordionVM } from "./resource-group-accordion-vm"
 import { ResourceGroupAccordionDB } from "./resource-group-accordion-db"
-
-export const cloudProviders = [
-  { value: "azure", label: "Azure", icon: "/icon/azure.svg" },
-  { value: "aws", label: "AWS", icon: "/icon/aws.svg" },
-]
-export const regions = [
-  {
-    value: "southeastasia",
-    label: "Asia Pacific (Singapore)",
-    flag: "https://flagsapi.com/SG/flat/16.png",
-  },
-  {
-    value: "eastus",
-    label: "US East (Virginia)",
-    flag: "https://flagsapi.com/US/flat/16.png",
-  },
-]
+import { CloudProvider, cloudProviders, regions } from "@/types/resource"
+import { useEffect } from "react"
 
 interface ResourceGroupProps {
   form: UseFormReturn<z.infer<typeof requestFormSchema>>
@@ -61,10 +46,15 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
   const [storageCount, setStorageCount] = useState(0)
   const [databaseCount, setDatabaseCount] = useState(0)
   const repoName = useSelector((state: RootState) => state.repoName.value)
-  const [selectedCloudProvider, setSelectedCloudProvider] = useState(
-    cloudProviders[0].value
-  )
-  console.log(selectedCloudProvider)
+  const selectedCloudProvider = form.watch(
+    "resources.cloudProvider"
+  ) as CloudProvider
+
+  useEffect(() => {
+    if (selectedCloudProvider) {
+      form.setValue("resources.region", regions[selectedCloudProvider][0].value)
+    }
+  }, [selectedCloudProvider, form])
 
   return (
     <Card>
@@ -90,9 +80,8 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
                 <FormControl>
                   <Select
                     value={field.value}
-                    onValueChange={(value) => {
+                    onValueChange={(value: CloudProvider) => {
                       field.onChange(value)
-                      setSelectedCloudProvider(value)
                     }}
                   >
                     <SelectTrigger className="w-[140px]">
@@ -122,7 +111,7 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
           <div className="grid gap-2">
             <Label htmlFor="resource-group-provider">Region</Label>
             <Select
-              defaultValue={regions[0].value}
+              value={form.watch("resources.region")}
               onValueChange={(value) =>
                 form.setValue("resources.region", value)
               }
@@ -131,7 +120,7 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {regions.map((option) => (
+                {regions[selectedCloudProvider].map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     <span className="flex items-center gap-2">
                       <Image
@@ -148,6 +137,7 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
             </Select>
           </div>
         </div>
+
         <div className="grid gap-4 mt-6 w-135">
           <Label htmlFor="resources">Resources</Label>
           <div>
@@ -183,7 +173,7 @@ export default function ResourceGroup({ form }: Readonly<ResourceGroupProps>) {
           <div className="">
             <div className="flex gap-6">
               <Label htmlFor="sql" className="w-60">
-                Databases
+                Database
               </Label>
               <Input
                 id="database"

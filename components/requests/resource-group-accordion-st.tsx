@@ -13,7 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -226,133 +225,134 @@ export function ResourceGroupAccordionST({
                     </div>
                     <div className="flex justify-between gap-4">
                       <div className="grid gap-2">
-                        <Label htmlFor={`storage-access-tier-${i}`}>
-                          Access Tier
-                        </Label>
-                        <Select
-                          onValueChange={(value) =>
-                            form.setValue(
-                              `resources.resourceConfig.sts.${i}.accessTier`,
-                              value
-                            )
-                          }
-                        >
-                          <SelectTrigger
-                            id={`storage-access-tier-${i}`}
-                            className=" w-[213px]"
-                          >
-                            <SelectValue placeholder="Select access tier">
-                              {form.watch(
-                                `resources.resourceConfig.sts.${i}.accessTier`
-                              ) && (
-                                <span>
-                                  {form.watch(
-                                    `resources.resourceConfig.sts.${i}.accessTier`
-                                  )}
-                                </span>
-                              )}
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {storageAccessTier.map((accessTier) => (
-                              <SelectItem
-                                key={accessTier.label}
-                                value={accessTier.label}
-                              >
-                                <div className="flex flex-col text-left">
-                                  <span>{accessTier.label}</span>
-                                  <span className="text-muted-foreground text-xs">
-                                    {accessTier.description}
-                                  </span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormField
+                          control={form.control}
+                          name={`resources.resourceConfig.sts.${i}.accessTier`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Access Tier</FormLabel>
+                              <FormControl>
+                                <Select
+                                  onValueChange={(value) =>
+                                    field.onChange(value)
+                                  }
+                                >
+                                  <SelectTrigger
+                                    id={`storage-access-tier-${i}`}
+                                    className=" w-[213px]"
+                                  >
+                                    <SelectValue placeholder="Select access tier">
+                                      <span>{field.value}</span>
+                                    </SelectValue>
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {storageAccessTier.map((accessTier) => (
+                                      <SelectItem
+                                        key={accessTier.label}
+                                        value={accessTier.label}
+                                      >
+                                        <div className="flex flex-col text-left">
+                                          <span>{accessTier.label}</span>
+                                          <span className="text-muted-foreground text-xs">
+                                            {accessTier.description}
+                                          </span>
+                                        </div>
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor={`storage-sku-${i}`}>SKU</Label>
-                        <Select
-                          onValueChange={(value) =>
-                            form.setValue(
-                              `resources.resourceConfig.sts.${i}.sku`,
-                              value
-                            )
-                          }
-                        >
-                          <SelectTrigger
-                            id={`storage-sku-${i}`}
-                            className=" w-[213px]"
-                          >
-                            <SelectValue placeholder="Select SKU">
-                              {form.watch(
-                                `resources.resourceConfig.sts.${i}.sku`
-                              ) && (
-                                <span>
-                                  {form.watch(
-                                    `resources.resourceConfig.sts.${i}.sku`
-                                  )}
-                                </span>
-                              )}
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {storageSKU.map((eachSku) => (
-                              <SelectItem key={eachSku.sku} value={eachSku.sku}>
-                                <div className="flex flex-col text-left">
-                                  <span>{eachSku.sku}</span>
-                                  <span className="text-muted-foreground text-xs">
-                                    {eachSku.description}
-                                  </span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormField
+                          control={form.control}
+                          name={`resources.resourceConfig.sts.${i}.sku`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>SKU</FormLabel>
+                              <FormControl>
+                                <Select
+                                  onValueChange={(value) =>
+                                    field.onChange(value)
+                                  }
+                                >
+                                  <SelectTrigger
+                                    id={`storage-sku-${i}`}
+                                    className=" w-[213px]"
+                                  >
+                                    <SelectValue placeholder="Select SKU">
+                                      {field.value && (
+                                        <span>{field.value}</span>
+                                      )}
+                                    </SelectValue>
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {storageSKU.map((eachSku) => (
+                                      <SelectItem
+                                        key={eachSku.sku}
+                                        value={eachSku.sku}
+                                      >
+                                        <div className="flex flex-col text-left">
+                                          <span>{eachSku.sku}</span>
+                                          <span className="text-muted-foreground text-xs">
+                                            {eachSku.description}
+                                          </span>
+                                        </div>
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor={`storage-kind-${i}`}>Kind</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          form.setValue(
-                            `resources.resourceConfig.sts.${i}.kind`,
-                            value
-                          )
-                        }
-                      >
-                        <SelectTrigger
-                          id={`storage-sku-${i}`}
-                          className=" w-[213px]"
-                        >
-                          <SelectValue placeholder="Select Kind">
-                            {form.watch(
-                              `resources.resourceConfig.sts.${i}.kind`
-                            ) && (
-                              <span>
-                                {form.watch(
-                                  `resources.resourceConfig.sts.${i}.kind`
-                                )}
-                              </span>
-                            )}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {storageKind.map((eachKind) => (
-                            <SelectItem
-                              key={eachKind.kind}
-                              value={eachKind.kind}
-                            >
-                              <div className="flex flex-col text-left">
-                                <span>{eachKind.kind}</span>
-                                <span className="text-muted-foreground text-xs">
-                                  {eachKind.description}
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormField
+                        control={form.control}
+                        name={`resources.resourceConfig.sts.${i}.kind`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Kind</FormLabel>
+                            <FormControl>
+                              <Select
+                                onValueChange={(value) => field.onChange(value)}
+                              >
+                                <SelectTrigger
+                                  id={`storage-sku-${i}`}
+                                  className=" w-[213px]"
+                                >
+                                  <SelectValue placeholder="Select Kind">
+                                    {field.value && <span>{field.value}</span>}
+                                  </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {storageKind.map((eachKind) => (
+                                    <SelectItem
+                                      key={eachKind.kind}
+                                      value={eachKind.kind}
+                                    >
+                                      <div className="flex flex-col text-left">
+                                        <span>{eachKind.kind}</span>
+                                        <span className="text-muted-foreground text-xs">
+                                          {eachKind.description}
+                                        </span>
+                                      </div>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </CardContent>
                 </Card>

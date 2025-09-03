@@ -1,3 +1,4 @@
+import { Engine } from "@/types/resource"
 import { z } from "zod"
 
 const vmSchema = z.object({
@@ -12,24 +13,37 @@ const vmSchema = z.object({
   }),
 })
 
-const dbSchema = z.object({
-  name: z.string().nonempty({
-    message: "Database name is required",
-  }),
-  engine: z.string().nonempty({
-    message: "Database engine is required",
-  }),
-  storageGB: z.number().optional(),
-  skuName: z.string().nonempty({
-    message: "SKU name is required",
-  }),
-  username: z.string().nonempty({
-    message: "Username is required",
-  }),
-  password: z.string().nonempty({
-    message: "Password is required",
-  }),
-})
+const dbSchema = z
+  .object({
+    name: z.string().nonempty({
+      message: "Database name is required",
+    }),
+    engine: z.string().nonempty({
+      message: "Database engine is required",
+    }),
+    storageGB: z.number().optional(),
+    skuName: z.string().nonempty({
+      message: "SKU name is required",
+    }),
+    username: z.string().nonempty({
+      message: "Username is required",
+    }),
+    password: z.string().nonempty({
+      message: "Password is required",
+    }),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.engine === Engine.PostgreSQL &&
+      (data.storageGB === undefined || data.storageGB === null)
+    ) {
+      ctx.addIssue({
+        path: ["storageGB"],
+        code: z.ZodIssueCode.custom,
+        message: "required for PostgreSQL databases",
+      })
+    }
+  })
 
 const storageSchema = z.object({
   accessTier: z.string().nonempty({
@@ -71,6 +85,7 @@ export const resourceSchema = z.object({
       },
       {
         message: "At least one resource (VM, Database, or Storage) is required",
+        path: ["resources", "resourceConfig"],
       }
     ),
 })

@@ -1,10 +1,8 @@
 "use client"
 
 import Collaborators from "@/components/requests/collaborators"
-import ResourceGroup, {
-  cloudProviders,
-  regions,
-} from "@/components/requests/resource-group"
+import ResourceGroup from "@/components/requests/resource-group"
+import { CloudProvider, cloudProviders, regions } from "@/types/resource"
 import { Textarea } from "@/components/ui/textarea"
 import { RepoNameInput } from "@/components/requests/repo-name-input"
 
@@ -37,6 +35,7 @@ import {
 import { createRequest } from "@/app/api/requests/api"
 import { useMutation } from "@tanstack/react-query"
 import { User } from "@/types/api"
+import AlertError from "../ui/alert-error"
 
 export const requestFormSchema = z.object({
   resources: resourceSchema,
@@ -77,6 +76,7 @@ export default function ClientRequestForm({
   const repoName = useSelector((state: RootState) => state.repoName.value)
   const router = useRouter()
   const [showSuccess, setShowSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const mutation = useMutation({
     mutationFn: (values: z.infer<typeof requestFormSchema>) =>
@@ -85,7 +85,7 @@ export default function ClientRequestForm({
       setShowSuccess(true)
     },
     onError: (error) => {
-      console.error("Failed to create request:", error)
+      setError(error.message)
     },
   })
 
@@ -97,14 +97,7 @@ export default function ClientRequestForm({
       },
       resources: {
         cloudProvider: cloudProviders[0].value,
-        region: regions[0].value,
-        resourceConfig: {
-          sts: [
-            {
-              name: "",
-            },
-          ],
-        },
+        region: regions[CloudProvider.AZURE][0].value,
       },
     },
   })
@@ -125,8 +118,17 @@ export default function ClientRequestForm({
     router.push(`/requests/${mutation.data?.displayCode}`)
   }
 
+  console.log(requestForm.formState.errors)
+
   return (
     <>
+      {error && (
+        <AlertError
+          title="Error creating request"
+          description="There was an error creating your request."
+          content={error}
+        />
+      )}
       <AlertDialogError form={requestForm} />
       <AlertDialogSuccess isOpen={showSuccess} onClose={handleSuccessClose} />
 
@@ -179,7 +181,9 @@ function AlertDialogError({
   const [hasErrors, setHasErrors] = useState<boolean>(false)
 
   useEffect(() => {
-    setHasErrors(Object.keys(form.formState.errors).length > 0)
+    setHasErrors(
+      form.formState.errors.resources?.resourceConfig?.message === "Required"
+    )
   }, [form.formState.errors])
 
   return (
@@ -191,11 +195,9 @@ function AlertDialogError({
             Please fix the following errors before submitting:
           </AlertDialogDescription>
           <ul className="mt-2 list-disc list-inside">
-            {Object.entries(form.formState.errors).map(([field, error]) => (
-              <li key={field} className="text-red-600">
-                {field}: {error?.message || "Invalid value"}
-              </li>
-            ))}
+            <li className="text-red-600">
+              At least one resource (VM, Database, or Storage) is required
+            </li>
           </ul>
         </AlertDialogHeader>
         <AlertDialogFooter>

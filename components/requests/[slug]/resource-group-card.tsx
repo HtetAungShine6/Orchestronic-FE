@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { cloudProviders, regions } from "../resource-group"
+import { cloudProviders, regions } from "@/types/resource"
 import { IconPackages } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
@@ -21,7 +21,12 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
   const cloudProvider = cloudProviders.find(
     (provider) => provider.value === data?.resources?.cloudProvider
   )
-  const region = regions.find((r) => r.value === data?.resources?.region)
+  const region =
+    cloudProvider?.value && regions[cloudProvider.value]
+      ? regions[cloudProvider.value].find(
+          (r) => r.value === data?.resources?.region
+        )
+      : undefined
   return (
     <Card className="h-full">
       <CardHeader>
