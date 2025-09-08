@@ -9,6 +9,50 @@ export interface VMInstance {
   resourceConfigId: string
 }
 
+export interface AwsVMInstance {
+  id: string
+  instanceName: string
+  os: string
+  keyName: string
+  sgName: string
+  AwsInstanceType: AwsInstanceType
+}
+
+interface AwsInstanceType {
+  id: string
+  name: string
+  numberOfCores: number
+  memoryInMB: number
+  raw: JSON
+  AwsVMInstance: AwsVMInstance[]
+}
+
+interface AwsDatabaseType {
+  id: string
+  DBInstanceClass: string
+  engine: Engine
+  raw: JSON
+  MinStorageSize: number
+  MaxStorageSize: number
+  AwsDatabaseInstance: AwsDatabaseInstance[]
+}
+
+export interface AwsDatabaseInstance {
+  id: string
+  dbUsername: string
+  dbPassword: string
+  dbInstanceClass: AwsDatabaseType
+  engine: Engine
+  dbAllocatedStorage: number
+  dbName: string
+  resourceConfigId: string
+}
+
+export interface AwsStorageInstance {
+  id: string
+  bucketName: string
+}
+
 export interface DatabaseInstance {
   id: string
   engine: Engine
@@ -29,11 +73,18 @@ export interface StorageInstance {
   resourceConfigId: string
 }
 
-export interface ResourceConfig {
+export interface ResourceAzureConfig {
   id: string
-  vms: VMInstance[]
-  dbs: DatabaseInstance[]
-  sts: StorageInstance[]
+  AzureVMInstance: VMInstance[]
+  AzureDatabase: DatabaseInstance[]
+  AzureStorage: StorageInstance[]
+}
+
+export interface ResourceAwsConfig {
+  id: string
+  AwsVMInstance: AwsVMInstance[]
+  AwsDatabase: AwsDatabaseInstance[]
+  AwsStorage: AwsStorageInstance[]
 }
 
 export enum Engine {

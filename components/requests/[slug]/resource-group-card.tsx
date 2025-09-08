@@ -7,16 +7,21 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { cloudProviders, regions } from "@/types/resource"
+import { CloudProvider, cloudProviders, regions } from "@/types/resource"
 import { IconPackages } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import Image from "next/image"
-import { RequestDetail } from "./request-detail"
 import { Separator } from "@/components/ui/separator"
-import ResourceConfigSection from "./resource-config-section"
+import ResourceAzureConfigSection from "./resource-azure-config-section"
+import ResourceAwsConfigSection from "./resource-aws-config-section"
+import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
 
-export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
+export default function ResourceGroupCard({
+  data,
+}: {
+  data?: AwsRequestDetail | AzureRequestDetail
+}) {
   const status = statuses.find((s) => s.value === data?.status)
   const cloudProvider = cloudProviders.find(
     (provider) => provider.value === data?.resources?.cloudProvider
@@ -92,7 +97,12 @@ export default function ResourceGroupCard({ data }: { data?: RequestDetail }) {
       </CardContent>
       <Separator />
       <CardFooter>
-        <ResourceConfigSection data={data} />
+        {data?.resources?.cloudProvider === CloudProvider.AZURE && (
+          <ResourceAzureConfigSection data={data as AzureRequestDetail} />
+        )}
+        {data?.resources?.cloudProvider === CloudProvider.AWS && (
+          <ResourceAwsConfigSection data={data as AwsRequestDetail} />
+        )}
       </CardFooter>
     </Card>
   )

@@ -1,9 +1,10 @@
+import { CloudProvider } from "@/types/resource"
 import { z } from "zod"
 
-export const resourceSchema = z.object({
+export const azureResourceSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
-  cloudProvider: z.enum(["aws", "azure", "gcp"]),
+  cloudProvider: z.nativeEnum(CloudProvider),
   region: z.string(),
   resourceConfigId: z.string().uuid(),
   resourceConfig: z.object({
@@ -55,4 +56,4 @@ export const resourceSchema = z.object({
   }),
 })
 
-export type Resource = z.infer<typeof resourceSchema>
+export type Resource = z.infer<typeof azureResourceSchema>

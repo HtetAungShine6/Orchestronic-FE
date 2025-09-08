@@ -7,7 +7,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { generateRepoName } from "@/lib/utils"
+// import { generateRepoName } from "@/lib/utils"
 
 import ClientRequestForm from "@/components/requests/client-request-form"
 import { useQuery } from "@tanstack/react-query"
@@ -15,7 +15,7 @@ import { getUser } from "@/app/api/user/api"
 import ClientRequestFormSkeleton from "../components/client-request-form-skeleton"
 
 export default function Page() {
-  const suggestedName = generateRepoName()
+  // const suggestedName = generateRepoName()
   const {
     data: session,
     isLoading,
@@ -52,7 +52,10 @@ export default function Page() {
         </div>
       </div>
       <div className="grid gap-6">
-        <ClientRequestForm session={session} suggestedName={suggestedName} />
+        <ClientRequestForm
+          session={session}
+          // suggestedName={suggestedName}
+        />
       </div>
     </div>
   )

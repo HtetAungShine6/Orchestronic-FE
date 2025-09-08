@@ -24,6 +24,7 @@
 - create request with aws * 
 - create request correctly to Terraform
     Delay
+- Detroy resource group
 
 TonKhaw
 - implement RQ, Airflow, and Terraform

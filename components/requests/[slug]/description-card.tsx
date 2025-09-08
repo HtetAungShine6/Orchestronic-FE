@@ -1,8 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
 import { IconInfoCircle } from "@tabler/icons-react"
-import { RequestDetail } from "./request-detail"
 
-export default function DescriptionCard({ data }: { data?: RequestDetail }) {
+export default function DescriptionCard({
+  data,
+}: {
+  data?: AwsRequestDetail | AzureRequestDetail
+}) {
   return (
     <Card>
       <CardHeader>

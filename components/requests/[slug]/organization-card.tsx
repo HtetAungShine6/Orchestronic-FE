@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { IconBuilding } from "@tabler/icons-react"
-import { RequestDetail } from "./request-detail"
 import { Label } from "@/components/ui/label"
 import {
   Tooltip,
@@ -13,8 +12,13 @@ import { getInitials } from "@/lib/utils"
 import { Repository } from "@/app/(dashboard)/repositories/data/schema-repository"
 import Link from "next/link"
 import { RepositoryStatus } from "@/types/repo"
+import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
 
-export default function OrganizationCard({ data }: { data?: RequestDetail }) {
+export default function OrganizationCard({
+  data,
+}: {
+  data?: AwsRequestDetail | AzureRequestDetail
+}) {
   const repoUrl =
     data?.repository?.status === RepositoryStatus.Created
       ? `${process.env.NEXT_PUBLIC_GITLAB_URL}/root/${data?.repository?.name}`

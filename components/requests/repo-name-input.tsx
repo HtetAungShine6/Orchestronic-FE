@@ -22,24 +22,22 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { UseFormReturn } from "react-hook-form"
-import { requestFormSchema } from "@/components/requests/client-request-form"
-import z from "zod"
+import { FieldValues, Path, UseFormReturn } from "react-hook-form"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/app/state/store"
 import { setRepoName } from "./state/repo-slice"
 
-interface RepoNameInputProps {
-  suggestedName: string
+interface RepoNameInputProps<T extends FieldValues> {
+  // suggestedName: string
   ownerName: string
-  form: UseFormReturn<z.infer<typeof requestFormSchema>>
+  form: UseFormReturn<T>
 }
 
-export function RepoNameInput({
+export function RepoNameInput<T extends FieldValues>({
   // suggestedName,
   ownerName,
   form,
-}: RepoNameInputProps) {
+}: RepoNameInputProps<T>) {
   const repoName = useSelector((state: RootState) => state.repoName.value)
   const dispatch = useDispatch()
   const debouncedRepoName = useDebounce(repoName, 500)
@@ -167,7 +165,7 @@ export function RepoNameInput({
           <div className="h-full">
             <FormField
               control={form.control}
-              name="repository.name"
+              name={"repository.name" as Path<T>}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="gap-1">Repository name *</FormLabel>
@@ -214,7 +212,7 @@ export function RepoNameInput({
         </p> */}
         <FormField
           control={form.control}
-          name="repository.description"
+          name={"repository.description" as Path<T>}
           render={({ field }) => (
             <FormItem>
               <FormLabel className="gap-1">

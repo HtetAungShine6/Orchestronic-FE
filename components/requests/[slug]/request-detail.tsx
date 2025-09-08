@@ -17,8 +17,7 @@ import ResourceGroupCard from "./resource-group-card"
 import OrganizationCard from "./organization-card"
 import { Role } from "@/types/role"
 import DescriptionCard from "./description-card"
-import { CloudProvider, ResourceConfig } from "@/types/resource"
-import { VmSizeDto } from "@/types/request"
+import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
 import { haveAdminOrIT } from "@/lib/utils"
 import {
   AlertDialog,
@@ -49,59 +48,11 @@ import { MessageSquareText } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { RequestPageSkeleton } from "./request-page-skeleton"
 import { getUser } from "@/app/api/user/api"
-import { RepositoryStatus } from "@/types/repo"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-
-export interface RequestDetail {
-  id: string
-  displayCode: string
-  status: "Pending" | "Approved" | "Rejected"
-  description: string
-  ownerId: string
-  repositoryId: string
-  resourcesId: string
-  createdAt: Date
-  updatedAt: Date
-  feedback?: string
-  resources: {
-    id: string
-    name: string
-    cloudProvider: CloudProvider
-    region: string
-    size: VmSizeDto
-    sizeId: string
-    resourceConfigId: string
-    resourceConfig: ResourceConfig
-  }
-  repository: {
-    id: string
-    name: string
-    description: string | null
-    status: RepositoryStatus
-    resourcesId: string
-    RepositoryCollaborator: {
-      userId: string
-      repositoryId: string
-      user: {
-        id: string
-        email: string
-        name: string
-        role: Role
-      }
-      assignedAt: string
-    }[]
-  }
-  owner: {
-    id: string
-    name: string
-    email: string
-    role: Role
-  }
-}
 
 export default function RequestDetail({ slug }: { slug: string }) {
   const queryClient = useQueryClient()
@@ -109,7 +60,9 @@ export default function RequestDetail({ slug }: { slug: string }) {
   const [showRejectPopup, setShowRejectPopup] = useState(false)
   const [feedback, setFeedback] = useState<string>("")
 
-  const { data, isLoading, error } = useQuery<RequestDetail>({
+  const { data, isLoading, error } = useQuery<
+    AzureRequestDetail | AwsRequestDetail
+  >({
     queryKey: ["request", slug],
     queryFn: () => getRequestBySlug(slug),
   })
@@ -200,8 +153,6 @@ export default function RequestDetail({ slug }: { slug: string }) {
 
   if (isLoading) return <RequestPageSkeleton />
   if (error instanceof ApiError) return <div>{error.message}</div>
-
-  console.log(data?.feedback)
 
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">

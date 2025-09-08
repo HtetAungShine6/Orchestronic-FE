@@ -23,18 +23,18 @@ import { useQuery } from "@tanstack/react-query"
 import { fuzzyFindUsersByEmail, getUser } from "@/app/api/user/api"
 import { User } from "@/types/api"
 import { useDebounce } from "@/hooks/useDebounce"
-import { requestFormSchema } from "@/components/requests/client-request-form"
-import { UseFormReturn } from "react-hook-form"
-import z from "zod"
+import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form"
 import { IconTrash } from "@tabler/icons-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { getInitials } from "@/lib/utils"
 
-interface CollaboratorsProps {
-  form: UseFormReturn<z.infer<typeof requestFormSchema>>
+interface CollaboratorsProps<T extends FieldValues> {
+  form: UseFormReturn<T>
 }
 
-export default function Collaborators({ form }: CollaboratorsProps) {
+export default function Collaborators<T extends FieldValues>({
+  form,
+}: CollaboratorsProps<T>) {
   const [open, setOpen] = useState<boolean>(false)
   const [searchEmail, setSearchEmail] = useState<string>("")
   const [selectedUsers, setSelectedUsers] = useState<User[]>([])
@@ -74,8 +74,8 @@ export default function Collaborators({ form }: CollaboratorsProps) {
       } else {
         const updated = [...prev, user]
         form.setValue(
-          "repository.collaborators",
-          updated.map((u) => ({ userId: u.id }))
+          "repository.collaborators" as Path<T>,
+          updated.map((u) => ({ userId: u.id })) as PathValue<T, Path<T>>
         )
         return updated
       }
@@ -96,8 +96,8 @@ export default function Collaborators({ form }: CollaboratorsProps) {
     setSelectedUsers((prev) => {
       const updated = prev.filter((user) => user.email !== email)
       form.setValue(
-        "repository.collaborators",
-        updated.map((u) => ({ userId: u.id }))
+        "repository.collaborators" as Path<T>,
+        updated.map((u) => ({ userId: u.id })) as PathValue<T, Path<T>>
       )
       return updated
     })

@@ -1,6 +1,7 @@
 "use client"
 
-import { requestFormSchema } from "@/components/requests/client-request-form"
+import { awsRequestFormSchema } from "@/components/requests/form-schema/aws"
+import { azureRequestFormSchema } from "@/components/requests/form-schema/azure"
 import { fetcher } from "@/lib/fetcher"
 import { Status } from "@/types/api"
 import { AzureRetailPriceResponse } from "@/types/request"
@@ -25,8 +26,23 @@ export async function getRequestsStatus(status: Status) {
   )
 }
 
-export async function createRequest(data: z.infer<typeof requestFormSchema>) {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/request`, {
+export async function createRequestAzure(
+  data: z.infer<typeof azureRequestFormSchema>
+) {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/request/azure`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+}
+
+export async function createRequestAws(
+  data: z.infer<typeof awsRequestFormSchema>
+) {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/request/aws`, {
     method: "POST",
     credentials: "include",
     headers: {

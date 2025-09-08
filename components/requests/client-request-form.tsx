@@ -1,8 +1,13 @@
 "use client"
 
 import Collaborators from "@/components/requests/collaborators"
-import ResourceGroup from "@/components/requests/resource-group"
-import { CloudProvider, cloudProviders, regions } from "@/types/resource"
+import AzureResourceGroup from "@/components/requests/azure-resource-group"
+import {
+  CloudProvider,
+  cloudProviders,
+  Engine,
+  regions,
+} from "@/types/resource"
 import { Textarea } from "@/components/ui/textarea"
 import { RepoNameInput } from "@/components/requests/repo-name-input"
 
@@ -18,7 +23,6 @@ import z from "zod"
 import { useForm, UseFormReturn } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { resourceSchema } from "@/app/zod/scheme"
 import { useSelector } from "react-redux"
 import { RootState } from "@/app/state/store"
 import { useEffect, useState } from "react"
@@ -32,93 +36,122 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { createRequest } from "@/app/api/requests/api"
+import { createRequestAws, createRequestAzure } from "@/app/api/requests/api"
 import { useMutation } from "@tanstack/react-query"
 import { User } from "@/types/api"
 import AlertError from "../ui/alert-error"
-
-export const requestFormSchema = z.object({
-  resources: resourceSchema,
-  repository: z.object({
-    name: z
-      .string()
-      .regex(/^[a-z0-9._-]+$/, {
-        message:
-          "Repository name can only contain lowercase letters and numbers",
-      })
-      .min(3, { message: "Repository name must be at least 3 characters" })
-      .max(24, { message: "Repository name must be at most 24 characters" }),
-    description: z.string().optional(),
-    collaborators: z
-      .array(
-        z.object({
-          userId: z.string().nonempty({
-            message: "Collaborator ID is required",
-          }),
-        })
-      )
-      .optional(),
-  }),
-  description: z.string().nonempty({
-    message: "Please provide a description for your request",
-  }),
-})
+import { azureRequestFormSchema } from "./form-schema/azure"
+import AwsResourceGroup from "./aws-resource-group"
+import { awsRequestFormSchema } from "./form-schema/aws"
 
 interface ClientRequestFormProps {
-  suggestedName: string
+  // suggestedName: string
   session?: User
 }
 
 export default function ClientRequestForm({
-  suggestedName,
+  // suggestedName,
   session,
 }: Readonly<ClientRequestFormProps>) {
   const repoName = useSelector((state: RootState) => state.repoName.value)
   const router = useRouter()
-  const [showSuccess, setShowSuccess] = useState(false)
+  const [showSuccess, setShowSuccess] = useState<{
+    show: boolean
+    provider: CloudProvider | null
+  }>({ show: false, provider: null })
   const [error, setError] = useState<string | null>(null)
+  const [cloudProvider, setCloudProvider] = useState<CloudProvider>(
+    CloudProvider.AZURE
+  )
 
-  const mutation = useMutation({
-    mutationFn: (values: z.infer<typeof requestFormSchema>) =>
-      createRequest(values),
+  const azureMutation = useMutation({
+    mutationFn: (values: z.infer<typeof azureRequestFormSchema>) => {
+      return createRequestAzure(values)
+    },
     onSuccess: () => {
-      setShowSuccess(true)
+      setShowSuccess({ show: true, provider: CloudProvider.AZURE })
     },
     onError: (error) => {
       setError(error.message)
     },
   })
 
-  const requestForm = useForm<z.infer<typeof requestFormSchema>>({
-    resolver: zodResolver(requestFormSchema),
+  const awsMutation = useMutation({
+    mutationFn: (values: z.infer<typeof awsRequestFormSchema>) => {
+      return createRequestAws(values)
+    },
+    onSuccess: () => {
+      setShowSuccess({ show: true, provider: CloudProvider.AWS })
+    },
+    onError: (error) => {
+      setError(error.message)
+    },
+  })
+
+  const azureRequestForm = useForm<z.infer<typeof azureRequestFormSchema>>({
+    resolver: zodResolver(azureRequestFormSchema),
     defaultValues: {
       repository: {
         description: "",
       },
       resources: {
-        cloudProvider: cloudProviders[0].value,
+        cloudProvider: cloudProviders.find(
+          (cp) => cp.value === CloudProvider.AZURE
+        )?.value as CloudProvider,
         region: regions[CloudProvider.AZURE][0].value,
+      },
+    },
+  })
+
+  const awsRequestForm = useForm<z.infer<typeof awsRequestFormSchema>>({
+    resolver: zodResolver(awsRequestFormSchema),
+    defaultValues: {
+      repository: {
+        description: "",
+      },
+      resources: {
+        cloudProvider: cloudProviders.find(
+          (cp) => cp.value === CloudProvider.AWS
+        )?.value as CloudProvider,
+        region: regions[CloudProvider.AWS][0].value,
+        resourceConfig: {
+          dbs: [
+            {
+              engine: Engine.PostgreSQL,
+            },
+          ],
+        },
       },
     },
   })
 
   useEffect(() => {
     if (repoName) {
-      requestForm.setValue("resources.name", `rg-${repoName}`)
-      requestForm.setValue("repository.name", repoName)
+      azureRequestForm.setValue("resources.name", `rg-${repoName}`)
+      azureRequestForm.setValue("repository.name", repoName)
+      awsRequestForm.setValue("resources.name", `rg-${repoName}`)
+      awsRequestForm.setValue("repository.name", repoName)
     }
-  }, [repoName, requestForm])
+  }, [repoName, azureRequestForm, awsRequestForm])
 
-  async function onSubmit(values: z.infer<typeof requestFormSchema>) {
-    mutation.mutate(values)
+  async function onSubmitAzure(values: z.infer<typeof azureRequestFormSchema>) {
+    azureMutation.mutate(values)
+  }
+
+  async function onSubmitAws(values: z.infer<typeof awsRequestFormSchema>) {
+    awsMutation.mutate(values)
   }
 
   const handleSuccessClose = () => {
-    setShowSuccess(false)
-    router.push(`/requests/${mutation.data?.displayCode}`)
+    setShowSuccess({ show: false, provider: null })
+    if (showSuccess.provider === CloudProvider.AWS)
+      router.push(`/requests/${awsMutation.data?.displayCode}`)
+    if (showSuccess.provider === CloudProvider.AZURE)
+      router.push(`/requests/${azureMutation.data?.displayCode}`)
   }
 
-  console.log(requestForm.formState.errors)
+  console.log("Azure Form Errors:", azureRequestForm.formState.errors)
+  console.log("AWS Form Errors:", awsRequestForm.formState.errors)
 
   return (
     <>
@@ -129,46 +162,99 @@ export default function ClientRequestForm({
           content={error}
         />
       )}
-      <AlertDialogError form={requestForm} />
-      <AlertDialogSuccess isOpen={showSuccess} onClose={handleSuccessClose} />
+      <AlertDialogError form={azureRequestForm} />
+      <AlertDialogSuccess
+        isOpen={showSuccess.show}
+        onClose={handleSuccessClose}
+      />
 
-      <Form {...requestForm}>
-        <form
-          onSubmit={requestForm.handleSubmit(onSubmit)}
-          className="space-y-8"
-        >
-          <RepoNameInput
-            suggestedName={suggestedName}
-            ownerName={session?.name ?? "Your Account"}
-            form={requestForm}
-          />
-          <Collaborators form={requestForm} />
-          <ResourceGroup form={requestForm} />
+      {cloudProvider === CloudProvider.AZURE && (
+        <Form {...azureRequestForm}>
+          <form
+            onSubmit={azureRequestForm.handleSubmit(onSubmitAzure)}
+            className="space-y-8"
+          >
+            <RepoNameInput
+              // suggestedName={suggestedName}
+              ownerName={session?.name ?? "Your Account"}
+              form={azureRequestForm}
+            />
+            <Collaborators form={azureRequestForm} />
+            <AzureResourceGroup
+              form={azureRequestForm}
+              cloudProvider={cloudProvider}
+              setCloudProvider={setCloudProvider}
+            />
 
-          <FormField
-            control={requestForm.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Request Description *</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Provide any additional context or details for your request"
-                    className="h-32"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex justify-end">
-            <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? "Submitting..." : "Submit Request"}
-            </Button>
-          </div>
-        </form>
-      </Form>
+            <FormField
+              control={azureRequestForm.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Request Description *</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Provide any additional context or details for your request"
+                      className="h-32"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-end">
+              <Button type="submit" disabled={azureMutation.isPending}>
+                {azureMutation.isPending ? "Submitting..." : "Submit Request"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      )}
+
+      {cloudProvider === CloudProvider.AWS && (
+        <Form {...awsRequestForm}>
+          <form
+            onSubmit={awsRequestForm.handleSubmit(onSubmitAws)}
+            className="space-y-8"
+          >
+            <RepoNameInput
+              // suggestedName={suggestedName}
+              ownerName={session?.name ?? "Your Account"}
+              form={awsRequestForm}
+            />
+            <Collaborators form={awsRequestForm} />
+            <AwsResourceGroup
+              form={awsRequestForm}
+              cloudProvider={cloudProvider}
+              setCloudProvider={setCloudProvider}
+            />
+
+            <FormField
+              control={awsRequestForm.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Request Description *</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Provide any additional context or details for your request"
+                      className="h-32"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-end">
+              <Button type="submit" disabled={awsMutation.isPending}>
+                {awsMutation.isPending ? "Submitting..." : "Submit Request"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      )}
     </>
   )
 }
@@ -176,7 +262,7 @@ export default function ClientRequestForm({
 function AlertDialogError({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof requestFormSchema>>
+  form: UseFormReturn<z.infer<typeof azureRequestFormSchema>>
 }) {
   const [hasErrors, setHasErrors] = useState<boolean>(false)
 
