@@ -102,6 +102,7 @@ export default function ClientRequestForm({
         region: regions[CloudProvider.AZURE][0].value,
       },
     },
+    mode: "onChange",
   })
 
   const awsRequestForm = useForm<z.infer<typeof awsRequestFormSchema>>({
@@ -124,6 +125,7 @@ export default function ClientRequestForm({
         },
       },
     },
+    mode: "onChange",
   })
 
   useEffect(() => {

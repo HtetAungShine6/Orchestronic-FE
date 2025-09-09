@@ -28,8 +28,30 @@ const dbSchema = z
     username: z.string().nonempty({
       message: "Username is required",
     }),
-    password: z.string().nonempty({
-      message: "Password is required",
+    password: z.string().superRefine((val, ctx) => {
+      if (val.length < 8) {
+        ctx.addIssue({
+          code: "too_small",
+          minimum: 8,
+          type: "string",
+          inclusive: true,
+          message: "Password must be at least 8 characters",
+        })
+      }
+
+      let count = 0
+      if (/[A-Z]/.test(val)) count++
+      if (/[a-z]/.test(val)) count++
+      if (/[0-9]/.test(val)) count++
+      if (/[^A-Za-z0-9]/.test(val)) count++
+
+      if (count < 3) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "Password must contain characters from at least three categories: uppercase, lowercase, numbers, special characters",
+        })
+      }
     }),
   })
   .superRefine((data, ctx) => {

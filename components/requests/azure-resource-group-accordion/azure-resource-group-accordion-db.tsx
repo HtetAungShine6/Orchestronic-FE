@@ -78,7 +78,7 @@ const databaseEngines: DatabaseEngine[] = [
     tier: "General Purpose",
     vCores: 2,
     ram: "8 GB",
-    SKU: "GP_Standard_D2s_v3",
+    SKU: "GP_Standard_D2ds_v4",
     price: "171.550/month",
   },
   {
@@ -86,7 +86,7 @@ const databaseEngines: DatabaseEngine[] = [
     tier: "Memory Optimized",
     vCores: 4,
     ram: "16 GB",
-    SKU: "MO_Optimized_D4s_v3",
+    SKU: "MO_Standard_E4ds_v4",
     price: "343.100/month",
   },
 ]
