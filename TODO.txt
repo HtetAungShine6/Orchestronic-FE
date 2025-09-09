@@ -17,12 +17,11 @@
     [x] need ip
 [x] Repo link to gitlab
 [x] Admin doesn;'t know why i can't approve without typing feedback
-
 [x] create request with aws
+[x] create request correctly to Terraform
+[x] when creating request and waiting
 
 - if change role to Admin, can't access admin stuff, force logout
-- when creating request and waiting
-- create request correctly to Terraform
 - Detroy resource group
 - Infrastricturte summary
 
