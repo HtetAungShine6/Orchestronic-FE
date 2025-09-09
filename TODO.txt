@@ -23,7 +23,6 @@
 - if change role to Admin, can't access admin stuff, force logout
 - when creating request and waiting
 - create request correctly to Terraform
-    Delay
 - Detroy resource group
 - Infrastricturte summary
 

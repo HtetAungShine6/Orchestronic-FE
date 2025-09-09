@@ -9,7 +9,6 @@ import { Monitor, Database, HardDrive } from "lucide-react"
 import { operatingSystems } from "../azure-resource-group-accordion/azure-resource-group-accordion-vm"
 import Image from "next/image"
 import { Status } from "@/types/api"
-import { CircleCheck } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,12 +22,9 @@ import {
 import { AwsRequestDetail } from "@/types/request"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { CopyButton } from "@/components/ui/shadcn-io/copy-button"
-import { Input } from "@/components/ui/input"
-import { toast } from "sonner"
-import InputPassword from "@/components/ui/input-password"
-import { Label } from "@/components/ui/label"
 import TextPassword from "@/components/ui/text-password"
+import SSH from "../connect/ssh"
+import InputWithCopyButton from "../connect/input-with-copy-button"
 
 export default function ResourceAwsConfigSection({
   data,
@@ -227,9 +223,11 @@ export default function ResourceAwsConfigSection({
                                       {db.dbInstanceClass.DBInstanceClass}
                                     </AlertDialogTitle>
                                     <AlertDialogDescription asChild>
-                                      <SSH
-                                        ip="root@192.123.213"
-                                        password="your_password"
+                                      <InputWithCopyButton
+                                        label="Connection String"
+                                        value={
+                                          db.dbInstanceClass.DBInstanceClass
+                                        }
                                       />
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
@@ -273,12 +271,12 @@ export default function ResourceAwsConfigSection({
                                 <span className="font-medium text-foreground">
                                   Password:
                                 </span>
-                                <p className="text-muted-foreground">
+                                <div className="text-muted-foreground">
                                   <TextPassword
                                     text={db.dbPassword}
                                     copyButton={true}
                                   />
-                                </p>
+                                </div>
                               </div>
                               <div>
                                 <span className="font-medium text-foreground">
@@ -350,9 +348,9 @@ export default function ResourceAwsConfigSection({
                                       Connect to {storage.bucketName}
                                     </AlertDialogTitle>
                                     <AlertDialogDescription asChild>
-                                      <SSH
-                                        ip="root@192.123.213"
-                                        password="your_password"
+                                      <InputWithCopyButton
+                                        label="Connection String"
+                                        value={storage.bucketName}
                                       />
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
@@ -387,53 +385,6 @@ export default function ResourceAwsConfigSection({
             </AccordionItem>
           </Accordion>
         )}
-    </div>
-  )
-}
-
-interface SSHProps {
-  ip: string
-  password: string
-}
-
-export function SSH({ ip, password }: SSHProps) {
-  return (
-    <div className="space-y-4">
-      {/* IP Address Field */}
-      <div>
-        <Label className="mb-1 block">IP Address</Label>
-        <div className="flex items-center gap-1">
-          <Input value={ip} readOnly className="flex-1" />
-          <CopyButton
-            variant="ghost"
-            className="px-3 py-2 hover:bg-transparent"
-            content={ip}
-            onCopy={() =>
-              toast.success("Copied to clipboard", {
-                icon: <CircleCheck color="white" fill="black" />,
-              })
-            }
-          />
-        </div>
-      </div>
-
-      {/* Password Field */}
-      <div>
-        <Label className="mb-1 block">Password</Label>
-        <div className="flex items-center gap-1">
-          <InputPassword value={password} readOnly />
-          <CopyButton
-            variant="ghost"
-            className="px-3 py-2 hover:bg-transparent"
-            content={password}
-            onCopy={() =>
-              toast.success("Copied to clipboard", {
-                icon: <CircleCheck color="white" fill="black" />,
-              })
-            }
-          />
-        </div>
-      </div>
     </div>
   )
 }
