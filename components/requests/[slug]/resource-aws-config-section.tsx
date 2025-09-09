@@ -205,65 +205,90 @@ export default function ResourceAwsConfigSection({
                   <div className="space-y-4">
                     {data.resources.resourceConfig.AwsDatabase.map(
                       (db, index) => (
-                        <div
-                          key={`db-${index}`}
-                          className="border rounded-lg p-4 bg-muted/50"
-                        >
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Name:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {db.dbName}
-                              </p>
+                        <div key={`db-${index}`}>
+                          {data.status === Status.Approved && (
+                            <div className="flex mb-1">
+                              <AlertDialog>
+                                <AlertDialogTrigger
+                                  className={cn(
+                                    buttonVariants({
+                                      variant: "default",
+                                    }),
+                                    "ml-auto"
+                                  )}
+                                >
+                                  Connect
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Connect to{" "}
+                                      {db.dbInstanceClass.DBInstanceClass}
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription asChild>
+                                      <SSH
+                                        ip="root@192.123.213"
+                                        password="your_password"
+                                      />
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogAction>
+                                      Continue
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Database Engine:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {db.dbInstanceClass.engine}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Username:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {db.dbUsername}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Password:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {db.dbPassword}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Instance Class:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {db.dbInstanceClass.DBInstanceClass} (
-                                {(
-                                  db.dbInstanceClass.MaxStorageSize / 1024
-                                ).toFixed(1)}{" "}
-                                GB)
-                              </p>
-                            </div>
-                            {/* {db.engine === Engine.PostgreSQL && (
+                          )}
+
+                          <div className="border rounded-lg p-4 bg-muted/50">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
                               <div>
                                 <span className="font-medium text-foreground">
-                                  Storage:
+                                  Name:
                                 </span>
                                 <p className="text-muted-foreground">
-                                  {formatMB(db.storageGB)}
+                                  {db.dbName}
                                 </p>
                               </div>
-                            )} */}
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Database Engine:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {db.dbInstanceClass.engine}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Username:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {db.dbUsername}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Password:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {db.dbPassword}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Instance Class:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {db.dbInstanceClass.DBInstanceClass} (
+                                  {(
+                                    db.dbInstanceClass.MaxStorageSize / 1024
+                                  ).toFixed(1)}{" "}
+                                  GB)
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       )
@@ -301,43 +326,53 @@ export default function ResourceAwsConfigSection({
                   <div className="space-y-4">
                     {data.resources.resourceConfig.AwsStorage.map(
                       (storage, index) => (
-                        <div
-                          key={`storage-${index}`}
-                          className="border rounded-lg p-4 bg-muted/50"
-                        >
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Bucket Name:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {storage.bucketName}
-                              </p>
+                        <div key={`storage-${index}`}>
+                          {data.status === Status.Approved && (
+                            <div className="flex mb-1">
+                              <AlertDialog>
+                                <AlertDialogTrigger
+                                  className={cn(
+                                    buttonVariants({
+                                      variant: "default",
+                                    }),
+                                    "ml-auto"
+                                  )}
+                                >
+                                  Connect
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Connect to {storage.bucketName}
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription asChild>
+                                      <SSH
+                                        ip="root@192.123.213"
+                                        password="your_password"
+                                      />
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogAction>
+                                      Continue
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </div>
-                            {/*<div>
-                              <span className="font-medium text-foreground">
-                                SKU:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {storage.sku}
-                              </p>
+                          )}
+
+                          <div className="border rounded-lg p-4 bg-muted/50">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Bucket Name:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {storage.bucketName}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Access Tier:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {storage.accessTier}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Kind:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {storage.kind}
-                              </p>
-                            </div> */}
                           </div>
                         </div>
                       )
@@ -361,25 +396,39 @@ export function SSH({ ip, password }: SSHProps) {
   return (
     <div className="space-y-4">
       {/* IP Address Field */}
-      <div className="relative">
+      <div>
         <Label className="mb-1 block">IP Address</Label>
-        <Input value={ip} readOnly className="pr-10" />
-        <CopyButton
-          variant="ghost"
-          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-          content={ip}
-          onCopy={() =>
-            toast.success("Copied to clipboard", {
-              icon: <CircleCheck color="white" fill="black" />,
-            })
-          }
-        />
+        <div className="flex items-center gap-1">
+          <Input value={ip} readOnly className="flex-1" />
+          <CopyButton
+            variant="ghost"
+            className="px-3 py-2 hover:bg-transparent"
+            content={ip}
+            onCopy={() =>
+              toast.success("Copied to clipboard", {
+                icon: <CircleCheck color="white" fill="black" />,
+              })
+            }
+          />
+        </div>
       </div>
 
       {/* Password Field */}
-      <div className="relative">
+      <div>
         <Label className="mb-1 block">Password</Label>
-        <InputPassword value={password} readOnly />
+        <div className="flex items-center gap-1">
+          <InputPassword value={password} readOnly />
+          <CopyButton
+            variant="ghost"
+            className="px-3 py-2 hover:bg-transparent"
+            content={password}
+            onCopy={() =>
+              toast.success("Copied to clipboard", {
+                icon: <CircleCheck color="white" fill="black" />,
+              })
+            }
+          />
+        </div>
       </div>
     </div>
   )
