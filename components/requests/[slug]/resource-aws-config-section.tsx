@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import InputPassword from "@/components/ui/input-password"
 import { Label } from "@/components/ui/label"
+import TextPassword from "@/components/ui/text-password"
 
 export default function ResourceAwsConfigSection({
   data,
@@ -273,7 +274,10 @@ export default function ResourceAwsConfigSection({
                                   Password:
                                 </span>
                                 <p className="text-muted-foreground">
-                                  {db.dbPassword}
+                                  <TextPassword
+                                    text={db.dbPassword}
+                                    copyButton={true}
+                                  />
                                 </p>
                               </div>
                               <div>
