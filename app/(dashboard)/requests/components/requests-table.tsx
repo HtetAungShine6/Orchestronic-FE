@@ -7,6 +7,7 @@ import { getRequests } from "@/app/api/requests/api"
 import { useQuery } from "@tanstack/react-query"
 import { getUser } from "@/app/api/user/api"
 import { Role } from "@/types/role"
+import DataTableSkeleton from "./data-table-skeleton"
 
 interface RequestsTableProps {
   prefilterStatus?: boolean
@@ -33,10 +34,10 @@ export default function RequestsTable({
     queryFn: getRequests,
   })
 
-  if (isLoadingSession) return <p>Loading...</p>
+  if (isLoadingSession) return <DataTableSkeleton />
   if (errorSession) return <p>Error loading user session</p>
 
-  if (isLoading) return <p>Loading...</p>
+  if (isLoading) return <DataTableSkeleton />
   if (error) return <p>Error loading table</p>
 
   const columns = getColumnsRequests(session?.role as Role)

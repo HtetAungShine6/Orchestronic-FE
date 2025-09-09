@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { getUser } from "@/app/api/user/api"
 import { RepositoryStatus } from "@/types/repo"
 import { useRouter } from "next/navigation"
+import DataTableSkeleton from "../../requests/components/data-table-skeleton"
 
 interface RepositoriesTableProps {
   pageSize?: number
@@ -26,7 +27,7 @@ export default function RepositoriesTable({
     queryFn: getRepositories,
   })
 
-  if (isLoading) return <p>Loading...</p>
+  if (isLoading) return <DataTableSkeleton />
   if (error) return <p>Error loading table</p>
 
   const columns = columnsRepositories(session?.role)

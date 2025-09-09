@@ -22,7 +22,7 @@ export default function PopupSpinner({
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription asChild>
-            <Spinner />
+            <Spinner className="mt-4 w-10 h-10" />
           </AlertDialogDescription>
         </AlertDialogHeader>
       </AlertDialogContent>
