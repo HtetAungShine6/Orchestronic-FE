@@ -8,11 +8,22 @@ import { Card } from "@/components/ui/card"
 import { Monitor, Database, HardDrive } from "lucide-react"
 import { operatingSystems } from "../azure-resource-group-accordion/azure-resource-group-accordion-vm"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { Status } from "@/types/api"
-import { formatMB } from "@/lib/utils"
+import { cn, formatMB } from "@/lib/utils"
 import { Engine } from "@/types/resource"
 import { AzureRequestDetail } from "@/types/request"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { buttonVariants } from "@/components/ui/button"
+import SSH from "../connect/ssh"
 
 export default function ResourceAzureConfigSection({
   data,
@@ -51,9 +62,36 @@ export default function ResourceAzureConfigSection({
                           <div key={`vm-${index}`}>
                             {data.status === Status.Approved && (
                               <div className="flex mb-1">
-                                <Button className="ml-auto">
-                                  Connect to VM
-                                </Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger
+                                    className={cn(
+                                      buttonVariants({
+                                        variant: "default",
+                                      }),
+                                      "ml-auto"
+                                    )}
+                                  >
+                                    Connect
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Connect to {vm.name}
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription asChild>
+                                        <SSH
+                                          ip={"root@192.123.213"}
+                                          password={"your_password"}
+                                        />
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogAction>
+                                        Continue
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
                               </div>
                             )}
 

@@ -43,6 +43,8 @@ import AlertError from "../ui/alert-error"
 import { azureRequestFormSchema } from "./form-schema/azure"
 import AwsResourceGroup from "./aws-resource-group"
 import { awsRequestFormSchema } from "./form-schema/aws"
+import { Spinner } from "../ui/spinner"
+import PopupSpinner from "../ui/popup-spinner"
 
 interface ClientRequestFormProps {
   // suggestedName: string
@@ -155,6 +157,12 @@ export default function ClientRequestForm({
 
   return (
     <>
+      {(awsMutation.isPending || azureMutation.isPending) && (
+        <PopupSpinner
+          open={awsMutation.isPending || azureMutation.isPending}
+          title="Submitting your request..."
+        />
+      )}
       {error && (
         <AlertError
           title="Error creating request"
