@@ -1,6 +1,5 @@
 import { CircleCheck } from "lucide-react"
 import { CopyButton } from "@/components/ui/shadcn-io/copy-button"
-import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import InputPassword from "@/components/ui/input-password"
 import { Label } from "@/components/ui/label"
