@@ -43,7 +43,6 @@ import AlertError from "../ui/alert-error"
 import { azureRequestFormSchema } from "./form-schema/azure"
 import AwsResourceGroup from "./aws-resource-group"
 import { awsRequestFormSchema } from "./form-schema/aws"
-import { Spinner } from "../ui/spinner"
 import PopupSpinner from "../ui/popup-spinner"
 
 interface ClientRequestFormProps {
