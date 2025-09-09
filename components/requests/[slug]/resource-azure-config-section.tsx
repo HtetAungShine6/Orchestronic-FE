@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { buttonVariants } from "@/components/ui/button"
 import SSH from "../connect/ssh"
+import TextPassword from "@/components/ui/text-password"
+import InputWithCopyButton from "../connect/input-with-copy-button"
 
 export default function ResourceAzureConfigSection({
   data,
@@ -191,51 +193,92 @@ export default function ResourceAzureConfigSection({
                   <div className="space-y-4">
                     {data.resources.resourceConfig.AzureDatabase.map(
                       (db, index) => (
-                        <div
-                          key={`db-${index}`}
-                          className="border rounded-lg p-4 bg-muted/50"
-                        >
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Name:
-                              </span>
-                              <p className="text-muted-foreground">{db.name}</p>
+                        <div key={`db-${index}`}>
+                          {data.status === Status.Approved && (
+                            <div className="flex mb-1">
+                              <AlertDialog>
+                                <AlertDialogTrigger
+                                  className={cn(
+                                    buttonVariants({
+                                      variant: "default",
+                                    }),
+                                    "ml-auto"
+                                  )}
+                                >
+                                  Connect
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Connect to {db.name}
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription asChild>
+                                      <InputWithCopyButton
+                                        label="Connection String"
+                                        value={
+                                          "Server=your_server.database.windows.net;Database=your_database;User Id=your_username;Password=your_password;"
+                                        }
+                                      />
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogAction>
+                                      Continue
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Database Engine:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {db.engine}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Username:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {db.username}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Password:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {db.password}
-                              </p>
-                            </div>
-                            {db.engine === Engine.PostgreSQL && (
+                          )}
+
+                          <div className="border rounded-lg p-4 bg-muted/50">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
                               <div>
                                 <span className="font-medium text-foreground">
-                                  Storage:
+                                  Name:
                                 </span>
                                 <p className="text-muted-foreground">
-                                  {formatMB(db.storageGB)}
+                                  {db.name}
                                 </p>
                               </div>
-                            )}
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Database Engine:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {db.engine}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Username:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {db.username}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Password:
+                                </span>
+                                <div className="text-muted-foreground">
+                                  <TextPassword
+                                    text={db.password}
+                                    copyButton={true}
+                                  />
+                                </div>
+                              </div>
+                              {db.engine === Engine.PostgreSQL && (
+                                <div>
+                                  <span className="font-medium text-foreground">
+                                    Storage:
+                                  </span>
+                                  <p className="text-muted-foreground">
+                                    {formatMB(db.storageGB)}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       )
@@ -273,42 +316,78 @@ export default function ResourceAzureConfigSection({
                   <div className="space-y-4">
                     {data.resources.resourceConfig.AzureStorage.map(
                       (storage, index) => (
-                        <div
-                          key={`storage-${index}`}
-                          className="border rounded-lg p-4 bg-muted/50"
-                        >
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Name:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {storage.name}
-                              </p>
+                        <div key={`storage-${index}`}>
+                          {data.status === Status.Approved && (
+                            <div className="flex mb-1">
+                              <AlertDialog>
+                                <AlertDialogTrigger
+                                  className={cn(
+                                    buttonVariants({
+                                      variant: "default",
+                                    }),
+                                    "ml-auto"
+                                  )}
+                                >
+                                  Connect
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Connect to {storage.name}
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription asChild>
+                                      <InputWithCopyButton
+                                        label="Connection String"
+                                        value={
+                                          "Server=your_server.database.windows.net;Database=your_database;User Id=your_username;Password=your_password;"
+                                        }
+                                      />
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogAction>
+                                      Continue
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                SKU:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {storage.sku}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Access Tier:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {storage.accessTier}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-foreground">
-                                Kind:
-                              </span>
-                              <p className="text-muted-foreground">
-                                {storage.kind}
-                              </p>
+                          )}
+
+                          <div className="border rounded-lg p-4 bg-muted/50">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Name:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {storage.name}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  SKU:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {storage.sku}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Access Tier:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {storage.accessTier}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-foreground">
+                                  Kind:
+                                </span>
+                                <p className="text-muted-foreground">
+                                  {storage.kind}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
