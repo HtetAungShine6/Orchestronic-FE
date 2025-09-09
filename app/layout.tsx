@@ -5,6 +5,7 @@ import { ReactScan } from "@/components/react-scan-component"
 import "./globals.css"
 import ReactQueryProvider from "@/components/provider/react-query-provider"
 import ReduxProvider from "@/components/provider/redux-provider"
+import { Toaster } from "@/components/ui/sonner"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default async function RootLayout({
         <ReduxProvider>
           <ReactQueryProvider>{children}</ReactQueryProvider>
         </ReduxProvider>
+        <Toaster />
       </body>
     </html>
   )

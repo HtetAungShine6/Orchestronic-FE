@@ -8,11 +8,25 @@ import { Card } from "@/components/ui/card"
 import { Monitor, Database, HardDrive } from "lucide-react"
 import { operatingSystems } from "../azure-resource-group-accordion/azure-resource-group-accordion-vm"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { Status } from "@/types/api"
-// import { formatMB } from "@/lib/utils"
-// import { Engine } from "@/types/resource"
+import { CircleCheck } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { AwsRequestDetail } from "@/types/request"
+import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { CopyButton } from "@/components/ui/shadcn-io/copy-button"
+import { Input } from "@/components/ui/input"
+import { toast } from "sonner"
 
 export default function ResourceAwsConfigSection({
   data,
@@ -51,9 +65,36 @@ export default function ResourceAwsConfigSection({
                           <div key={`vm-${index}`}>
                             {data.status === Status.Approved && (
                               <div className="flex mb-1">
-                                <Button className="ml-auto">
-                                  Connect to VM
-                                </Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger
+                                    className={cn(
+                                      buttonVariants({
+                                        variant: "default",
+                                      }),
+                                      "ml-auto"
+                                    )}
+                                  >
+                                    Connect
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Are you absolutely sure?
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        <SSH ssh="root@192.123.213" />
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        Cancel
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction>
+                                        Continue
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
                               </div>
                             )}
 
@@ -306,6 +347,26 @@ export default function ResourceAwsConfigSection({
             </AccordionItem>
           </Accordion>
         )}
+    </div>
+  )
+}
+
+function SSH({ ssh }: { ssh: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <Input
+        value={ssh}
+        className="flex-1 px-3 py-2 border rounded-md"
+        readOnly
+      />
+      <CopyButton
+        content={ssh}
+        onCopy={() =>
+          toast.success("Copied to clipboard", {
+            icon: <CircleCheck color="white" fill="black" />,
+          })
+        }
+      />
     </div>
   )
 }
