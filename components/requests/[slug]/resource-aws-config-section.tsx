@@ -13,7 +13,6 @@ import { CircleCheck } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -27,6 +26,8 @@ import { cn } from "@/lib/utils"
 import { CopyButton } from "@/components/ui/shadcn-io/copy-button"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
+import InputPassword from "@/components/ui/input-password"
+import { Label } from "@/components/ui/label"
 
 export default function ResourceAwsConfigSection({
   data,
@@ -79,10 +80,13 @@ export default function ResourceAwsConfigSection({
                                   <AlertDialogContent>
                                     <AlertDialogHeader>
                                       <AlertDialogTitle>
-                                        Are you absolutely sure?
+                                        Connect to {vm.instanceName}
                                       </AlertDialogTitle>
                                       <AlertDialogDescription asChild>
-                                        <SSH ssh="root@192.123.213" />
+                                        <SSH
+                                          ip="root@192.123.213"
+                                          password="your_password"
+                                        />
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -348,22 +352,35 @@ export default function ResourceAwsConfigSection({
   )
 }
 
-function SSH({ ssh }: { ssh: string }) {
+interface SSHProps {
+  ip: string
+  password: string
+}
+
+export function SSH({ ip, password }: SSHProps) {
   return (
-    <div className="flex items-center gap-2">
-      <Input
-        value={ssh}
-        className="flex-1 px-3 py-2 border rounded-md"
-        readOnly
-      />
-      <CopyButton
-        content={ssh}
-        onCopy={() =>
-          toast.success("Copied to clipboard", {
-            icon: <CircleCheck color="white" fill="black" />,
-          })
-        }
-      />
+    <div className="space-y-4">
+      {/* IP Address Field */}
+      <div className="relative">
+        <Label className="mb-1 block">IP Address</Label>
+        <Input value={ip} readOnly className="pr-10" />
+        <CopyButton
+          variant="ghost"
+          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+          content={ip}
+          onCopy={() =>
+            toast.success("Copied to clipboard", {
+              icon: <CircleCheck color="white" fill="black" />,
+            })
+          }
+        />
+      </div>
+
+      {/* Password Field */}
+      <div className="relative">
+        <Label className="mb-1 block">Password</Label>
+        <InputPassword value={password} readOnly />
+      </div>
     </div>
   )
 }
