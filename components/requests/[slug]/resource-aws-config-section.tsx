@@ -81,14 +81,11 @@ export default function ResourceAwsConfigSection({
                                       <AlertDialogTitle>
                                         Are you absolutely sure?
                                       </AlertDialogTitle>
-                                      <AlertDialogDescription>
+                                      <AlertDialogDescription asChild>
                                         <SSH ssh="root@192.123.213" />
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                      <AlertDialogCancel>
-                                        Cancel
-                                      </AlertDialogCancel>
                                       <AlertDialogAction>
                                         Continue
                                       </AlertDialogAction>
