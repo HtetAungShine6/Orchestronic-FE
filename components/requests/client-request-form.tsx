@@ -137,6 +137,11 @@ export default function ClientRequestForm({
     }
   }, [repoName, azureRequestForm, awsRequestForm])
 
+  useEffect(() => {
+    awsRequestForm.reset()
+    azureRequestForm.reset()
+  }, [awsRequestForm, azureRequestForm, cloudProvider])
+
   async function onSubmitAzure(values: z.infer<typeof azureRequestFormSchema>) {
     azureMutation.mutate(values)
   }
