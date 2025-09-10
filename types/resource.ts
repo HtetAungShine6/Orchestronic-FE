@@ -109,11 +109,11 @@ export const regions = {
       label: "Asia Pacific (Singapore)",
       flag: "https://flagsapi.com/SG/flat/16.png",
     },
-    {
-      value: "eastus",
-      label: "US East (Virginia)",
-      flag: "https://flagsapi.com/US/flat/16.png",
-    },
+    // {
+    //   value: "eastus",
+    //   label: "US East (Virginia)",
+    //   flag: "https://flagsapi.com/US/flat/16.png",
+    // },
   ],
   [CloudProvider.AWS]: [
     {
@@ -121,10 +121,10 @@ export const regions = {
       label: "Asia Pacific (Singapore)",
       flag: "https://flagsapi.com/SG/flat/16.png",
     },
-    {
-      value: "us-east-1",
-      label: "US East (N. Virginia)",
-      flag: "https://flagsapi.com/US/flat/16.png",
-    },
+    // {
+    //   value: "us-east-1",
+    //   label: "US East (N. Virginia)",
+    //   flag: "https://flagsapi.com/US/flat/16.png",
+    // },
   ],
 }

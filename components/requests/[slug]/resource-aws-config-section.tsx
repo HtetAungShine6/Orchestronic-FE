@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/accordion"
 import { Card } from "@/components/ui/card"
 import { Monitor, Database, HardDrive } from "lucide-react"
-import { operatingSystems } from "../azure-resource-group-accordion/azure-resource-group-accordion-vm"
 import Image from "next/image"
 import { Status } from "@/types/api"
 import {
@@ -25,6 +24,7 @@ import { cn } from "@/lib/utils"
 import TextPassword from "@/components/ui/text-password"
 import SSH from "../connect/ssh"
 import InputWithCopyButton from "../connect/input-with-copy-button"
+import { operatingSystems } from "../aws-resource-group-accordion/aws-resource-group-accordion-vm"
 
 export default function ResourceAwsConfigSection({
   data,

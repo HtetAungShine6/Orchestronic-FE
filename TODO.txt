@@ -20,10 +20,10 @@
 [x] create request with aws
 [x] create request correctly to Terraform
 [x] when creating request and waiting
+[x] Infrastricturte summary
 
 - if change role to Admin, can't access admin stuff, force logout
 - Detroy resource group
-- Infrastricturte summary
 
 TonKhaw
 - implement RQ, Airflow, and Terraform
