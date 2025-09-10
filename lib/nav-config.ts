@@ -63,7 +63,7 @@ export const navData = {
       title: "Infrastructure",
       url: "/infrastructure",
       icon: IconCloudSearch,
-      role: [Role.Admin, Role.IT, Role.Developer],
+      role: [Role.Admin, Role.IT],
     },
   ],
   collaborations: [
