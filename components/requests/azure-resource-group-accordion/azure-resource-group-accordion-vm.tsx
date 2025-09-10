@@ -57,7 +57,7 @@ import {
 import { azureRequestFormSchema } from "../form-schema/azure"
 
 export const operatingSystems = [
-  { value: "ubuntu", label: "Ubuntu 20.04 LTS", icon: "/icon/ubuntu.png" },
+  { value: "ubuntu", label: "Ubuntu 22.04 LTS", icon: "/icon/ubuntu.png" },
 ]
 
 interface ResourceGroupAccordionProps {
