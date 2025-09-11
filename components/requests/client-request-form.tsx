@@ -2,12 +2,7 @@
 
 import Collaborators from "@/components/requests/collaborators"
 import AzureResourceGroup from "@/components/requests/azure-resource-group"
-import {
-  CloudProvider,
-  cloudProviders,
-  Engine,
-  regions,
-} from "@/types/resource"
+import { CloudProvider, cloudProviders, regions } from "@/types/resource"
 import { Textarea } from "@/components/ui/textarea"
 import { RepoNameInput } from "@/components/requests/repo-name-input"
 
@@ -20,10 +15,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import z from "zod"
-import { useForm, UseFormReturn } from "react-hook-form"
+import { FieldValues, useForm, UseFormReturn } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/app/state/store"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -44,6 +39,7 @@ import { azureRequestFormSchema } from "./form-schema/azure"
 import AwsResourceGroup from "./aws-resource-group"
 import { awsRequestFormSchema } from "./form-schema/aws"
 import PopupSpinner from "../ui/popup-spinner"
+import { setRepoName } from "./state/repo-slice"
 
 interface ClientRequestFormProps {
   // suggestedName: string
@@ -55,6 +51,7 @@ export default function ClientRequestForm({
   session,
 }: Readonly<ClientRequestFormProps>) {
   const repoName = useSelector((state: RootState) => state.repoName.value)
+  const dispatch = useDispatch()
   const router = useRouter()
   const [showSuccess, setShowSuccess] = useState<{
     show: boolean
@@ -116,13 +113,6 @@ export default function ClientRequestForm({
           (cp) => cp.value === CloudProvider.AWS
         )?.value as CloudProvider,
         region: regions[CloudProvider.AWS][0].value,
-        resourceConfig: {
-          dbs: [
-            {
-              engine: Engine.PostgreSQL,
-            },
-          ],
-        },
       },
     },
     mode: "onChange",
@@ -140,7 +130,10 @@ export default function ClientRequestForm({
   useEffect(() => {
     awsRequestForm.reset()
     azureRequestForm.reset()
-  }, [awsRequestForm, azureRequestForm, cloudProvider])
+    awsRequestForm.clearErrors()
+    azureRequestForm.clearErrors()
+    dispatch(setRepoName(""))
+  }, [cloudProvider])
 
   async function onSubmitAzure(values: z.infer<typeof azureRequestFormSchema>) {
     azureMutation.mutate(values)
@@ -176,7 +169,9 @@ export default function ClientRequestForm({
           content={error}
         />
       )}
+
       <AlertDialogError form={azureRequestForm} />
+      <AlertDialogError form={awsRequestForm} />
       <AlertDialogSuccess
         isOpen={showSuccess.show}
         onClose={handleSuccessClose}
@@ -189,7 +184,6 @@ export default function ClientRequestForm({
             className="space-y-8"
           >
             <RepoNameInput
-              // suggestedName={suggestedName}
               ownerName={session?.name ?? "Your Account"}
               form={azureRequestForm}
             />
@@ -199,7 +193,6 @@ export default function ClientRequestForm({
               cloudProvider={cloudProvider}
               setCloudProvider={setCloudProvider}
             />
-
             <FormField
               control={azureRequestForm.control}
               name="description"
@@ -233,7 +226,6 @@ export default function ClientRequestForm({
             className="space-y-8"
           >
             <RepoNameInput
-              // suggestedName={suggestedName}
               ownerName={session?.name ?? "Your Account"}
               form={awsRequestForm}
             />
@@ -243,7 +235,6 @@ export default function ClientRequestForm({
               cloudProvider={cloudProvider}
               setCloudProvider={setCloudProvider}
             />
-
             <FormField
               control={awsRequestForm.control}
               name="description"
@@ -273,17 +264,30 @@ export default function ClientRequestForm({
   )
 }
 
-function AlertDialogError({
+function AlertDialogError<T extends FieldValues>({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof azureRequestFormSchema>>
+  form: UseFormReturn<T>
 }) {
   const [hasErrors, setHasErrors] = useState<boolean>(false)
 
   useEffect(() => {
-    setHasErrors(
-      form.formState.errors.resources?.resourceConfig?.message === "Required"
-    )
+    const resourcesError = form.formState.errors.resources
+    let hasResourceConfigError = false
+    if (
+      resourcesError &&
+      typeof resourcesError === "object" &&
+      "resourceConfig" in resourcesError &&
+      resourcesError.resourceConfig &&
+      typeof resourcesError.resourceConfig === "object" &&
+      "message" in resourcesError.resourceConfig
+    ) {
+      hasResourceConfigError =
+        resourcesError.resourceConfig.message === "Required" ||
+        resourcesError.resourceConfig.message ===
+          "At least one resource (VM, Database, or Storage) is required"
+    }
+    setHasErrors(hasResourceConfigError)
   }, [form.formState.errors])
 
   return (

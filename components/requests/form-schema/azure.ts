@@ -107,7 +107,7 @@ export const azureResourceSchema = z.object({
       },
       {
         message: "At least one resource (VM, Database, or Storage) is required",
-        path: ["resources", "resourceConfig"],
+        path: [],
       }
     ),
 })

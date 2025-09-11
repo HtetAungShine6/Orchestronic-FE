@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { useSelector } from "react-redux"
 import { RootState } from "@/app/state/store"
@@ -52,11 +52,37 @@ export default function AzureResourceGroup({
   const [databaseCount, setDatabaseCount] = useState(0)
   const repoName = useSelector((state: RootState) => state.repoName.value)
 
-  // useEffect(() => {
-  //   if (cloudProvider) {
-  //     form.setValue("resources.region", regions[cloudProvider][0].value)
-  //   }
-  // }, [cloudProvider, form])
+  useEffect(() => {
+    if (vmCount === 0) {
+      form.setValue("resources.resourceConfig.vms", [], {
+        shouldValidate: false,
+        shouldDirty: true,
+      })
+      form.clearErrors("resources.resourceConfig.vms")
+    }
+
+    if (storageCount === 0) {
+      form.setValue("resources.resourceConfig.sts", [], {
+        shouldValidate: false,
+        shouldDirty: true,
+      })
+      form.clearErrors("resources.resourceConfig.sts")
+    }
+
+    if (databaseCount === 0) {
+      form.setValue("resources.resourceConfig.dbs", [], {
+        shouldValidate: false,
+        shouldDirty: true,
+      })
+      form.clearErrors("resources.resourceConfig.dbs")
+    }
+  }, [vmCount, form, storageCount, databaseCount])
+
+  useEffect(() => {
+    setVmCount(0)
+    setStorageCount(0)
+    setDatabaseCount(0)
+  }, [cloudProvider])
 
   return (
     <Card>
@@ -149,11 +175,18 @@ export default function AzureResourceGroup({
                 Virtual Machines
               </Label>
               <Input
+                value={vmCount}
                 id="vm"
                 placeholder="e.g., 2"
                 type="number"
                 min={0}
-                onChange={(e) => setVmCount(Number(e.target.value))}
+                onChange={(e) => {
+                  setVmCount(Number(e.target.value))
+                  form.setError("resources.resourceConfig", {
+                    message:
+                      "At least one resource (VM, Database, or Storage) is required",
+                  })
+                }}
               />
             </div>
             <ResourceGroupAccordionVM form={form} vmCount={vmCount} />
@@ -164,11 +197,18 @@ export default function AzureResourceGroup({
                 Storage
               </Label>
               <Input
+                value={storageCount}
                 id="storage"
                 placeholder="e.g., 1"
                 type="number"
                 min={0}
-                onChange={(e) => setStorageCount(Number(e.target.value))}
+                onChange={(e) => {
+                  setStorageCount(Number(e.target.value))
+                  form.setError("resources.resourceConfig", {
+                    message:
+                      "At least one resource (VM, Database, or Storage) is required",
+                  })
+                }}
               />
             </div>
             <ResourceGroupAccordionST form={form} storageCount={storageCount} />
@@ -179,11 +219,18 @@ export default function AzureResourceGroup({
                 Database
               </Label>
               <Input
+                value={databaseCount}
                 id="database"
                 placeholder="e.g., 1"
                 type="number"
                 min={0}
-                onChange={(e) => setDatabaseCount(Number(e.target.value))}
+                onChange={(e) => {
+                  setDatabaseCount(Number(e.target.value))
+                  form.setError("resources.resourceConfig", {
+                    message:
+                      "At least one resource (VM, Database, or Storage) is required",
+                  })
+                }}
               />
             </div>
             <ResourceGroupAccordionDB
