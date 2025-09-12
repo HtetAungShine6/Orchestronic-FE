@@ -17,7 +17,6 @@ import ResourceGroupCard from "./resource-group-card"
 import OrganizationCard from "./organization-card"
 import { Role } from "@/types/role"
 import DescriptionCard from "./description-card"
-import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
 import { haveAdminOrIT } from "@/lib/utils"
 import {
   AlertDialog,
@@ -53,6 +52,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { RepositoryStatus } from "@/types/repo"
+import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
 
 export default function RequestDetail({ slug }: { slug: string }) {
   const queryClient = useQueryClient()
@@ -65,6 +66,11 @@ export default function RequestDetail({ slug }: { slug: string }) {
   >({
     queryKey: ["request", slug],
     queryFn: () => getRequestBySlug(slug),
+    refetchInterval: (query) =>
+      query.state.data?.repository?.status === RepositoryStatus.Created
+        ? false
+        : 2000,
+    refetchIntervalInBackground: true,
   })
 
   const updateFeedback = useMutation({
@@ -235,7 +241,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
 
           {/* Right side - Organization info */}
           <div className="flex flex-col space-y-6">
-            <OrganizationCard data={data} slug={slug} />
+            <OrganizationCard data={data} />
             <DescriptionCard data={data} />
           </div>
           {/* Feedback card */}
