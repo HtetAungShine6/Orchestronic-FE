@@ -235,7 +235,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
 
           {/* Right side - Organization info */}
           <div className="flex flex-col space-y-6">
-            <OrganizationCard data={data} />
+            <OrganizationCard data={data} slug={slug} />
             <DescriptionCard data={data} />
           </div>
           {/* Feedback card */}

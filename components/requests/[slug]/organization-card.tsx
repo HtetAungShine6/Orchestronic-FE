@@ -1,3 +1,4 @@
+"use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { IconBuilding } from "@tabler/icons-react"
 import { Label } from "@/components/ui/label"
@@ -13,16 +14,31 @@ import { Repository } from "@/app/(dashboard)/repositories/data/schema-repositor
 import Link from "next/link"
 import { RepositoryStatus } from "@/types/repo"
 import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
+import { useQuery } from "@tanstack/react-query"
+import { getRequestBySlug } from "@/app/api/requests/api"
+import { Spinner } from "@/components/ui/spinner"
 
 export default function OrganizationCard({
   data,
+  slug,
 }: {
   data?: AwsRequestDetail | AzureRequestDetail
+  slug: string
 }) {
+  const {
+    data: requestData,
+    isLoading,
+    error,
+  } = useQuery<AzureRequestDetail | AwsRequestDetail>({
+    queryKey: ["request", slug],
+    queryFn: () => getRequestBySlug(slug),
+  })
+
   const repoUrl =
     data?.repository?.status === RepositoryStatus.Created
       ? `${process.env.NEXT_PUBLIC_GITLAB_URL}/root/${data?.repository?.name}`
       : `/repositories-not-created`
+
   const isExternal = data?.repository?.status === RepositoryStatus.Created
 
   return (
@@ -44,17 +60,24 @@ export default function OrganizationCard({
             <p>{data?.owner?.name}</p>
           </div>
           <div>
-            <Link
-              className="cursor-pointer hover:underline w-fit"
-              href={repoUrl}
-              target={isExternal ? "_blank" : "_self"}
-              rel={isExternal ? "noopener noreferrer" : undefined}
-            >
-              <Label className="text-sm font-medium text-muted-foreground cursor-pointer">
-                Repository
-              </Label>
-              <p className="truncate">{data?.repository?.name}</p>
-            </Link>
+            {requestData?.status === "Approved" &&
+            requestData?.repository?.status === RepositoryStatus.Pending ? (
+              <Spinner size="small" className="mr-2">
+                Creating Repository...
+              </Spinner>
+            ) : (
+              <Link
+                className="cursor-pointer hover:underline w-fit"
+                href={repoUrl}
+                target={isExternal ? "_blank" : "_self"}
+                rel={isExternal ? "noopener noreferrer" : undefined}
+              >
+                <Label className="text-sm font-medium text-muted-foreground cursor-pointer">
+                  Repository
+                </Label>
+                <p className="truncate">{data?.repository?.name}</p>
+              </Link>
+            )}
           </div>
           <div>
             <Label className="text-sm font-medium text-muted-foreground">
