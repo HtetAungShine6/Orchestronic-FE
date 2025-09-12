@@ -96,6 +96,7 @@ export const columnsResources: ColumnDef<Resource>[] = [
       const resourceConfig = row.getValue(
         "resourceConfig"
       ) as Resource["resourceConfig"]
+      console.log(resourceConfig)
       return (
         <div className="flex space-x-2">
           <span className="">{generateResources(resourceConfig)}</span>

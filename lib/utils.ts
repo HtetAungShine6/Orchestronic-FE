@@ -17,20 +17,22 @@ export function getInitials(name: string): string {
     .join("")
 }
 
-const resourceTypes = {
-  vms: "VM",
-  dbs: "DB",
-  sts: "ST",
+const resourceTypes: Record<string, { singular: string; plural: string }> = {
+  AwsStorage: { singular: "ST", plural: "STS" },
+  AzureDatabase: { singular: "DB", plural: "DBS" },
+  AzureVMInstance: { singular: "VM", plural: "VMS" },
 }
+
 export function generateResources(resourceConfig: Resource["resourceConfig"]) {
   return Object.entries(resourceConfig)
     .filter(([key, value]) => key !== "id" && Array.isArray(value))
     .map(([type, items]) => {
       const count = items.length
-      const label =
-        count > 1
-          ? `${resourceTypes[type as keyof typeof resourceTypes]}s`
-          : resourceTypes[type as keyof typeof resourceTypes]
+      const labels = resourceTypes[type] ?? {
+        singular: type,
+        plural: `${type}s`,
+      }
+      const label = count > 1 ? labels.plural : labels.singular
       return `${count} ${label}`
     })
     .join(", ")
