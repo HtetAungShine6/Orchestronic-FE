@@ -80,10 +80,17 @@ export default function ResourceAwsConfigSection({
                                         Connect to {vm.instanceName}
                                       </AlertDialogTitle>
                                       <AlertDialogDescription asChild>
-                                        <SSH
-                                          ip="root@192.123.213"
-                                          password="your_password"
-                                        />
+                                        <>
+                                          <SSH
+                                            ip={`root@$`}
+                                            pem={"asdsadas"}
+                                            vmName={vm.instanceName}
+                                          />
+                                          <InputWithCopyButton
+                                            label="SSH Command"
+                                            value={`ssh -i <private-key-file-path> root@$`}
+                                          />
+                                        </>
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
