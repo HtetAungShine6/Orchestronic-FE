@@ -71,9 +71,13 @@ const storageSchema = z.object({
   accessTier: z.string().nonempty({
     message: "Access tier is required",
   }),
-  name: z.string().regex(/^[a-z0-9]+$/, {
-    message: "Repository name can only contain lowercase letters and numbers",
-  }),
+  name: z
+    .string()
+    .regex(/^[a-z0-9]+$/, {
+      message: "Name can only contain lowercase letters and numbers",
+    })
+    .min(3, { message: "Name must be at least 3 characters" })
+    .max(24, { message: "Name must be at most 24 characters" }),
   kind: z.string().nonempty({
     message: "Kind is required",
   }),
