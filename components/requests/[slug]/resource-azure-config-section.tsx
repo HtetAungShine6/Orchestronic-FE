@@ -60,6 +60,14 @@ export default function ResourceAzureConfigSection({
                         const os = operatingSystems.find(
                           (item) => item.value === vm.os
                         )
+                        const terraformOutput =
+                          vm?.terraformState?.resources.find(
+                            (res) => res.name === "vm"
+                          )?.instances[0].attributes
+
+                        const public_ip_address =
+                          terraformOutput?.public_ip_address
+
                         return (
                           <div key={`vm-${index}`}>
                             {data.status === Status.Approved && (
@@ -81,10 +89,17 @@ export default function ResourceAzureConfigSection({
                                         Connect to {vm.name}
                                       </AlertDialogTitle>
                                       <AlertDialogDescription asChild>
-                                        <SSH
-                                          ip={"root@192.123.213"}
-                                          password={"your_password"}
-                                        />
+                                        <>
+                                          <SSH
+                                            ip={`azureuser@${public_ip_address as string}`}
+                                            pem={vm.pem}
+                                            vmName={vm.name}
+                                          />
+                                          <InputWithCopyButton
+                                            label="SSH Command"
+                                            value={`ssh -i <private-key-file-path> azureuser@${public_ip_address as string}`}
+                                          />
+                                        </>
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>

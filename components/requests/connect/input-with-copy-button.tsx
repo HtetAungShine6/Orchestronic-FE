@@ -7,12 +7,14 @@ import { Label } from "@/components/ui/label"
 export default function InputWithCopyButton({
   label,
   value,
+  className,
 }: {
   label: string
   value: string
+  className?: string
 }) {
   return (
-    <div>
+    <div className={className}>
       <Label className="mb-1 block">{label}</Label>
       <div className="flex items-center gap-1">
         <Input value={value} readOnly className="flex-1" />

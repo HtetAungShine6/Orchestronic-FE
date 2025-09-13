@@ -7,6 +7,13 @@ export interface VMInstance {
   size: VmSizeDto
   sizeId: string
   resourceConfigId: string
+  terraformState?: {
+    resources: Array<{
+      name: string
+      instances: Array<{ attributes: { public_ip_address: string } }>
+    }>
+  }
+  pem?: string
 }
 
 export interface AwsVMInstance {
