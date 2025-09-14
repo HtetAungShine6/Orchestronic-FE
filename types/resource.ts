@@ -69,6 +69,7 @@ export interface DatabaseInstance {
   password: string
   skuName: string
   username: string
+  terraformState?: JSON
 }
 
 export interface StorageInstance {
@@ -77,6 +78,7 @@ export interface StorageInstance {
   kind: string
   sku: string
   accessTier: string
+  terraformState?: JSON
   resourceConfigId: string
 }
 

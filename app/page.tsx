@@ -25,6 +25,11 @@ import {
   Lock,
   Gauge,
 } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export default function Home() {
   return (
@@ -53,18 +58,32 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Button size="lg" className="text-base px-8 py-3" asChild>
-                <Link href="/auth/signin">
-                  Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-base px-8 py-3"
-              >
-                Request a Demo
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="lg" className="text-base px-8 py-3" asChild>
+                    <Link href="#">
+                      Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Not Available</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-base px-8 py-3"
+                  >
+                    Request a Demo
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Not Available</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
 
             <div className="flex justify-center">
@@ -284,23 +303,37 @@ export default function Home() {
               streamline their cloud infrastructure.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                variant="secondary"
-                className="text-base px-8 py-3"
-                asChild
-              >
-                <Link href="/auth/signin">
-                  Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-base px-8 py-3 border-white text-blue-600 hover:text-blue-800"
-              >
-                Schedule Demo
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    className="text-base px-8 py-3"
+                    asChild
+                  >
+                    <Link href="#">
+                      Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Not Available</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-base px-8 py-3 border-white text-blue-600 hover:text-blue-800"
+                  >
+                    Schedule Demo
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Not Available</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </section>
