@@ -236,7 +236,7 @@ export default function ResourceAzureConfigSection({
                                         <>
                                           <TextareaWithCopyButton
                                             label="Connection String"
-                                            value={`host=${output.instances[index].attributes.fqdn};\nport=5432;\ndbname=${db.name};\nuser=${db.username};\npassword=${db.password}`}
+                                            value={`host=${output?.instances[index].attributes.fqdn};\nport=5432;\ndbname=${db.name};\nuser=${db.username};\npassword=${db.password}`}
                                           />
                                         </>
                                       </AlertDialogDescription>
@@ -340,7 +340,7 @@ export default function ResourceAzureConfigSection({
                         const output = storage.terraformState?.resources.find(
                           (res) => res.mode === "managed"
                         )
-                        const blob_connection_string: string =
+                        const blob_connection_string =
                           output?.instances[index]?.attributes
                             ?.primary_blob_connection_string
 
@@ -368,10 +368,12 @@ export default function ResourceAzureConfigSection({
                                         <>
                                           <TextareaWithCopyButton
                                             label="Connection String"
-                                            value={blob_connection_string.replaceAll(
-                                              ";",
-                                              ";\n"
-                                            )}
+                                            value={
+                                              blob_connection_string?.replaceAll(
+                                                ";",
+                                                ";\n"
+                                              ) || "None"
+                                            }
                                           />
                                         </>
                                       </AlertDialogDescription>

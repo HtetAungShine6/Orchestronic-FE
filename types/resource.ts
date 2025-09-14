@@ -69,7 +69,15 @@ export interface DatabaseInstance {
   password: string
   skuName: string
   username: string
-  terraformState?: JSON
+  terraformState?: {
+    resources: Array<{
+      name: string
+      mode: string
+      instances: Array<{
+        attributes: { public_ip_address: string; fqdn: string }
+      }>
+    }>
+  }
 }
 
 export interface StorageInstance {
@@ -78,7 +86,15 @@ export interface StorageInstance {
   kind: string
   sku: string
   accessTier: string
-  terraformState?: JSON
+  terraformState?: {
+    resources: Array<{
+      name: string
+      mode: string
+      instances: Array<{
+        attributes: { primary_blob_connection_string: string }
+      }>
+    }>
+  }
   resourceConfigId: string
 }
 
