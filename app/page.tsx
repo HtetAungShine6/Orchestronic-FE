@@ -221,7 +221,9 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="font-semibold">Virtual Machines</h3>
-                  <p className="text-sm text-muted-foreground">Linux</p>
+                  <p className="text-sm text-muted-foreground">
+                    Linux (Ubuntu)
+                  </p>
                 </div>
               </div>
 
@@ -231,7 +233,9 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="font-semibold">Databases</h3>
-                  <p className="text-sm text-muted-foreground">SQL solutions</p>
+                  <p className="text-sm text-muted-foreground">
+                    SQL solutions (MySQL and PostgreSQL)
+                  </p>
                 </div>
               </div>
 
