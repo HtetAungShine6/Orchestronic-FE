@@ -119,9 +119,9 @@ export default function Home() {
                   <div className="mx-auto mb-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full w-fit">
                     <Zap className="h-8 w-8 text-blue-600" />
                   </div>
-                  <CardTitle>Lightning Fast</CardTitle>
+                  <CardTitle>DevSecOps Ready</CardTitle>
                   <CardDescription>
-                    Request and provision resources in minutes, not days
+                    Streamline resource requests with automation
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -178,9 +178,7 @@ export default function Home() {
                     <Cloud className="h-8 w-8 text-purple-600" />
                   </div>
                   <CardTitle>Multi-Cloud Ready</CardTitle>
-                  <CardDescription>
-                    Support for AWS, Azure, and Google Cloud
-                  </CardDescription>
+                  <CardDescription>Support for AWS and Azure</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2">
@@ -223,9 +221,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="font-semibold">Virtual Machines</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Linux & Windows VMs
-                  </p>
+                  <p className="text-sm text-muted-foreground">Linux</p>
                 </div>
               </div>
 
@@ -235,9 +231,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="font-semibold">Databases</h3>
-                  <p className="text-sm text-muted-foreground">
-                    SQL & NoSQL solutions
-                  </p>
+                  <p className="text-sm text-muted-foreground">SQL solutions</p>
                 </div>
               </div>
 
