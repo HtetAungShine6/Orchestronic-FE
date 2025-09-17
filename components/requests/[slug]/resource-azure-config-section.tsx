@@ -66,7 +66,7 @@ export default function ResourceAzureConfigSection({
                         const terraformOutput = vm?.terraformState?.resources
                           ?.find((res) => res.name === "vm")
                           ?.instances.find((inst) =>
-                            inst.attributes.name.includes(vm.name)
+                            inst.attributes?.name?.includes(vm.name)
                           )
 
                         const public_ip_address =
@@ -232,7 +232,7 @@ export default function ResourceAzureConfigSection({
                               res.mode === "managed" && res.name === "mysql"
                           )
                           ?.instances.find(
-                            (inst) => inst.attributes.name === db.name
+                            (inst) => inst.attributes?.name === db.name
                           )
 
                         const postgresInstances = db.terraformState?.resources
@@ -241,7 +241,7 @@ export default function ResourceAzureConfigSection({
                               res.mode === "managed" && res.name === "postgres"
                           )
                           ?.instances.find(
-                            (inst) => inst.attributes.name === db.name
+                            (inst) => inst.attributes?.name === db.name
                           )
 
                         return (
@@ -273,7 +273,7 @@ export default function ResourceAzureConfigSection({
                                             (mysqlInstances ? (
                                               <TextareaWithCopyButton
                                                 label={`MySQL Connection String`}
-                                                value={`host=${mysqlInstances?.attributes.fqdn};\nport=3306;\ndbname=${mysqlInstances?.attributes.name};\nuser=${mysqlInstances?.attributes.administrator_login};\npassword=${mysqlInstances?.attributes.administrator_password};\nssl-mode=require`}
+                                                value={`host=${mysqlInstances?.attributes.fqdn};\nport=3306;\ndbname=${mysqlInstances?.attributes?.name};\nuser=${mysqlInstances?.attributes.administrator_login};\npassword=${mysqlInstances?.attributes.administrator_password};\nssl-mode=require`}
                                               />
                                             ) : (
                                               <p className="text-sm text-muted-foreground">
@@ -288,7 +288,7 @@ export default function ResourceAzureConfigSection({
                                             (postgresInstances ? (
                                               <TextareaWithCopyButton
                                                 label={`Postgres Connection String`}
-                                                value={`host=${postgresInstances?.attributes.fqdn};\nport=5432;\ndbname=${postgresInstances?.attributes.name};\nuser=${postgresInstances?.attributes.administrator_login};\npassword=${postgresInstances?.attributes.administrator_password}`}
+                                                value={`host=${postgresInstances?.attributes.fqdn};\nport=5432;\ndbname=${postgresInstances?.attributes?.name};\nuser=${postgresInstances?.attributes.administrator_login};\npassword=${postgresInstances?.attributes.administrator_password}`}
                                               />
                                             ) : (
                                               <p className="text-sm text-muted-foreground">
@@ -420,7 +420,7 @@ export default function ResourceAzureConfigSection({
                         const output = storage.terraformState?.resources
                           .find((res) => res.mode === "managed")
                           ?.instances.find((inst) =>
-                            inst.attributes.name.includes(storage.name)
+                            inst.attributes?.name?.includes(storage.name)
                           )
 
                         const blob_connection_string =

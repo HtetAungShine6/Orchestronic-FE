@@ -143,7 +143,7 @@ export function AwsResourceGroupAccordionDB({
                               <FormLabel>Database Engine</FormLabel>
                               <FormControl>
                                 <Select
-                                  value={field.value ?? Engine.PostgreSQL}
+                                  value={field.value}
                                   onValueChange={(value) =>
                                     field.onChange(value as Engine)
                                   }
@@ -413,6 +413,7 @@ export function DatabaseInstanceClassCombobox({
             <CommandGroup>
               {data?.map((each) => (
                 <CommandItem
+                  className="flex items-start gap-3 py-3 cursor-pointer"
                   key={each.id}
                   value={each.DBInstanceClass}
                   onSelect={(currentValue) => {
@@ -420,7 +421,16 @@ export function DatabaseInstanceClassCombobox({
                     setOpen(false)
                     onChange(each.id)
                   }}
+                  disabled={each.DBInstanceClass !== "db.t3.micro"}
                 >
+                  <div className="flex-1">
+                    <p>{each.DBInstanceClass}</p>
+                    {each.DBInstanceClass !== "db.t3.micro" && (
+                      <span className="text-xs text-red-300">
+                        Not available
+                      </span>
+                    )}
+                  </div>
                   <CheckIcon
                     className={cn(
                       "mr-2 h-4 w-4",
@@ -429,7 +439,6 @@ export function DatabaseInstanceClassCombobox({
                         : "opacity-0"
                     )}
                   />
-                  {each.DBInstanceClass}
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -29,7 +29,7 @@ export interface AwsVMInstance {
     resources: Array<{
       name: string
       instances: Array<{
-        attributes: { public_ip_address: string; name: string }
+        attributes: { public_ip: string; tags: { Name: string } }
       }>
     }>
   }
@@ -89,7 +89,7 @@ export interface AwsStorageInstance {
       name: string
       mode: string
       instances: Array<{
-        attributes: { name: string; primary_blob_connection_string: string }
+        attributes: { bucket: string; primary_blob_connection_string: string }
       }>
     }>
   }

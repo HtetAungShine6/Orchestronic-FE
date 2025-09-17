@@ -64,12 +64,13 @@ export default function ResourceAwsConfigSection({
 
                         const terraformOutput = vm?.terraformState?.resources
                           ?.find((res) => res.name === "vm")
-                          ?.instances.find((inst) =>
-                            inst.attributes.name.includes(vm.instanceName)
+                          ?.instances.find(
+                            (inst) =>
+                              inst.attributes?.tags.Name === vm.instanceName
                           )
 
                         const public_ip_address =
-                          terraformOutput?.attributes.public_ip_address
+                          terraformOutput?.attributes.public_ip
 
                         return (
                           <div key={`vm-${index}`}>
@@ -241,7 +242,7 @@ export default function ResourceAwsConfigSection({
                               res.mode === "managed" && res.name === "mysql"
                           )
                           ?.instances.find(
-                            (inst) => inst.attributes.name === db.dbName
+                            (inst) => inst.attributes?.name === db.dbName
                           )
 
                         const postgresInstances = db.terraformState?.resources
@@ -250,7 +251,7 @@ export default function ResourceAwsConfigSection({
                               res.mode === "managed" && res.name === "postgres"
                           )
                           ?.instances.find(
-                            (inst) => inst.attributes.name === db.dbName
+                            (inst) => inst.attributes?.name === db.dbName
                           )
                         return (
                           <div key={`db-${index}`}>
@@ -282,7 +283,7 @@ export default function ResourceAwsConfigSection({
                                             (mysqlInstances ? (
                                               <TextareaWithCopyButton
                                                 label={`MySQL Connection String`}
-                                                value={`host=${mysqlInstances?.attributes.fqdn};\nport=3306;\ndbname=${mysqlInstances?.attributes.name};\nuser=${mysqlInstances?.attributes.administrator_login};\npassword=${mysqlInstances?.attributes.administrator_password};\nssl-mode=require`}
+                                                value={`host=${mysqlInstances?.attributes.fqdn};\nport=3306;\ndbname=${mysqlInstances?.attributes?.name};\nuser=${mysqlInstances?.attributes?.administrator_login};\npassword=${mysqlInstances?.attributes?.administrator_password};\nssl-mode=require`}
                                               />
                                             ) : (
                                               <p className="text-sm text-muted-foreground">
@@ -297,7 +298,7 @@ export default function ResourceAwsConfigSection({
                                             (postgresInstances ? (
                                               <TextareaWithCopyButton
                                                 label={`Postgres Connection String`}
-                                                value={`host=${postgresInstances?.attributes.fqdn};\nport=5432;\ndbname=${postgresInstances?.attributes.name};\nuser=${postgresInstances?.attributes.administrator_login};\npassword=${postgresInstances?.attributes.administrator_password}`}
+                                                value={`host=${postgresInstances?.attributes.fqdn};\nport=5432;\ndbname=${postgresInstances?.attributes?.name};\nuser=${postgresInstances?.attributes.administrator_login};\npassword=${postgresInstances?.attributes.administrator_password}`}
                                               />
                                             ) : (
                                               <p className="text-sm text-muted-foreground">
@@ -411,7 +412,9 @@ export default function ResourceAwsConfigSection({
                         const output = storage.terraformState?.resources
                           .find((res) => res.mode === "managed")
                           ?.instances.find((inst) =>
-                            inst.attributes.name.includes(storage.bucketName)
+                            inst.attributes?.bucket?.includes(
+                              storage.bucketName
+                            )
                           )
 
                         const blob_connection_string =

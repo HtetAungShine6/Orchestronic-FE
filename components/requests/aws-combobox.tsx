@@ -37,24 +37,28 @@ export function AwsVMSizeCombobox({
   const [open, setOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
 
-  const vmSizes: AwsVmSizeDto[] = [
-    // {
-    //   id: "d2ddf565-1e8d-480d-9018-731e6f4d5405",
-    //   name: "t2.micro",
-    //   raw: "t2.micro",
-    //   numberOfCores: 1,
-    //   memoryInMB: 1024,
-    // },
-    {
-      id: "683a5a81-03fa-4597-b1f0-b06259e201bc",
-      name: "t3.micro",
-      raw: "t3.micro",
-      numberOfCores: 2,
-      memoryInMB: 1024,
-    },
-  ]
+  // const vmSizes: AwsVmSizeDto[] = [
+  //   // {
+  //   //   id: "d2ddf565-1e8d-480d-9018-731e6f4d5405",
+  //   //   name: "t2.micro",
+  //   //   raw: "t2.micro",
+  //   //   numberOfCores: 1,
+  //   //   memoryInMB: 1024,
+  //   // },
+  //   {
+  //     id: "683a5a81-03fa-4597-b1f0-b06259e201bc",
+  //     name: "t3.micro",
+  //     raw: "t3.micro",
+  //     numberOfCores: 2,
+  //     memoryInMB: 1024,
+  //   },
+  // ]
 
-  const { isLoading, error } = useQuery<AwsVmSizeDto[]>({
+  const {
+    data: vmSizes,
+    isLoading,
+    error,
+  } = useQuery<AwsVmSizeDto[]>({
     queryKey: ["aws-vm-sizes", searchValue],
     queryFn: () => fetchAwsVmSizes(searchValue, 1, 20, usePolicyFilter),
   })
@@ -99,6 +103,7 @@ export function AwsVMSizeCombobox({
                     setSelectedValue(vmSize)
                     setOpen(false)
                   }}
+                  disabled={vmSize.name.toLowerCase() !== "t3.micro"}
                   className="flex items-start gap-3 py-3 cursor-pointer"
                 >
                   <div className="flex-1">
@@ -107,6 +112,11 @@ export function AwsVMSizeCombobox({
                       <div>vCPUs: {vmSize.numberOfCores}</div>
                       <div>RAM: {Math.round(vmSize.memoryInMB / 1024)} GB</div>
                     </div>
+                    {vmSize.name.toLowerCase() !== "t3.micro" && (
+                      <span className="text-xs text-red-300">
+                        Not available
+                      </span>
+                    )}
                   </div>
                   <Check
                     className={`h-4 w-4 shrink-0 ${
