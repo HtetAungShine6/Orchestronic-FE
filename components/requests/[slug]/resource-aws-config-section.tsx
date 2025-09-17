@@ -252,10 +252,6 @@ export default function ResourceAwsConfigSection({
                               inst.attributes?.engine === "postgres"
                           )
 
-                        console.log(
-                          "postgresInstances",
-                          postgresInstances?.attributes
-                        )
                         return (
                           <div key={`db-${index}`}>
                             {data.status === Status.Approved && (
@@ -274,8 +270,7 @@ export default function ResourceAwsConfigSection({
                                   <AlertDialogContent>
                                     <AlertDialogHeader>
                                       <AlertDialogTitle>
-                                        Connect to{" "}
-                                        {db.dbInstanceClass.DBInstanceClass}
+                                        Connect to {db.dbName}
                                       </AlertDialogTitle>
                                       <AlertDialogDescription
                                         className="text-black"
