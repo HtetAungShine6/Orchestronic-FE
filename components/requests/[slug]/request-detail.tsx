@@ -51,7 +51,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { RepositoryStatus } from "@/types/repo"
+// import { RepositoryStatus } from "@/types/repo"
 import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
 
 // const AirflowLogs = lazy(() => import("./airflow-logs"))
