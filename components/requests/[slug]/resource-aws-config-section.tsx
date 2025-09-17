@@ -237,22 +237,25 @@ export default function ResourceAwsConfigSection({
                     {data.resources.resourceConfig.AwsDatabase.map(
                       (db, index) => {
                         const mysqlInstances = db.terraformState?.resources
-                          .find(
-                            (res) =>
-                              res.mode === "managed" && res.name === "mysql"
-                          )
+                          .find((res) => res.mode === "managed")
                           ?.instances.find(
-                            (inst) => inst.attributes?.name === db.dbName
+                            (inst) =>
+                              inst.attributes?.db_name === db.dbName &&
+                              inst.attributes?.engine === "mysql"
                           )
 
                         const postgresInstances = db.terraformState?.resources
-                          .find(
-                            (res) =>
-                              res.mode === "managed" && res.name === "postgres"
-                          )
+                          .find((res) => res.mode === "managed")
                           ?.instances.find(
-                            (inst) => inst.attributes?.name === db.dbName
+                            (inst) =>
+                              inst.attributes?.db_name === db.dbName &&
+                              inst.attributes?.engine === "postgres"
                           )
+
+                        console.log(
+                          "postgresInstances",
+                          postgresInstances?.attributes
+                        )
                         return (
                           <div key={`db-${index}`}>
                             {data.status === Status.Approved && (
@@ -283,7 +286,7 @@ export default function ResourceAwsConfigSection({
                                             (mysqlInstances ? (
                                               <TextareaWithCopyButton
                                                 label={`MySQL Connection String`}
-                                                value={`host=${mysqlInstances?.attributes.fqdn};\nport=3306;\ndbname=${mysqlInstances?.attributes?.name};\nuser=${mysqlInstances?.attributes?.administrator_login};\npassword=${mysqlInstances?.attributes?.administrator_password};\nssl-mode=require`}
+                                                value={`host=${mysqlInstances?.attributes.endpoint};\nport=3306;\ndbname=${mysqlInstances?.attributes?.db_name};\nuser=${mysqlInstances?.attributes?.username};\npassword=${mysqlInstances?.attributes?.password};`}
                                               />
                                             ) : (
                                               <p className="text-sm text-muted-foreground">
@@ -298,7 +301,7 @@ export default function ResourceAwsConfigSection({
                                             (postgresInstances ? (
                                               <TextareaWithCopyButton
                                                 label={`Postgres Connection String`}
-                                                value={`host=${postgresInstances?.attributes.fqdn};\nport=5432;\ndbname=${postgresInstances?.attributes?.name};\nuser=${postgresInstances?.attributes.administrator_login};\npassword=${postgresInstances?.attributes.administrator_password}`}
+                                                value={`host=${postgresInstances?.attributes.endpoint};\nport=5432;\ndbname=${postgresInstances?.attributes?.db_name};\nuser=${postgresInstances?.attributes?.username};\npassword=${postgresInstances?.attributes?.password};`}
                                               />
                                             ) : (
                                               <p className="text-sm text-muted-foreground">

@@ -70,11 +70,12 @@ export interface AwsDatabaseInstance {
       mode: string
       instances: Array<{
         attributes: {
-          public_ip_address: string
-          fqdn: string
+          endpoint: string
           name: string
-          administrator_login: string
-          administrator_password: string
+          username: string
+          password: string
+          engine: string
+          db_name: string
         }
       }>
     }>
