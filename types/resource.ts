@@ -89,7 +89,7 @@ export interface AwsStorageInstance {
       name: string
       mode: string
       instances: Array<{
-        attributes: { bucket: string; primary_blob_connection_string: string }
+        attributes: { bucket: string; region: string; arn: string }
       }>
     }>
   }

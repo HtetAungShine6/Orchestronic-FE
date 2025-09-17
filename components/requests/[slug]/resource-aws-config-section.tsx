@@ -417,8 +417,9 @@ export default function ResourceAwsConfigSection({
                             )
                           )
 
-                        const blob_connection_string =
-                          output?.attributes.primary_blob_connection_string
+                        const region = output?.attributes.region
+                        const arn = output?.attributes.arn
+                        const bucket = output?.attributes.bucket
 
                         return (
                           <div key={`storage-${index}`}>
@@ -448,12 +449,7 @@ export default function ResourceAwsConfigSection({
                                           {output ? (
                                             <TextareaWithCopyButton
                                               label="Connection String"
-                                              value={
-                                                blob_connection_string?.replaceAll(
-                                                  ";",
-                                                  ";\n"
-                                                ) || "None"
-                                              }
+                                              value={`Bucket: ${bucket}\nRegion: ${region}\nARN: ${arn}`}
                                             />
                                           ) : (
                                             <p className="text-sm text-muted-foreground">

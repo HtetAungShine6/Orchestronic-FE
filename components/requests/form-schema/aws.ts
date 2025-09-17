@@ -30,9 +30,10 @@ const dbSchema = z.object({
   dbUsername: z.string().nonempty({
     message: "Username is required",
   }),
-  dbPassword: z.string().nonempty({
-    message: "Password is required",
-  }),
+  dbPassword: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters" })
+    .nonempty({ message: "Password is required" }),
   awsDatabaseTypeId: z.string().nonempty({
     message: "DB instance class is required",
   }),

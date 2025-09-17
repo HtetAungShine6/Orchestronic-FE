@@ -143,7 +143,6 @@ export function AwsResourceGroupAccordionDB({
                               <FormLabel>Database Engine</FormLabel>
                               <FormControl>
                                 <Select
-                                  value={field.value}
                                   onValueChange={(value) =>
                                     field.onChange(value as Engine)
                                   }
