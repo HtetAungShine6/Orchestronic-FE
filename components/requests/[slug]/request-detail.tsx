@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { buttonVariants } from "@/components/ui/button"
 import { Status } from "@/types/api"
-import { useState } from "react"
+import { lazy, useState } from "react"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -54,7 +54,7 @@ import {
 // import { RepositoryStatus } from "@/types/repo"
 import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
 
-// const AirflowLogs = lazy(() => import("./airflow-logs"))
+const AirflowLogs = lazy(() => import("./airflow-logs"))
 
 export default function RequestDetail({ slug }: { slug: string }) {
   const queryClient = useQueryClient()
@@ -188,11 +188,21 @@ export default function RequestDetail({ slug }: { slug: string }) {
           )}
         {haveAdminOrIT(session?.role) && data?.status === Status.Approved && (
           <AlertDialog>
-            <AlertDialogTrigger
-              className={buttonVariants({ variant: "destructive" })}
-            >
-              {rejectMutation.isPending ? "Deleting..." : "Delete"}
-            </AlertDialogTrigger>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <AlertDialogTrigger
+                    className={buttonVariants({ variant: "destructive" })}
+                    disabled
+                  >
+                    {rejectMutation.isPending ? "Deleting..." : "Delete"}
+                  </AlertDialogTrigger>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Not available</p>
+              </TooltipContent>
+            </Tooltip>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -263,14 +273,14 @@ export default function RequestDetail({ slug }: { slug: string }) {
                 />
               </div>
             )}
-          {/* {data?.status === Status.Approved && (
+          {data?.status === Status.Approved && (
             <div className="col-span-3">
               <AirflowLogs
                 dagId="AZURE_Resource_Group"
                 dagRunId="manual__2025-09-15T04:04:17.884443+00:00"
               />
             </div>
-          )} */}
+          )}
         </div>
       </div>
     </div>

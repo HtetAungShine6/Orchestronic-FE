@@ -366,6 +366,7 @@ export function AzureVMSizeCombobox({
                     setSelectedValue(vmSize)
                     setOpen(false)
                   }}
+                  disabled={vmSize.name.toLowerCase() !== "standard_b1ls"}
                   className="flex items-start gap-3 py-3 cursor-pointer"
                 >
                   <div className="flex-1">
@@ -378,6 +379,11 @@ export function AzureVMSizeCombobox({
                       </div>
                       <div>Max Disks: {vmSize.maxDataDiskCount}</div>
                     </div>
+                    {vmSize.name.toLowerCase() !== "standard_b1ls" && (
+                      <div className="text-xs text-red-300 mt-1">
+                        Not available
+                      </div>
+                    )}
                   </div>
                   <Check
                     className={`h-4 w-4 shrink-0 ${

@@ -90,7 +90,12 @@ export default function AirflowLogs({ dagId, dagRunId }: AirflowLogsProps) {
   }
 
   return (
-    <Card className="h-[650px]">
+    <Card className="h-[650px] bg-gray-100 opacity-60 pointer-events-none cursor-not-allowed relative">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-gray-600 font-semibold text-2xl bg-white/80 px-4 py-2 rounded-xl shadow">
+          Not available
+        </span>
+      </div>
       <CardHeader>
         <CardTitle className="text-xl font-bold tracking-tight">
           <p className="flex items-center gap-1">
