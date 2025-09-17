@@ -100,13 +100,13 @@ export default function ResourceAwsConfigSection({
                                           {terraformOutput || vm.pem ? (
                                             <>
                                               <SSH
-                                                ip={`azureuser@${public_ip_address as string}`}
+                                                ip={`root@${public_ip_address as string}`}
                                                 pem={vm.pem}
                                                 vmName={vm.instanceName}
                                               />
                                               <InputWithCopyButton
                                                 label="SSH Command"
-                                                value={`ssh -i <private-key-file-path> azureuser@${public_ip_address as string}`}
+                                                value={`ssh -i <private-key-file-path> root@${public_ip_address as string}`}
                                               />
                                             </>
                                           ) : (
