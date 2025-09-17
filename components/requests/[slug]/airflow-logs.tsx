@@ -12,6 +12,7 @@ import {
 import { useQuery } from "@tanstack/react-query"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
+import { Spinner } from "@/components/ui/spinner"
 
 interface AirflowLogsProps {
   dagId: string
@@ -50,8 +51,8 @@ export default function AirflowLogs({ dagId, dagRunId }: AirflowLogsProps) {
       if (!res.ok) throw new Error("Failed to fetch logs")
       return res.json()
     },
-    refetchInterval: 5000,
-    refetchIntervalInBackground: true,
+    // refetchInterval: 5000,
+    // refetchIntervalInBackground: true,
   })
 
   // React Query for task instances
@@ -82,7 +83,7 @@ export default function AirflowLogs({ dagId, dagRunId }: AirflowLogsProps) {
   const [selectedTaskId, setSelectedTaskId] = useState(sortedTaskInstances[0])
 
   if (isLoadingLogs || isLoadingInstances) {
-    return <div>Loading...</div>
+    return <Spinner>Loading</Spinner>
   }
 
   if (errorLogs || errorInstances) {

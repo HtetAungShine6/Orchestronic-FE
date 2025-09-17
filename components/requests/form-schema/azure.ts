@@ -28,9 +28,12 @@ const dbSchema = z
     skuName: z.string().nonempty({
       message: "SKU name is required",
     }),
-    username: z.string().nonempty({
-      message: "Username is required",
-    }),
+    username: z
+      .string()
+      .nonempty({ message: "Username is required" })
+      .refine((val) => val.toLowerCase() !== "root", {
+        message: "Username cannot be root",
+      }),
     password: z.string().superRefine((val, ctx) => {
       if (val.length < 8) {
         ctx.addIssue({
