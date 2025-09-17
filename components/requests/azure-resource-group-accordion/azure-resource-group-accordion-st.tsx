@@ -295,12 +295,22 @@ export function ResourceGroupAccordionST({
                                       <SelectItem
                                         key={eachSku.sku}
                                         value={eachSku.sku}
+                                        disabled={
+                                          eachSku.sku === "Premium_LRS" ||
+                                          eachSku.sku === "Standard_ZRS"
+                                        }
                                       >
                                         <div className="flex flex-col text-left">
                                           <span>{eachSku.sku}</span>
                                           <span className="text-muted-foreground text-xs">
                                             {eachSku.description}
                                           </span>
+                                          {(eachSku.sku === "Premium_LRS" ||
+                                            eachSku.sku === "Standard_ZRS") && (
+                                            <span className="text-xs text-red-300">
+                                              Not available
+                                            </span>
+                                          )}
                                         </div>
                                       </SelectItem>
                                     ))}
@@ -337,12 +347,23 @@ export function ResourceGroupAccordionST({
                                     <SelectItem
                                       key={eachKind.kind}
                                       value={eachKind.kind}
+                                      disabled={
+                                        eachKind.kind === "FileStorage" ||
+                                        eachKind.kind === "BlockBlobStorage"
+                                      }
                                     >
                                       <div className="flex flex-col text-left">
                                         <span>{eachKind.kind}</span>
                                         <span className="text-muted-foreground text-xs">
                                           {eachKind.description}
                                         </span>
+                                        {(eachKind.kind === "FileStorage" ||
+                                          eachKind.kind ===
+                                            "BlockBlobStorage") && (
+                                          <span className="text-xs text-red-300">
+                                            Not available
+                                          </span>
+                                        )}
                                       </div>
                                     </SelectItem>
                                   ))}

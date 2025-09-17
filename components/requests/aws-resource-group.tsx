@@ -150,7 +150,13 @@ export default function AwsResourceGroup({
               </SelectTrigger>
               <SelectContent>
                 {regions[cloudProvider].map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    disabled={
+                      option.flag === "https://flagsapi.com/US/flat/16.png"
+                    }
+                  >
                     <span className="flex items-center gap-2">
                       <Image
                         src={option.flag}
@@ -159,6 +165,12 @@ export default function AwsResourceGroup({
                         alt={`${option.label} Icon`}
                       />
                       {option.label}
+                      {option.flag ===
+                        "https://flagsapi.com/US/flat/16.png" && (
+                        <span className="text-xs text-red-300">
+                          (Not available)
+                        </span>
+                      )}
                     </span>
                   </SelectItem>
                 ))}

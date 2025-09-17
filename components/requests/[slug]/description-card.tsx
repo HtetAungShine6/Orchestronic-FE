@@ -17,7 +17,7 @@ export default function DescriptionCard({
           </p>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="truncate whitespace-pre-wrap">
         {data?.description ?? "No description provided."}
       </CardContent>
     </Card>

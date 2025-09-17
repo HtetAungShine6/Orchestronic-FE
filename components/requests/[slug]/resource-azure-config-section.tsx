@@ -27,13 +27,14 @@ import SSH from "../connect/ssh"
 import TextPassword from "@/components/ui/text-password"
 import InputWithCopyButton from "../connect/input-with-copy-button"
 import TextareaWithCopyButton from "../connect/textarea-with-copy-button"
+import { databaseEngines } from "../azure-resource-group-accordion/azure-resource-group-accordion-db"
+import { Spinner } from "@/components/ui/spinner"
 
 export default function ResourceAzureConfigSection({
   data,
 }: {
   data?: AzureRequestDetail
 }) {
-  console.log(data?.resources.resourceConfig.AzureVMInstance)
   return (
     <div className="w-full space-y-4">
       {data?.resources.resourceConfig.AzureVMInstance &&
@@ -62,7 +63,7 @@ export default function ResourceAzureConfigSection({
                           (item) => item.value === vm.os
                         )
                         const terraformOutput =
-                          vm?.terraformState?.resources.find(
+                          vm?.terraformState?.resources?.find(
                             (res) => res.name === "vm"
                           )?.instances[index].attributes
 
@@ -89,18 +90,32 @@ export default function ResourceAzureConfigSection({
                                       <AlertDialogTitle>
                                         Connect to {vm.name}
                                       </AlertDialogTitle>
-                                      <AlertDialogDescription asChild>
-                                        <>
-                                          <SSH
-                                            ip={`azureuser@${public_ip_address as string}`}
-                                            pem={vm.pem}
-                                            vmName={vm.name}
-                                          />
-                                          <InputWithCopyButton
-                                            label="SSH Command"
-                                            value={`ssh -i <private-key-file-path> azureuser@${public_ip_address as string}`}
-                                          />
-                                        </>
+                                      <AlertDialogDescription
+                                        className="text-black"
+                                        asChild
+                                      >
+                                        <div id="vm">
+                                          {terraformOutput || vm.pem ? (
+                                            <>
+                                              <SSH
+                                                ip={`azureuser@${public_ip_address as string}`}
+                                                pem={vm.pem}
+                                                vmName={vm.name}
+                                              />
+                                              <InputWithCopyButton
+                                                label="SSH Command"
+                                                value={`ssh -i <private-key-file-path> azureuser@${public_ip_address as string}`}
+                                              />
+                                            </>
+                                          ) : (
+                                            <p className="text-sm text-muted-foreground">
+                                              <Spinner className="mt-4">
+                                                Provisioning in progress. Please
+                                                wait...
+                                              </Spinner>
+                                            </p>
+                                          )}
+                                        </div>
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -209,9 +224,18 @@ export default function ResourceAzureConfigSection({
                   <div className="space-y-4">
                     {data.resources.resourceConfig.AzureDatabase.map(
                       (db, index) => {
-                        const output = db.terraformState?.resources.find(
-                          (res) => res.mode === "managed"
-                        )
+                        const mysqlInstances =
+                          db.terraformState?.resources.find(
+                            (res) =>
+                              res.mode === "managed" && res.name === "mysql"
+                          )?.instances ?? []
+
+                        const postgresInstances =
+                          db.terraformState?.resources.find(
+                            (res) =>
+                              res.mode === "managed" && res.name === "postgres"
+                          )?.instances ?? []
+
                         return (
                           <div key={`db-${index}`}>
                             {data.status === Status.Approved && (
@@ -232,13 +256,50 @@ export default function ResourceAzureConfigSection({
                                       <AlertDialogTitle>
                                         Connect to {db.name}
                                       </AlertDialogTitle>
-                                      <AlertDialogDescription asChild>
-                                        <>
-                                          <TextareaWithCopyButton
-                                            label="Connection String"
-                                            value={`host=${output?.instances[index].attributes.fqdn};\nport=5432;\ndbname=${db.name};\nuser=${db.username};\npassword=${db.password}`}
-                                          />
-                                        </>
+                                      <AlertDialogDescription
+                                        className="text-black"
+                                        asChild
+                                      >
+                                        <div id="db">
+                                          {db.engine === Engine.MySQL ? (
+                                            mysqlInstances.length > 0 ? (
+                                              mysqlInstances.map(
+                                                (instance, i) => (
+                                                  <TextareaWithCopyButton
+                                                    key={`mysql-${i}`}
+                                                    label={`MySQL Connection String #${i + 1}`}
+                                                    value={`host=${instance.attributes.fqdn};\nport=3306;\ndbname=${instance.attributes.name};\nuser=${instance.attributes.administrator_login};\npassword=${instance.attributes.administrator_password};\nssl-mode=require`}
+                                                  />
+                                                )
+                                              )
+                                            ) : (
+                                              <p className="text-sm text-muted-foreground flex items-center gap-2">
+                                                <Spinner className="mt-1" />
+                                                Provisioning MySQL
+                                                instance(s)... Please wait.
+                                              </p>
+                                            )
+                                          ) : db.engine ===
+                                            Engine.PostgreSQL ? (
+                                            postgresInstances.length > 0 ? (
+                                              postgresInstances.map(
+                                                (instance, i) => (
+                                                  <TextareaWithCopyButton
+                                                    key={`postgres-${i}`}
+                                                    label={`Postgres Connection String #${i + 1}`}
+                                                    value={`host=${instance.attributes.fqdn};\nport=5432;\ndbname=${instance.attributes.name};\nuser=${instance.attributes.administrator_login};\npassword=${instance.attributes.administrator_password}`}
+                                                  />
+                                                )
+                                              )
+                                            ) : (
+                                              <p className="text-sm text-muted-foreground flex items-center gap-2">
+                                                <Spinner className="mt-1" />
+                                                Provisioning PostgreSQL
+                                                instance(s)... Please wait.
+                                              </p>
+                                            )
+                                          ) : null}
+                                        </div>
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -287,6 +348,26 @@ export default function ResourceAzureConfigSection({
                                       copyButton={true}
                                     />
                                   </div>
+                                </div>
+                                <div>
+                                  <span className="font-medium text-foreground">
+                                    Tier / Size:
+                                  </span>
+                                  <p className="text-muted-foreground">
+                                    {
+                                      databaseEngines.find(
+                                        (item) => item.SKU === db.skuName
+                                      )?.userOption
+                                    }
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="font-medium text-foreground">
+                                    SKU:
+                                  </span>
+                                  <p className="text-muted-foreground">
+                                    {db.skuName}
+                                  </p>
                                 </div>
                                 {db.engine === Engine.PostgreSQL && (
                                   <div>
@@ -339,10 +420,10 @@ export default function ResourceAzureConfigSection({
                       (storage, index) => {
                         const output = storage.terraformState?.resources.find(
                           (res) => res.mode === "managed"
-                        )
+                        )?.instances[index]?.attributes
+
                         const blob_connection_string =
-                          output?.instances[index]?.attributes
-                            ?.primary_blob_connection_string
+                          output?.primary_blob_connection_string
 
                         return (
                           <div key={`storage-${index}`}>
@@ -364,18 +445,30 @@ export default function ResourceAzureConfigSection({
                                       <AlertDialogTitle>
                                         Connect to {storage.name}
                                       </AlertDialogTitle>
-                                      <AlertDialogDescription asChild>
-                                        <>
-                                          <TextareaWithCopyButton
-                                            label="Connection String"
-                                            value={
-                                              blob_connection_string?.replaceAll(
-                                                ";",
-                                                ";\n"
-                                              ) || "None"
-                                            }
-                                          />
-                                        </>
+                                      <AlertDialogDescription
+                                        className="text-black"
+                                        asChild
+                                      >
+                                        <div id="storage">
+                                          {output ? (
+                                            <TextareaWithCopyButton
+                                              label="Connection String"
+                                              value={
+                                                blob_connection_string?.replaceAll(
+                                                  ";",
+                                                  ";\n"
+                                                ) || "None"
+                                              }
+                                            />
+                                          ) : (
+                                            <p className="text-sm text-muted-foreground">
+                                              <Spinner className="mt-4">
+                                                Provisioning in progress. Please
+                                                wait...
+                                              </Spinner>
+                                            </p>
+                                          )}
+                                        </div>
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -400,18 +493,18 @@ export default function ResourceAzureConfigSection({
                                 </div>
                                 <div>
                                   <span className="font-medium text-foreground">
-                                    SKU:
-                                  </span>
-                                  <p className="text-muted-foreground">
-                                    {storage.sku}
-                                  </p>
-                                </div>
-                                <div>
-                                  <span className="font-medium text-foreground">
                                     Access Tier:
                                   </span>
                                   <p className="text-muted-foreground">
                                     {storage.accessTier}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="font-medium text-foreground">
+                                    SKU:
+                                  </span>
+                                  <p className="text-muted-foreground">
+                                    {storage.sku}
                                   </p>
                                 </div>
                                 <div>

@@ -31,7 +31,6 @@ export default function ResourceAwsConfigSection({
 }: {
   data?: AwsRequestDetail
 }) {
-  console.log("AWS Resource Data:", data)
   return (
     <div className="w-full space-y-4">
       {data?.resources.resourceConfig.AwsVMInstance &&
@@ -79,8 +78,11 @@ export default function ResourceAwsConfigSection({
                                       <AlertDialogTitle>
                                         Connect to {vm.instanceName}
                                       </AlertDialogTitle>
-                                      <AlertDialogDescription asChild>
-                                        <>
+                                      <AlertDialogDescription
+                                        className="text-black"
+                                        asChild
+                                      >
+                                        <div>
                                           <SSH
                                             ip={`root@$`}
                                             pem={"asdsadas"}
@@ -90,7 +92,7 @@ export default function ResourceAwsConfigSection({
                                             label="SSH Command"
                                             value={`ssh -i <private-key-file-path> root@$`}
                                           />
-                                        </>
+                                        </div>
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>

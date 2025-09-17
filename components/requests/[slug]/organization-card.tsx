@@ -49,9 +49,11 @@ export default function OrganizationCard({
           <div>
             {data?.status === "Approved" &&
             data?.repository?.status === RepositoryStatus.Pending ? (
-              <Spinner size="small" className="mr-2">
-                Creating Repository...
-              </Spinner>
+              <p className="text-sm text-muted-foreground">
+                <Spinner size="small" className="mr-2 ">
+                  Creating Repository...
+                </Spinner>
+              </p>
             ) : (
               <Link
                 className="cursor-pointer hover:underline w-fit"
@@ -78,24 +80,28 @@ export default function OrganizationCard({
               Collaborators
             </Label>
             <div className="flex gap-2">
-              {data?.repository.RepositoryCollaborator.map(
-                (
-                  initial: Repository["RepositoryCollaborator"][number],
-                  index: number
-                ) => (
-                  <TooltipProvider key={`${index}_${initial}`}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback>
-                            {getInitials(initial.user.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                      </TooltipTrigger>
-                      <TooltipContent>{initial.user.name}</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+              {data?.repository.RepositoryCollaborator?.length ? (
+                data.repository.RepositoryCollaborator.map(
+                  (
+                    initial: Repository["RepositoryCollaborator"][number],
+                    index: number
+                  ) => (
+                    <TooltipProvider key={initial.user.id ?? index}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback>
+                              {getInitials(initial.user.name)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </TooltipTrigger>
+                        <TooltipContent>{initial.user.name}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )
                 )
+              ) : (
+                <p>No collaborators</p>
               )}
             </div>
           </div>

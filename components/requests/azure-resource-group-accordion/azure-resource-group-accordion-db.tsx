@@ -64,7 +64,7 @@ interface DatabaseEngine {
   price: string
 }
 
-const databaseEngines: DatabaseEngine[] = [
+export const databaseEngines: DatabaseEngine[] = [
   {
     userOption: "Small",
     tier: "Burstable",

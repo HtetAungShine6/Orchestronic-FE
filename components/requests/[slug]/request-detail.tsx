@@ -32,7 +32,6 @@ import {
 import { buttonVariants } from "@/components/ui/button"
 import { Status } from "@/types/api"
 import { useState } from "react"
-// import confetti from "canvas-confetti"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -54,6 +53,8 @@ import {
 } from "@/components/ui/tooltip"
 import { RepositoryStatus } from "@/types/repo"
 import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
+
+// const AirflowLogs = lazy(() => import("./airflow-logs"))
 
 export default function RequestDetail({ slug }: { slug: string }) {
   const queryClient = useQueryClient()
@@ -265,6 +266,14 @@ export default function RequestDetail({ slug }: { slug: string }) {
                 />
               </div>
             )}
+          {/* {data?.status === Status.Approved && (
+            <div className="col-span-3">
+              <AirflowLogs
+                dagId="AZURE_Resource_Group"
+                dagRunId="manual__2025-09-15T04:04:17.884443+00:00"
+              />
+            </div>
+          )} */}
         </div>
       </div>
     </div>

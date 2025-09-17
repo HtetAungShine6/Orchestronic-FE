@@ -43,6 +43,7 @@ import { awsRequestFormSchema } from "../form-schema/aws"
 
 export const operatingSystems = [
   { value: "ubuntu", label: "Ubuntu 22.04 LTS", icon: "/icon/ubuntu.png" },
+  { value: "windows", label: "Windows", icon: "/icon/windows.png" },
 ]
 
 interface ResourceGroupAccordionProps {
@@ -252,7 +253,11 @@ const VMAccordionItem = React.forwardRef<HTMLDivElement, VMAccordionItemProps>(
                             </SelectTrigger>
                             <SelectContent>
                               {operatingSystems.map((os) => (
-                                <SelectItem key={os.label} value={os.value}>
+                                <SelectItem
+                                  key={os.label}
+                                  value={os.value}
+                                  disabled={os.value === "windows"}
+                                >
                                   <div className="flex items-center gap-2">
                                     <Image
                                       src={os.icon}
@@ -261,6 +266,11 @@ const VMAccordionItem = React.forwardRef<HTMLDivElement, VMAccordionItemProps>(
                                       alt={`${os.label} icon`}
                                     />
                                     {os.label}
+                                    {os.value === "windows" && (
+                                      <span className="text-xs text-red-300">
+                                        (Not available)
+                                      </span>
+                                    )}
                                   </div>
                                 </SelectItem>
                               ))}

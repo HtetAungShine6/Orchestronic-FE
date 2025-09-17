@@ -45,13 +45,13 @@ export function AwsVMSizeCombobox({
       numberOfCores: 1,
       memoryInMB: 1024,
     },
-    {
-      id: "683a5a81-03fa-4597-b1f0-b06259e201bc",
-      name: "t3.micro",
-      raw: "t3.micro",
-      numberOfCores: 2,
-      memoryInMB: 1024,
-    },
+    // {
+    //   id: "683a5a81-03fa-4597-b1f0-b06259e201bc",
+    //   name: "t3.micro",
+    //   raw: "t3.micro",
+    //   numberOfCores: 2,
+    //   memoryInMB: 1024,
+    // },
   ]
 
   const { isLoading, error } = useQuery<AwsVmSizeDto[]>({

@@ -149,7 +149,7 @@ export default function Home() {
                   <div className="mx-auto mb-4 p-3 bg-green-100 dark:bg-green-900/30 rounded-full w-fit">
                     <Shield className="h-8 w-8 text-green-600" />
                   </div>
-                  <CardTitle>Enterprise Security</CardTitle>
+                  <CardTitle>Enterprise Compliance</CardTitle>
                   <CardDescription>
                     Built-in governance and compliance controls
                   </CardDescription>
@@ -178,7 +178,7 @@ export default function Home() {
                     <Cloud className="h-8 w-8 text-purple-600" />
                   </div>
                   <CardTitle>Multi-Cloud Ready</CardTitle>
-                  <CardDescription>Support for AWS and Azure</CardDescription>
+                  <CardDescription>Support AWS and Azure</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2">

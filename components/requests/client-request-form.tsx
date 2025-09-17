@@ -151,9 +151,6 @@ export default function ClientRequestForm({
       router.push(`/requests/${azureMutation.data?.displayCode}`)
   }
 
-  console.log("Azure Form Errors:", azureRequestForm.formState.errors)
-  console.log("AWS Form Errors:", awsRequestForm.formState.errors)
-
   return (
     <>
       {(awsMutation.isPending || azureMutation.isPending) && (
