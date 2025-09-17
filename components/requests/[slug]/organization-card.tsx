@@ -101,7 +101,7 @@ export default function OrganizationCard({
                   )
                 )
               ) : (
-                <p>No collaborators</p>
+                <p className="">-</p>
               )}
             </div>
           </div>

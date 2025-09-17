@@ -25,6 +25,15 @@ export interface AwsVMInstance {
   keyName: string
   sgName: string
   AwsInstanceType: AwsInstanceType
+  terraformState?: {
+    resources: Array<{
+      name: string
+      instances: Array<{
+        attributes: { public_ip_address: string; name: string }
+      }>
+    }>
+  }
+  pem?: string
 }
 
 interface AwsInstanceType {
@@ -55,11 +64,35 @@ export interface AwsDatabaseInstance {
   dbAllocatedStorage: number
   dbName: string
   resourceConfigId: string
+  terraformState?: {
+    resources: Array<{
+      name: string
+      mode: string
+      instances: Array<{
+        attributes: {
+          public_ip_address: string
+          fqdn: string
+          name: string
+          administrator_login: string
+          administrator_password: string
+        }
+      }>
+    }>
+  }
 }
 
 export interface AwsStorageInstance {
   id: string
   bucketName: string
+  terraformState?: {
+    resources: Array<{
+      name: string
+      mode: string
+      instances: Array<{
+        attributes: { name: string; primary_blob_connection_string: string }
+      }>
+    }>
+  }
 }
 
 export interface DatabaseInstance {

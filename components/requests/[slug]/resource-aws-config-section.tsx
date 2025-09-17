@@ -25,6 +25,9 @@ import TextPassword from "@/components/ui/text-password"
 import SSH from "../connect/ssh"
 import InputWithCopyButton from "../connect/input-with-copy-button"
 import { operatingSystems } from "../aws-resource-group-accordion/aws-resource-group-accordion-vm"
+import { Spinner } from "@/components/ui/spinner"
+import TextareaWithCopyButton from "../connect/textarea-with-copy-button"
+import { Engine } from "@/types/resource"
 
 export default function ResourceAwsConfigSection({
   data,
@@ -58,6 +61,16 @@ export default function ResourceAwsConfigSection({
                         const os = operatingSystems.find(
                           (item) => item.value === vm.os
                         )
+
+                        const terraformOutput = vm?.terraformState?.resources
+                          ?.find((res) => res.name === "vm")
+                          ?.instances.find((inst) =>
+                            inst.attributes.name.includes(vm.instanceName)
+                          )
+
+                        const public_ip_address =
+                          terraformOutput?.attributes.public_ip_address
+
                         return (
                           <div key={`vm-${index}`}>
                             {data.status === Status.Approved && (
@@ -82,16 +95,27 @@ export default function ResourceAwsConfigSection({
                                         className="text-black"
                                         asChild
                                       >
-                                        <div>
-                                          <SSH
-                                            ip={`root@$`}
-                                            pem={"asdsadas"}
-                                            vmName={vm.instanceName}
-                                          />
-                                          <InputWithCopyButton
-                                            label="SSH Command"
-                                            value={`ssh -i <private-key-file-path> root@$`}
-                                          />
+                                        <div id="vm">
+                                          {terraformOutput || vm.pem ? (
+                                            <>
+                                              <SSH
+                                                ip={`azureuser@${public_ip_address as string}`}
+                                                pem={vm.pem}
+                                                vmName={vm.instanceName}
+                                              />
+                                              <InputWithCopyButton
+                                                label="SSH Command"
+                                                value={`ssh -i <private-key-file-path> azureuser@${public_ip_address as string}`}
+                                              />
+                                            </>
+                                          ) : (
+                                            <p className="text-sm text-muted-foreground">
+                                              <Spinner className="mt-4">
+                                                Provisioning in progress. Please
+                                                wait...
+                                              </Spinner>
+                                            </p>
+                                          )}
                                         </div>
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
@@ -210,99 +234,146 @@ export default function ResourceAwsConfigSection({
                 <AccordionContent className="p-4 pt-0">
                   <div className="space-y-4">
                     {data.resources.resourceConfig.AwsDatabase.map(
-                      (db, index) => (
-                        <div key={`db-${index}`}>
-                          {data.status === Status.Approved && (
-                            <div className="flex mb-1">
-                              <AlertDialog>
-                                <AlertDialogTrigger
-                                  className={cn(
-                                    buttonVariants({
-                                      variant: "default",
-                                    }),
-                                    "ml-auto"
-                                  )}
-                                >
-                                  Connect
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Connect to{" "}
-                                      {db.dbInstanceClass.DBInstanceClass}
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription asChild>
-                                      <InputWithCopyButton
-                                        label="Connection String"
-                                        value={
-                                          db.dbInstanceClass.DBInstanceClass
-                                        }
-                                      />
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogAction>
-                                      Continue
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </div>
-                          )}
+                      (db, index) => {
+                        const mysqlInstances = db.terraformState?.resources
+                          .find(
+                            (res) =>
+                              res.mode === "managed" && res.name === "mysql"
+                          )
+                          ?.instances.find(
+                            (inst) => inst.attributes.name === db.dbName
+                          )
 
-                          <div className="border rounded-lg p-4 bg-muted/50">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <span className="font-medium text-foreground">
-                                  Name:
-                                </span>
-                                <p className="text-muted-foreground">
-                                  {db.dbName}
-                                </p>
+                        const postgresInstances = db.terraformState?.resources
+                          .find(
+                            (res) =>
+                              res.mode === "managed" && res.name === "postgres"
+                          )
+                          ?.instances.find(
+                            (inst) => inst.attributes.name === db.dbName
+                          )
+                        return (
+                          <div key={`db-${index}`}>
+                            {data.status === Status.Approved && (
+                              <div className="flex mb-1">
+                                <AlertDialog>
+                                  <AlertDialogTrigger
+                                    className={cn(
+                                      buttonVariants({
+                                        variant: "default",
+                                      }),
+                                      "ml-auto"
+                                    )}
+                                  >
+                                    Connect
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Connect to{" "}
+                                        {db.dbInstanceClass.DBInstanceClass}
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription
+                                        className="text-black"
+                                        asChild
+                                      >
+                                        <div id="db">
+                                          {db.engine === Engine.MySQL &&
+                                            (mysqlInstances ? (
+                                              <TextareaWithCopyButton
+                                                label={`MySQL Connection String`}
+                                                value={`host=${mysqlInstances?.attributes.fqdn};\nport=3306;\ndbname=${mysqlInstances?.attributes.name};\nuser=${mysqlInstances?.attributes.administrator_login};\npassword=${mysqlInstances?.attributes.administrator_password};\nssl-mode=require`}
+                                              />
+                                            ) : (
+                                              <p className="text-sm text-muted-foreground">
+                                                <Spinner className="mt-4">
+                                                  Provisioning MySQL
+                                                  instance(s)... Please wait.
+                                                </Spinner>
+                                              </p>
+                                            ))}
+
+                                          {db.engine === Engine.PostgreSQL &&
+                                            (postgresInstances ? (
+                                              <TextareaWithCopyButton
+                                                label={`Postgres Connection String`}
+                                                value={`host=${postgresInstances?.attributes.fqdn};\nport=5432;\ndbname=${postgresInstances?.attributes.name};\nuser=${postgresInstances?.attributes.administrator_login};\npassword=${postgresInstances?.attributes.administrator_password}`}
+                                              />
+                                            ) : (
+                                              <p className="text-sm text-muted-foreground">
+                                                <Spinner className="mt-4">
+                                                  Provisioning Postgres
+                                                  instance(s)... Please wait.
+                                                </Spinner>
+                                              </p>
+                                            ))}
+                                        </div>
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogAction>
+                                        Continue
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
                               </div>
-                              <div>
-                                <span className="font-medium text-foreground">
-                                  Database Engine:
-                                </span>
-                                <p className="text-muted-foreground">
-                                  {db.dbInstanceClass.engine}
-                                </p>
-                              </div>
-                              <div>
-                                <span className="font-medium text-foreground">
-                                  Username:
-                                </span>
-                                <p className="text-muted-foreground">
-                                  {db.dbUsername}
-                                </p>
-                              </div>
-                              <div>
-                                <span className="font-medium text-foreground">
-                                  Password:
-                                </span>
-                                <div className="text-muted-foreground">
-                                  <TextPassword
-                                    text={db.dbPassword}
-                                    copyButton={true}
-                                  />
+                            )}
+
+                            <div className="border rounded-lg p-4 bg-muted/50">
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <span className="font-medium text-foreground">
+                                    Name:
+                                  </span>
+                                  <p className="text-muted-foreground">
+                                    {db.dbName}
+                                  </p>
                                 </div>
-                              </div>
-                              <div>
-                                <span className="font-medium text-foreground">
-                                  Instance Class:
-                                </span>
-                                <p className="text-muted-foreground">
-                                  {db.dbInstanceClass.DBInstanceClass} (
-                                  {(
-                                    db.dbInstanceClass.MaxStorageSize / 1024
-                                  ).toFixed(1)}{" "}
-                                  GB)
-                                </p>
+                                <div>
+                                  <span className="font-medium text-foreground">
+                                    Database Engine:
+                                  </span>
+                                  <p className="text-muted-foreground">
+                                    {db.dbInstanceClass.engine}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="font-medium text-foreground">
+                                    Username:
+                                  </span>
+                                  <p className="text-muted-foreground">
+                                    {db.dbUsername}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="font-medium text-foreground">
+                                    Password:
+                                  </span>
+                                  <div className="text-muted-foreground">
+                                    <TextPassword
+                                      text={db.dbPassword}
+                                      copyButton={true}
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <span className="font-medium text-foreground">
+                                    Instance Class:
+                                  </span>
+                                  <p className="text-muted-foreground">
+                                    {db.dbInstanceClass.DBInstanceClass} (
+                                    {(
+                                      db.dbInstanceClass.MaxStorageSize / 1024
+                                    ).toFixed(1)}{" "}
+                                    GB)
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      )
+                        )
+                      }
                     )}
                   </div>
                 </AccordionContent>
@@ -336,57 +407,87 @@ export default function ResourceAwsConfigSection({
                 <AccordionContent className="p-4 pt-0">
                   <div className="space-y-4">
                     {data.resources.resourceConfig.AwsStorage.map(
-                      (storage, index) => (
-                        <div key={`storage-${index}`}>
-                          {data.status === Status.Approved && (
-                            <div className="flex mb-1">
-                              <AlertDialog>
-                                <AlertDialogTrigger
-                                  className={cn(
-                                    buttonVariants({
-                                      variant: "default",
-                                    }),
-                                    "ml-auto"
-                                  )}
-                                >
-                                  Connect
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Connect to {storage.bucketName}
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription asChild>
-                                      <InputWithCopyButton
-                                        label="Connection String"
-                                        value={storage.bucketName}
-                                      />
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogAction>
-                                      Continue
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </div>
-                          )}
+                      (storage, index) => {
+                        const output = storage.terraformState?.resources
+                          .find((res) => res.mode === "managed")
+                          ?.instances.find((inst) =>
+                            inst.attributes.name.includes(storage.bucketName)
+                          )
 
-                          <div className="border rounded-lg p-4 bg-muted/50">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <span className="font-medium text-foreground">
-                                  Bucket Name:
-                                </span>
-                                <p className="text-muted-foreground">
-                                  {storage.bucketName}
-                                </p>
+                        const blob_connection_string =
+                          output?.attributes.primary_blob_connection_string
+
+                        return (
+                          <div key={`storage-${index}`}>
+                            {data.status === Status.Approved && (
+                              <div className="flex mb-1">
+                                <AlertDialog>
+                                  <AlertDialogTrigger
+                                    className={cn(
+                                      buttonVariants({
+                                        variant: "default",
+                                      }),
+                                      "ml-auto"
+                                    )}
+                                  >
+                                    Connect
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Connect to {storage.bucketName}
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription
+                                        className="text-black"
+                                        asChild
+                                      >
+                                        <div id="storage">
+                                          {output ? (
+                                            <TextareaWithCopyButton
+                                              label="Connection String"
+                                              value={
+                                                blob_connection_string?.replaceAll(
+                                                  ";",
+                                                  ";\n"
+                                                ) || "None"
+                                              }
+                                            />
+                                          ) : (
+                                            <p className="text-sm text-muted-foreground">
+                                              <Spinner className="mt-4">
+                                                Provisioning in progress. Please
+                                                wait...
+                                              </Spinner>
+                                            </p>
+                                          )}
+                                        </div>
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogAction>
+                                        Continue
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            )}
+
+                            <div className="border rounded-lg p-4 bg-muted/50">
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <span className="font-medium text-foreground">
+                                    Bucket Name:
+                                  </span>
+                                  <p className="text-muted-foreground">
+                                    {storage.bucketName}
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      )
+                        )
+                      }
                     )}
                   </div>
                 </AccordionContent>
