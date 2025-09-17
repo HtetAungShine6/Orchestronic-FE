@@ -67,10 +67,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
   >({
     queryKey: ["request", slug],
     queryFn: () => getRequestBySlug(slug),
-    refetchInterval: (query) =>
-      query.state.data?.repository?.status === RepositoryStatus.Created
-        ? false
-        : 2000,
+    refetchInterval: () => 30000,
     refetchIntervalInBackground: true,
   })
 
