@@ -2,9 +2,12 @@ import { Engine } from "@/types/resource"
 import z from "zod"
 
 const vmSchema = z.object({
-  name: z.string().nonempty({
-    message: "VM name is required",
-  }),
+  name: z
+    .string()
+    .nonempty({ message: "VM name is required" })
+    .regex(/^[a-zA-Z0-9_-]+$/, {
+      message: "VM name must not contain special characters",
+    }),
   os: z.string().nonempty({
     message: "Operating system is required",
   }),
