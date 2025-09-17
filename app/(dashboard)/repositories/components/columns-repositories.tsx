@@ -70,8 +70,7 @@ export const columnsRepositories = (
           "RepositoryCollaborator"
         ) as Repository["RepositoryCollaborator"]
 
-        if (initials.length === 0)
-          return <span className="">No Collaborators</span>
+        if (initials.length === 0) return <span className="">-</span>
 
         return (
           <div className="flex space-x-2">
@@ -100,6 +99,8 @@ export const columnsRepositories = (
         <DataTableColumnHeader column={column} title="Description" />
       ),
       cell: ({ row }) => {
+        const description = row.getValue("description")
+        if (!description) return <span className="">-</span>
         return (
           <div className="flex space-x-2">
             <span className="">{row.getValue("description")}</span>
