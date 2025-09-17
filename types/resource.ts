@@ -10,7 +10,9 @@ export interface VMInstance {
   terraformState?: {
     resources: Array<{
       name: string
-      instances: Array<{ attributes: { public_ip_address: string } }>
+      instances: Array<{
+        attributes: { public_ip_address: string; name: string }
+      }>
     }>
   }
   pem?: string
@@ -97,7 +99,7 @@ export interface StorageInstance {
       name: string
       mode: string
       instances: Array<{
-        attributes: { primary_blob_connection_string: string }
+        attributes: { name: string; primary_blob_connection_string: string }
       }>
     }>
   }

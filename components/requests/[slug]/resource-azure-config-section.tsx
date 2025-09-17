@@ -62,13 +62,15 @@ export default function ResourceAzureConfigSection({
                         const os = operatingSystems.find(
                           (item) => item.value === vm.os
                         )
-                        const terraformOutput =
-                          vm?.terraformState?.resources?.find(
-                            (res) => res.name === "vm"
-                          )?.instances[index].attributes
+
+                        const terraformOutput = vm?.terraformState?.resources
+                          ?.find((res) => res.name === "vm")
+                          ?.instances.find((inst) =>
+                            inst.attributes.name.includes(vm.name)
+                          )
 
                         const public_ip_address =
-                          terraformOutput?.public_ip_address
+                          terraformOutput?.attributes.public_ip_address
 
                         return (
                           <div key={`vm-${index}`}>
@@ -224,17 +226,23 @@ export default function ResourceAzureConfigSection({
                   <div className="space-y-4">
                     {data.resources.resourceConfig.AzureDatabase.map(
                       (db, index) => {
-                        const mysqlInstances =
-                          db.terraformState?.resources.find(
+                        const mysqlInstances = db.terraformState?.resources
+                          .find(
                             (res) =>
                               res.mode === "managed" && res.name === "mysql"
-                          )?.instances ?? []
+                          )
+                          ?.instances.find(
+                            (inst) => inst.attributes.name === db.name
+                          )
 
-                        const postgresInstances =
-                          db.terraformState?.resources.find(
+                        const postgresInstances = db.terraformState?.resources
+                          .find(
                             (res) =>
                               res.mode === "managed" && res.name === "postgres"
-                          )?.instances ?? []
+                          )
+                          ?.instances.find(
+                            (inst) => inst.attributes.name === db.name
+                          )
 
                         return (
                           <div key={`db-${index}`}>
@@ -261,44 +269,35 @@ export default function ResourceAzureConfigSection({
                                         asChild
                                       >
                                         <div id="db">
-                                          {db.engine === Engine.MySQL ? (
-                                            mysqlInstances.length > 0 ? (
-                                              mysqlInstances.map(
-                                                (instance, i) => (
-                                                  <TextareaWithCopyButton
-                                                    key={`mysql-${i}`}
-                                                    label={`MySQL Connection String #${i + 1}`}
-                                                    value={`host=${instance.attributes.fqdn};\nport=3306;\ndbname=${instance.attributes.name};\nuser=${instance.attributes.administrator_login};\npassword=${instance.attributes.administrator_password};\nssl-mode=require`}
-                                                  />
-                                                )
-                                              )
+                                          {db.engine === Engine.MySQL &&
+                                            (mysqlInstances ? (
+                                              <TextareaWithCopyButton
+                                                label={`MySQL Connection String`}
+                                                value={`host=${mysqlInstances?.attributes.fqdn};\nport=3306;\ndbname=${mysqlInstances?.attributes.name};\nuser=${mysqlInstances?.attributes.administrator_login};\npassword=${mysqlInstances?.attributes.administrator_password};\nssl-mode=require`}
+                                              />
                                             ) : (
-                                              <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                                <Spinner className="mt-1" />
-                                                Provisioning MySQL
-                                                instance(s)... Please wait.
+                                              <p className="text-sm text-muted-foreground">
+                                                <Spinner>
+                                                  Provisioning MySQL
+                                                  instance(s)... Please wait.
+                                                </Spinner>
                                               </p>
-                                            )
-                                          ) : db.engine ===
-                                            Engine.PostgreSQL ? (
-                                            postgresInstances.length > 0 ? (
-                                              postgresInstances.map(
-                                                (instance, i) => (
-                                                  <TextareaWithCopyButton
-                                                    key={`postgres-${i}`}
-                                                    label={`Postgres Connection String #${i + 1}`}
-                                                    value={`host=${instance.attributes.fqdn};\nport=5432;\ndbname=${instance.attributes.name};\nuser=${instance.attributes.administrator_login};\npassword=${instance.attributes.administrator_password}`}
-                                                  />
-                                                )
-                                              )
+                                            ))}
+
+                                          {db.engine === Engine.PostgreSQL &&
+                                            (postgresInstances ? (
+                                              <TextareaWithCopyButton
+                                                label={`Postgres Connection String`}
+                                                value={`host=${postgresInstances?.attributes.fqdn};\nport=5432;\ndbname=${postgresInstances?.attributes.name};\nuser=${postgresInstances?.attributes.administrator_login};\npassword=${postgresInstances?.attributes.administrator_password}`}
+                                              />
                                             ) : (
-                                              <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                                <Spinner className="mt-1" />
-                                                Provisioning PostgreSQL
-                                                instance(s)... Please wait.
+                                              <p className="text-sm text-muted-foreground">
+                                                <Spinner>
+                                                  Provisioning Postgres
+                                                  instance(s)... Please wait.
+                                                </Spinner>
                                               </p>
-                                            )
-                                          ) : null}
+                                            ))}
                                         </div>
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
@@ -418,12 +417,14 @@ export default function ResourceAzureConfigSection({
                   <div className="space-y-4">
                     {data.resources.resourceConfig.AzureStorage.map(
                       (storage, index) => {
-                        const output = storage.terraformState?.resources.find(
-                          (res) => res.mode === "managed"
-                        )?.instances[index]?.attributes
+                        const output = storage.terraformState?.resources
+                          .find((res) => res.mode === "managed")
+                          ?.instances.find((inst) =>
+                            inst.attributes.name.includes(storage.name)
+                          )
 
                         const blob_connection_string =
-                          output?.primary_blob_connection_string
+                          output?.attributes.primary_blob_connection_string
 
                         return (
                           <div key={`storage-${index}`}>
