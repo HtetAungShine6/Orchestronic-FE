@@ -83,7 +83,7 @@ const storageSchema = z.object({
       message: "Name can only contain lowercase letters and numbers",
     })
     .min(3, { message: "Name must be at least 3 characters" })
-    .max(24, { message: "Name must be at most 24 characters" }),
+    .max(16, { message: "Name must be at most 16 characters" }),
   kind: z.string().nonempty({
     message: "Kind is required",
   }),
