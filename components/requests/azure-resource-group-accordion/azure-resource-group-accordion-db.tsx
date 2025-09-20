@@ -94,11 +94,16 @@ export const databaseEngines: DatabaseEngine[] = [
 interface ResourceGroupAccordionProps {
   form: UseFormReturn<z.infer<typeof azureRequestFormSchema>>
   databaseCount: number
+  dbPolicy: {
+    id: string
+    maxStorage: number
+  }
 }
 
 export function ResourceGroupAccordionDB({
   form,
   databaseCount,
+  dbPolicy,
 }: Readonly<ResourceGroupAccordionProps>) {
   const lastDBRef = useRef<HTMLDivElement | null>(null)
   const [userOption, setUserOption] = React.useState<DatabaseEngine | null>(
@@ -357,6 +362,7 @@ export function ResourceGroupAccordionDB({
                                     onChange={(value) => {
                                       field.onChange(value)
                                     }}
+                                    dbPolicy={dbPolicy}
                                   />
                                 </FormControl>
                                 <FormDescription />
@@ -394,8 +400,10 @@ const databaseSizes = [
 
 export function DatabaseSizeCombobox({
   onChange,
+  dbPolicy,
 }: {
   onChange?: (value: number) => void
+  dbPolicy: { id: string; maxStorage: number }
 }) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState<number | "">("")
@@ -406,7 +414,10 @@ export function DatabaseSizeCombobox({
     const s = search.trim().toLowerCase()
     const numberStr = size.label.toString()
     const unitStr = size.unit.toLowerCase()
-    return numberStr.includes(s) || unitStr.includes(s)
+    return (
+      (numberStr.includes(s) || unitStr.includes(s)) &&
+      size.value <= Number(dbPolicy.maxStorage * 1024)
+    )
   })
 
   const handleSelect = (selectedValue: number) => {

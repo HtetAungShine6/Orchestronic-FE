@@ -32,7 +32,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { createRequestAws, createRequestAzure } from "@/app/api/requests/api"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { User } from "@/types/api"
 import AlertError from "../ui/alert-error"
 import { azureRequestFormSchema } from "./form-schema/azure"
@@ -40,6 +40,7 @@ import AwsResourceGroup from "./aws-resource-group"
 import { awsRequestFormSchema } from "./form-schema/aws"
 import PopupSpinner from "../ui/popup-spinner"
 import { setRepoName } from "./state/repo-slice"
+import { fetcher } from "@/lib/fetcher"
 
 interface ClientRequestFormProps {
   // suggestedName: string
@@ -151,6 +152,15 @@ export default function ClientRequestForm({
       router.push(`/requests/${azureMutation.data?.displayCode}`)
   }
 
+  const { data: dbPolicy } = useQuery({
+    queryKey: ["dbPolicy"],
+    queryFn: async () => {
+      return fetcher(
+        `${process.env.NEXT_PUBLIC_API_URL}/${cloudProvider.toLowerCase()}/policy/database`
+      )
+    },
+  })
+
   return (
     <>
       {(awsMutation.isPending || azureMutation.isPending) && (
@@ -189,6 +199,7 @@ export default function ClientRequestForm({
               form={azureRequestForm}
               cloudProvider={cloudProvider}
               setCloudProvider={setCloudProvider}
+              dbPolicy={dbPolicy}
             />
             <FormField
               control={azureRequestForm.control}
@@ -231,6 +242,7 @@ export default function ClientRequestForm({
               form={awsRequestForm}
               cloudProvider={cloudProvider}
               setCloudProvider={setCloudProvider}
+              dbPolicy={dbPolicy}
             />
             <FormField
               control={awsRequestForm.control}

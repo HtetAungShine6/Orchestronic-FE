@@ -40,12 +40,17 @@ interface ResourceGroupProps {
   form: UseFormReturn<z.infer<typeof awsRequestFormSchema>>
   cloudProvider: CloudProvider
   setCloudProvider: (value: CloudProvider) => void
+  dbPolicy: {
+    id: string
+    maxStorage: number
+  }
 }
 
 export default function AwsResourceGroup({
   form,
   cloudProvider,
   setCloudProvider,
+  dbPolicy,
 }: Readonly<ResourceGroupProps>) {
   const [vmCount, setVmCount] = useState(0)
   const [storageCount, setStorageCount] = useState(0)
@@ -233,6 +238,7 @@ export default function AwsResourceGroup({
             <AwsResourceGroupAccordionDB
               form={form}
               databaseCount={databaseCount}
+              dbPolicy={dbPolicy}
             />
           </div>
         </div>

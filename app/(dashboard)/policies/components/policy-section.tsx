@@ -172,7 +172,7 @@ function PolicyCardAzure({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
         </div>
       </div>
       <Separator className="my-4" />
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
           <DatabaseZap size={16} />
           <h3 className="font-medium">Storage</h3>
@@ -198,7 +198,7 @@ function PolicyCardAzure({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
             require justification.
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }
@@ -285,7 +285,7 @@ function PolicyCardAWS({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
         </div>
       </div>
       <Separator className="my-4" />
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
           <DatabaseZap size={16} />
           <h3 className="font-medium">Storage</h3>
@@ -307,7 +307,7 @@ function PolicyCardAWS({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
             require justification.
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

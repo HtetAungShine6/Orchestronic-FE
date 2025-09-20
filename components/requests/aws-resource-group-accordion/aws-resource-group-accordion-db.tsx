@@ -66,11 +66,16 @@ import { useQuery } from "@tanstack/react-query"
 interface ResourceGroupAccordionProps {
   form: UseFormReturn<z.infer<typeof awsRequestFormSchema>>
   databaseCount: number
+  dbPolicy: {
+    id: string
+    maxStorage: number
+  }
 }
 
 export function AwsResourceGroupAccordionDB({
   form,
   databaseCount,
+  dbPolicy,
 }: Readonly<ResourceGroupAccordionProps>) {
   const lastDBRef = useRef<HTMLDivElement | null>(null)
   // Per-card show/hide password state
@@ -204,6 +209,7 @@ export function AwsResourceGroupAccordionDB({
                                   type="number"
                                   placeholder="Enter allocated storage"
                                   value={field.value ?? ""}
+                                  max={dbPolicy.maxStorage}
                                   onChange={(e) =>
                                     field.onChange(
                                       e.target.value === ""

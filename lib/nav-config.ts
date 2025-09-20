@@ -3,7 +3,7 @@ import {
   IconCloudSearch,
   IconDashboard,
   IconFolder,
-  IconHelp,
+  // IconHelp,
   IconPackages,
   IconSend,
   IconSettings,
@@ -45,12 +45,12 @@ export const navData = {
       icon: IconSettings,
       role: [Role.Admin],
     },
-    {
-      title: "Get Help",
-      url: "/get-help",
-      icon: IconHelp,
-      role: [Role.Admin, Role.Developer, Role.IT],
-    },
+    // {
+    //   title: "Get Help",
+    //   url: "/get-help",
+    //   icon: IconHelp,
+    //   role: [Role.Admin, Role.Developer, Role.IT],
+    // },
   ],
   operations: [
     {
