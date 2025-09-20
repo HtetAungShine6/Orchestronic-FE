@@ -1,14 +1,18 @@
 "use client"
 
 import { Separator } from "@/components/ui/separator"
-import { Cpu, Database, DatabaseZap } from "lucide-react"
+import {
+  Cpu,
+  Database,
+  // DatabaseZap
+} from "lucide-react"
 import { useState } from "react"
 import { haveAdminOrIT } from "@/lib/utils"
 import Image from "next/image"
 import { useQuery } from "@tanstack/react-query"
 import {
   getPolicyDBAzure,
-  getPolicySTAzure,
+  // getPolicySTAzure,
   getPolicyVMAzure,
 } from "@/app/api/policy/azure/api"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -20,7 +24,7 @@ import AzureEditPolicyDialog from "./azure-edit-policy"
 import { AwsVmSizeDto, VmSizeDto } from "@/types/request"
 import {
   getPolicyDBAws,
-  getPolicySTAws,
+  // getPolicySTAws,
   getPolicyVMAws,
 } from "@/app/api/policy/aws/api"
 
@@ -93,10 +97,10 @@ function PolicyCardAzure({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
     queryFn: () => getPolicyDBAzure(),
   })
 
-  const { data: stData } = useQuery({
-    queryKey: ["azure-policies-st", activeTab],
-    queryFn: () => getPolicySTAzure(),
-  })
+  // const { data: stData } = useQuery({
+  //   queryKey: ["azure-policies-st", activeTab],
+  //   queryFn: () => getPolicySTAzure(),
+  // })
 
   const { data, isLoading, error } = useQuery<VmSizeDto>({
     queryKey: ["azure-policies-vm", activeTab],
@@ -214,10 +218,10 @@ function PolicyCardAWS({ activeTab }: { activeTab: "AZURE" | "AWS" }) {
     queryFn: () => getPolicyDBAws(),
   })
 
-  const { data: stData } = useQuery({
-    queryKey: ["aws-policies-st", activeTab],
-    queryFn: () => getPolicySTAws(),
-  })
+  // const { data: stData } = useQuery({
+  //   queryKey: ["aws-policies-st", activeTab],
+  //   queryFn: () => getPolicySTAws(),
+  // })
 
   const {
     data: vmData,
