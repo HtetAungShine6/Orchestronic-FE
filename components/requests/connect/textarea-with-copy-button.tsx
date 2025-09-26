@@ -17,7 +17,11 @@ export default function TextareaWithCopyButton({
     <div className={className}>
       <Label className="mb-1 block">{label}</Label>
       <div className="flex items-center gap-1">
-        <Textarea value={value} readOnly className="flex-1 w-fit h-[120px]" />
+        <Textarea
+          value={value}
+          readOnly
+          className="w-full h-[120px] whitespace-pre-wrap break-all"
+        />
         <CopyButton
           variant="ghost"
           className="px-3 py-2 hover:bg-transparent"
