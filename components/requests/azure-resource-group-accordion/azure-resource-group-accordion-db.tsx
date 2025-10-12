@@ -71,7 +71,7 @@ export const databaseEngines: DatabaseEngine[] = [
     vCores: 1,
     ram: "2 GB",
     SKU: "B_Standard_B1ms",
-    price: "18.98/month",
+    price: "$18.98/month",
   },
   {
     userOption: "Medium",
@@ -79,7 +79,7 @@ export const databaseEngines: DatabaseEngine[] = [
     vCores: 2,
     ram: "8 GB",
     SKU: "GP_Standard_D2ds_v4",
-    price: "171.550/month",
+    price: "$171.550/month",
   },
   {
     userOption: "Large",
@@ -87,7 +87,7 @@ export const databaseEngines: DatabaseEngine[] = [
     vCores: 4,
     ram: "16 GB",
     SKU: "MO_Standard_E4ds_v4",
-    price: "343.100/month",
+    price: "$343.100/month",
   },
 ]
 

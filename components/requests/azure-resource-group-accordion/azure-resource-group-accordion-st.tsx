@@ -50,41 +50,41 @@ const storagePrices: Record<string, StoragePrice[]> = {
   Standard_LRS: [
     {
       tier: "Hot",
-      price: "0.02 per GB/month",
+      price: "$0.02 per GB/month",
     },
     {
       tier: "Cool",
-      price: "0.011 per GB/month",
+      price: "$0.011 per GB/month",
     },
   ],
   Standard_GRS: [
     {
       tier: "Hot",
-      price: "0.04 per GB/month",
+      price: "$0.04 per GB/month",
     },
     {
       tier: "Cool",
-      price: "0.022 per GB/month",
+      price: "$0.022 per GB/month",
     },
   ],
   Standard_ZRS: [
     {
       tier: "Hot",
-      price: "0.025 per GB/month",
+      price: "$0.025 per GB/month",
     },
     {
       tier: "Cool",
-      price: "0.0138 per GB/month",
+      price: "$0.0138 per GB/month",
     },
   ],
   Premium_LRS: [
     {
       tier: "Hot",
-      price: "0.195 per GB/month",
+      price: "$0.195 per GB/month",
     },
     {
       tier: "Cool",
-      price: "0.195 per GB/month",
+      price: "$0.195 per GB/month",
     },
   ],
 }
