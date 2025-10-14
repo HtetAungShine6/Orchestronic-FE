@@ -63,7 +63,10 @@ export default function Page() {
             Azure
           </h3>
           <div className="space-y-4">
-            <SummaryCard title="Resource Groups" value={data.resourceGroups} />
+            <SummaryCard
+              title="Resource Groups"
+              value={data.totalResourceGroupsAzure}
+            />
             <SummaryCard title="VMs" value={data.vms.azure} />
             <SummaryCard title="DBs" value={data.dbs.azure} />
             <SummaryCard title="Storage" value={data.storage.azure} />
@@ -82,7 +85,10 @@ export default function Page() {
             AWS
           </h3>
           <div className="space-y-4">
-            <SummaryCard title="Resource Groups" value={data.resourceGroups} />
+            <SummaryCard
+              title="Resource Groups"
+              value={data.totalResourceGroupsAWS}
+            />
             <SummaryCard title="VMs" value={data.vms.aws} />
             <SummaryCard title="DBs" value={data.dbs.aws} />
             <SummaryCard title="Storage" value={data.storage.aws} />
