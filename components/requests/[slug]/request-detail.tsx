@@ -2,6 +2,7 @@
 
 import {
   changeRequestStatus,
+  deleteRequest,
   getRequestBySlug,
   RequestStatusResponse,
   updateRequestFeedback,
@@ -17,7 +18,7 @@ import ResourceGroupCard from "./resource-group-card"
 import OrganizationCard from "./organization-card"
 import { Role } from "@/types/role"
 import DescriptionCard from "./description-card"
-import { haveAdminOrIT } from "@/lib/utils"
+import { haveAdminOrIT, showDestroyButtonAfterCreation } from "@/lib/utils"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -108,8 +109,10 @@ export default function RequestDetail({ slug }: { slug: string }) {
   })
 
   const rejectMutation = useMutation({
-    mutationFn: ({ requestId }: { requestId: string }) =>
-      changeRequestStatus(requestId, Status.Rejected),
+    mutationFn: async ({ requestId }: { requestId: string }) => {
+      await changeRequestStatus(requestId, Status.Deleted)
+      return await deleteRequest(requestId)
+    },
     onSuccess: (data) => {
       if (data.status === Status.Rejected) {
         setShowRejectPopup(true)
@@ -134,7 +137,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
   }
 
   function handleReject() {
-    if (data && feedback.trim()) {
+    if (data && data.feedback?.trim()) {
       rejectMutation.mutate({ requestId: data.id })
       updateFeedback.mutate({
         requestId: data.id,
@@ -156,7 +159,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
   if (errorUser) return <p>Error fetching user data...</p>
 
   if (isLoading) return <RequestPageSkeleton />
-  if (error instanceof ApiError) return <div>{error.message}</div>
+  if (error) return <div>{error.message}</div>
 
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
@@ -177,7 +180,8 @@ export default function RequestDetail({ slug }: { slug: string }) {
         </div>
         {haveAdminOrIT(session?.role) &&
           data?.status !== Status.Approved &&
-          data?.status !== Status.Rejected && (
+          data?.status !== Status.Rejected &&
+          data?.status !== Status.Deleted && (
             <AdminITActionsButton
               handleApprove={handleApprove}
               handleReject={handleReject}
@@ -186,43 +190,44 @@ export default function RequestDetail({ slug }: { slug: string }) {
               feedback={feedback}
             />
           )}
-        {haveAdminOrIT(session?.role) && data?.status === Status.Approved && (
-          <AlertDialog>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span>
-                  <AlertDialogTrigger
-                    className={buttonVariants({ variant: "destructive" })}
-                    disabled
-                  >
-                    {rejectMutation.isPending ? "Deleting..." : "Delete"}
-                  </AlertDialogTrigger>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
+        {haveAdminOrIT(session?.role) &&
+          data?.status === Status.Approved &&
+          showDestroyButtonAfterCreation(data) && (
+            <AlertDialog>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>
+                    <AlertDialogTrigger
+                      className={buttonVariants({ variant: "destructive" })}
+                    >
+                      {rejectMutation.isPending ? "Deleting..." : "Delete"}
+                    </AlertDialogTrigger>
+                  </span>
+                </TooltipTrigger>
+                {/* <TooltipContent>
                 <p>Not available</p>
-              </TooltipContent>
-            </Tooltip>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will delete the resource
-                  group associated with this request.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  className={buttonVariants({ variant: "destructive" })}
-                  onClick={() => handleReject()}
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
+              </TooltipContent> */}
+              </Tooltip>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will delete the resource
+                    group associated with this request.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className={buttonVariants({ variant: "destructive" })}
+                    onClick={() => handleReject()}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
       </div>
       <div className="flex flex-col gap-8">
         {/* {showApprovePopup && (

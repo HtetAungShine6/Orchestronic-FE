@@ -1,4 +1,5 @@
 import { Resource } from "@/app/(dashboard)/resources/data/schema-resources"
+import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
 import { Role } from "@/types/role"
 import { faker } from "@faker-js/faker"
 
@@ -89,4 +90,78 @@ export function formatMB(mb: number): string {
   if (mb >= 1024 * 1024) return (mb / (1024 * 1024)).toFixed(2) + " TB"
   if (mb >= 1024) return (mb / 1024).toFixed(2) + " GB"
   return mb + " MB"
+}
+
+export function showDestroyButtonAfterCreation(
+  data: AzureRequestDetail | AwsRequestDetail
+): boolean {
+  if (!data) {
+    console.log("❌ Data is null or undefined")
+    return false
+  }
+
+  if (!data.resources) {
+    console.log("❌ data.resources is null or undefined")
+    return false
+  }
+
+  const resourceConfig = data.resources.resourceConfig
+
+  if (!resourceConfig || typeof resourceConfig !== "object") {
+    console.log(
+      "❌ resourceConfig is null, undefined, or not an object:",
+      resourceConfig
+    )
+    return false
+  }
+
+  console.log("🔍 Checking resourceConfig:", resourceConfig)
+
+  // Assume everything is valid until proven otherwise
+  let allResourcesHaveTerraformData = true
+
+  for (const [key, resources] of Object.entries(resourceConfig)) {
+    console.log(`\n📦 Resource type: ${key}`)
+
+    if (!Array.isArray(resources)) {
+      console.log("❌ Not an array — skipping:", resources)
+      continue
+    }
+
+    if (resources.length === 0) {
+      console.log("⚠️ Empty array — skipping")
+      continue
+    }
+
+    const allHaveTerraform = resources.every((item, idx) => {
+      const state = item?.terraformState
+      const valid =
+        state && typeof state === "object" && Object.keys(state).length > 0
+
+      console.log(
+        `   • Item [${idx}] terraformState:`,
+        state,
+        "✅ Valid:",
+        valid
+      )
+      return valid
+    })
+
+    console.log(`👉 Result for ${key}:`, allHaveTerraform)
+
+    // If any resource type fails, immediately set to false
+    if (!allHaveTerraform) {
+      allResourcesHaveTerraformData = false
+    }
+  }
+
+  if (allResourcesHaveTerraformData) {
+    console.log("✅ All resource types have valid terraformState.")
+    return true
+  } else {
+    console.log(
+      "❌ At least one resource type has null or invalid terraformState."
+    )
+    return false
+  }
 }

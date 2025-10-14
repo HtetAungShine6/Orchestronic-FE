@@ -94,6 +94,19 @@ export async function changeRequestStatus(
   )
 }
 
+export async function deleteRequest(requestId: string) {
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/infrastructure/${requestId}/infra-destroy`,
+    {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+}
+
 export async function updateRequestFeedback(
   requestId: string,
   feedback: string

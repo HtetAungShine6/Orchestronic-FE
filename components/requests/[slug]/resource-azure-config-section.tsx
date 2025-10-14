@@ -241,8 +241,14 @@ export default function ResourceAzureConfigSection({
                               res.mode === "managed" && res.name === "postgres"
                           )
                           ?.instances.find(
-                            (inst) => inst.attributes?.name === db.name
+                            (inst) =>
+                              inst.attributes?.administrator_login ===
+                                db.username &&
+                              inst.attributes?.administrator_password ===
+                                db.password
                           )
+
+                        console.log(db.terraformState?.resources)
 
                         return (
                           <div key={`db-${index}`}>

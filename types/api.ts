@@ -11,6 +11,7 @@ export enum Status {
   Pending = "Pending",
   Approved = "Approved",
   Rejected = "Rejected",
+  Deleted = "Deleted",
 }
 
 export type UserState = {

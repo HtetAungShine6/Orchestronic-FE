@@ -148,7 +148,7 @@ export interface AzureRequestDetail {
 export interface AwsRequestDetail {
   id: string
   displayCode: string
-  status: "Pending" | "Approved" | "Rejected"
+  status: "Pending" | "Approved" | "Rejected" | "Deleted"
   description: string
   ownerId: string
   repositoryId: string
