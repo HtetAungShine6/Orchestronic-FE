@@ -135,7 +135,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
   }
 
   function handleReject() {
-    if (data && data.feedback?.trim()) {
+    if (data) {
       rejectMutation.mutate({ requestId: data.id })
       updateFeedback.mutate({
         requestId: data.id,
