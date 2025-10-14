@@ -189,8 +189,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
               feedback={feedback}
             />
           )}
-        {haveAdminOrIT(session?.role) &&
-          data?.status === Status.Approved &&
+        {data?.status === Status.Approved &&
           showDestroyButtonAfterCreation(data) && (
             <AlertDialog>
               <Tooltip>
