@@ -109,8 +109,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
 
   const rejectMutation = useMutation({
     mutationFn: async ({ requestId }: { requestId: string }) => {
-      await changeRequestStatus(requestId, Status.Deleted)
-      return await deleteRequest(requestId)
+      return await changeRequestStatus(requestId, Status.Rejected)
     },
     onSuccess: (data) => {
       if (data.status === Status.Rejected) {
@@ -138,10 +137,34 @@ export default function RequestDetail({ slug }: { slug: string }) {
   function handleReject() {
     if (data && data.feedback?.trim()) {
       rejectMutation.mutate({ requestId: data.id })
-      // updateFeedback.mutate({
-      //   requestId: data.id,
-      //   feedback: feedback,
-      // })
+      updateFeedback.mutate({
+        requestId: data.id,
+        feedback: feedback,
+      })
+    }
+  }
+
+  const deleteMutation = useMutation({
+    mutationFn: async ({ requestId }: { requestId: string }) => {
+      await changeRequestStatus(requestId, Status.Deleted)
+      return await deleteRequest(requestId)
+    },
+    onSuccess: (data) => {
+      if (data.status === Status.Rejected) {
+        setShowRejectPopup(true)
+        queryClient.invalidateQueries({
+          queryKey: ["request", slug],
+        })
+      }
+    },
+    onError: (error) => {
+      console.error("Failed to reject request:", error)
+    },
+  })
+
+  function handleDelete() {
+    if (data && data.feedback?.trim()) {
+      deleteMutation.mutate({ requestId: data.id })
     }
   }
 
@@ -218,7 +241,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
                     className={buttonVariants({ variant: "destructive" })}
-                    onClick={() => handleReject()}
+                    onClick={() => handleDelete()}
                   >
                     Delete
                   </AlertDialogAction>
