@@ -46,7 +46,7 @@ export function NavDocuments({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>{label ?? "No label"}</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
+        {itemsFiltered.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton
               asChild
