@@ -7,7 +7,6 @@ import {
   RequestStatusResponse,
   updateRequestFeedback,
 } from "@/app/api/requests/api"
-import { ApiError } from "@/types/error"
 import {
   useMutation,
   UseMutationResult,
