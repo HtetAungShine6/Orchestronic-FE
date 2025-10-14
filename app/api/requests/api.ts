@@ -95,6 +95,7 @@ export async function changeRequestStatus(
 }
 
 export async function deleteRequest(requestId: string) {
+  console.log("Deleting request with ID:", requestId)
   return fetcher(
     `${process.env.NEXT_PUBLIC_API_URL}/infrastructure/${requestId}/infra-destroy`,
     {
