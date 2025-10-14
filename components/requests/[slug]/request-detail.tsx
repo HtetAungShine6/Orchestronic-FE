@@ -138,10 +138,10 @@ export default function RequestDetail({ slug }: { slug: string }) {
   function handleReject() {
     if (data && data.feedback?.trim()) {
       rejectMutation.mutate({ requestId: data.id })
-      updateFeedback.mutate({
-        requestId: data.id,
-        feedback: feedback,
-      })
+      // updateFeedback.mutate({
+      //   requestId: data.id,
+      //   feedback: feedback,
+      // })
     }
   }
 
