@@ -27,12 +27,30 @@ export default function middleware(req: NextRequest) {
   let isLoggedIn = false
 
   if (token) {
+    // try {
+    //   const payload = JSON.parse(
+    //     Buffer.from(token.split(".")[1], "base64").toString()
+    //   )
+    //   role = payload.role as Role
+    //   isLoggedIn = true
+    // } catch {
+    //   isLoggedIn = false
+    //   role = null
+    // }
+
     try {
       const payload = JSON.parse(
         Buffer.from(token.split(".")[1], "base64").toString()
       )
-      role = payload.role as Role
-      isLoggedIn = true
+
+      const now = Math.floor(Date.now() / 1000)
+      if (payload.exp && payload.exp < now) {
+        isLoggedIn = false
+        role = null
+      } else {
+        isLoggedIn = true
+        role = payload.role as Role
+      }
     } catch {
       isLoggedIn = false
       role = null
