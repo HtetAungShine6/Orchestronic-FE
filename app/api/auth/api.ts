@@ -6,5 +6,5 @@ export async function logout() {
     credentials: "include", // important to include cookies
   })
   // optionally redirect user
-  window.location.href = "/"
+  window.location.href = "/login"
 }

@@ -34,7 +34,7 @@ export default function RepositoriesTable({
 
   return (
     <DataTable
-      data={data}
+      data={data ?? []}
       columns={columns}
       filterColumn="name"
       pageSize={pageSize}

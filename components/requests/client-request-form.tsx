@@ -41,6 +41,7 @@ import { awsRequestFormSchema } from "./form-schema/aws"
 import PopupSpinner from "../ui/popup-spinner"
 import { setRepoName } from "./state/repo-slice"
 import { fetcher } from "@/lib/fetcher"
+import { extractGitlabUsername, getGitLabUrl } from "@/app/api/user/api"
 
 interface ClientRequestFormProps {
   // suggestedName: string
@@ -119,6 +120,13 @@ export default function ClientRequestForm({
     mode: "onChange",
   })
 
+  const { data: gitlabUrl } = useQuery({
+    queryKey: ["gitlab-url"],
+    queryFn: getGitLabUrl,
+  })
+
+  const gitlabUsername = extractGitlabUsername(gitlabUrl || "")
+
   useEffect(() => {
     if (repoName) {
       azureRequestForm.setValue("resources.name", `rg-${repoName}`)
@@ -191,7 +199,8 @@ export default function ClientRequestForm({
             className="space-y-8"
           >
             <RepoNameInput
-              ownerName={session?.name ?? "Your Account"}
+              // ownerName={session?.name ?? "Your Account"}
+              ownerName={gitlabUsername ?? "Your Account"}
               form={azureRequestForm}
             />
             <Collaborators form={azureRequestForm} />
@@ -234,7 +243,8 @@ export default function ClientRequestForm({
             className="space-y-8"
           >
             <RepoNameInput
-              ownerName={session?.name ?? "Your Account"}
+              // ownerName={session?.name ?? "Your Account"}
+              ownerName={gitlabUsername ?? "Your Account"}
               form={awsRequestForm}
             />
             <Collaborators form={awsRequestForm} />

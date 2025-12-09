@@ -24,7 +24,7 @@ export default function ResourcesTable({ pageSize = 10 }: ResourcesTableProps) {
 
   return (
     <DataTable
-      data={data}
+      data={data ?? []}
       columns={columnsResources}
       filterColumn="name"
       pageSize={pageSize}

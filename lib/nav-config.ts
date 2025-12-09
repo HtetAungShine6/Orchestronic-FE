@@ -74,4 +74,20 @@ export const navData = {
       role: [Role.Admin, Role.Developer],
     },
   ],
+  account: [
+    {
+      title: "Profile",
+      url: "/accountSettings",
+      icon: IconUsers,
+      role: [Role.IT, Role.Developer, Role.Admin],
+    },
+  ],
+  users: [
+    {
+      title: "User Management",
+      url: "/users",
+      icon: IconUsers,
+      role: [Role.Admin],
+    },
+  ],
 }
