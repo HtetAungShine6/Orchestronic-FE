@@ -61,7 +61,7 @@ export default function Home() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button size="lg" className="text-base px-8 py-3" asChild>
-                    <Link href="#">
+                    <Link href="/login">
                       Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>

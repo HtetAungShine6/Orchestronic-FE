@@ -17,16 +17,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-// import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useQuery } from "@tanstack/react-query"
-import { fuzzyFindUsersByEmail, getUser } from "@/app/api/user/api"
 import { User } from "@/types/api"
 import { useDebounce } from "@/hooks/useDebounce"
 import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form"
 import { IconTrash } from "@tabler/icons-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { getInitials } from "@/lib/utils"
+import { getUser } from "@/app/api/user/api"
+import { getUsers } from "@/app/api/users/api"
 
 interface CollaboratorsProps<T extends FieldValues> {
   form: UseFormReturn<T>
@@ -36,11 +36,14 @@ export default function Collaborators<T extends FieldValues>({
   form,
 }: CollaboratorsProps<T>) {
   const [open, setOpen] = useState<boolean>(false)
-  const [searchEmail, setSearchEmail] = useState<string>("")
-  const [selectedUsers, setSelectedUsers] = useState<User[]>([])
-  const debouncedSearchEmail = useDebounce(searchEmail, 500)
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([])
+  const [search, setSearch] = useState<string>("")
+  const debouncedSearch = useDebounce(search, 500)
 
+  const [selectedUsers, setSelectedUsers] = useState<
+    Array<User & { gitlabUserId: number }>
+  >([])
+
+  // Authenticated user
   const {
     data: session,
     isLoading: isLoadingUser,
@@ -50,99 +53,108 @@ export default function Collaborators<T extends FieldValues>({
     queryFn: getUser,
   })
 
+  // Fetch all Orchestronic users
   const {
-    data: users,
+    data: localUsers,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["userByEmail", debouncedSearchEmail],
-    queryFn: () => fuzzyFindUsersByEmail(debouncedSearchEmail),
+    queryKey: ["localUsers"],
+    queryFn: getUsers,
   })
 
-  if (isLoadingUser) {
-    return <div>Loading...</div>
-  }
+  if (isLoadingUser) return <div>Loading...</div>
+  if (errorUser) return <div>Error fetching user data</div>
 
-  if (errorUser) {
-    return <div>Error fetching user data</div>
-  }
+  // Only users that are linked to GitLab
+  const gitlabLinkedUsers: User[] =
+    localUsers?.filter((u: User) => u.gitlabId && u.gitlabUrl) ?? []
 
+  // Filter by search (name or email)
+  const filteredUsers = gitlabLinkedUsers.filter((u) => {
+    if (!debouncedSearch.trim()) return true
+    const lower = debouncedSearch.toLowerCase()
+    return (
+      u.name.toLowerCase().includes(lower) ||
+      u.email.toLowerCase().includes(lower)
+    )
+  })
+
+  // Optionally hide the current logged-in user from the list
+  const currentUserId = session?.id
+  const availableUsers = filteredUsers.filter((u) => u.id !== currentUserId)
+
+  // Select collaborator
   function handleUserSelect(user: User) {
-    setSelectedUsers((prev) => {
-      if (prev.some((u) => u.email === user.email)) {
-        return prev
-      } else {
-        const updated = [...prev, user]
-        form.setValue(
-          "repository.collaborators" as Path<T>,
-          updated.map((u) => ({ userId: u.id })) as PathValue<T, Path<T>>
-        )
-        return updated
-      }
-    })
-    setFilteredUsers((prev) => {
-      if (prev.some((u) => u.email === user.email)) {
-        return prev
-      } else {
-        const updated = [...prev, user]
-        return updated
-      }
-    })
-    setOpen(false)
-    setSearchEmail("")
-  }
+    if (!user.gitlabId) {
+      console.error("Selected user does not have gitlabId")
+      return
+    }
 
-  function handleRemoveUser(email: string) {
     setSelectedUsers((prev) => {
-      const updated = prev.filter((user) => user.email !== email)
+      if (prev.some((u) => u.id === user.id)) return prev
+
+      const updated = [...prev, { ...user, gitlabUserId: user.gitlabId! }]
+
       form.setValue(
         "repository.collaborators" as Path<T>,
-        updated.map((u) => ({ userId: u.id })) as PathValue<T, Path<T>>
+        updated.map((u) => ({
+          userId: u.id,
+          gitlabUserId: u.gitlabUserId,
+        })) as PathValue<T, Path<T>>
       )
+
       return updated
     })
 
-    setFilteredUsers((prev) => {
-      const updated = prev.filter((user) => user.email !== email)
+    setOpen(false)
+    setSearch("")
+  }
+
+  // Remove collaborator
+  function handleRemoveUser(userId: string) {
+    setSelectedUsers((prev) => {
+      const updated = prev.filter((u) => u.id !== userId)
+
+      form.setValue(
+        "repository.collaborators" as Path<T>,
+        updated.map((u) => ({
+          userId: u.id,
+          gitlabUserId: u.gitlabUserId,
+        })) as PathValue<T, Path<T>>
+      )
+
       return updated
     })
   }
-
-  // function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-  //   const value = event.target.value
-
-  //   const filtered = selectedUsers.filter((user) =>
-  //     user.name.toLowerCase().includes(value.toLowerCase())
-  //   )
-  //   setFilteredUsers(filtered)
-  // }
 
   return (
     <>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <Command>
           <CommandInput
-            placeholder="Search by email"
-            onValueChange={(value) => setSearchEmail(value)}
+            placeholder="Search by name or email"
+            onValueChange={(value) => setSearch(value)}
           />
           <CommandList>
             {isLoading ? (
               <CommandEmpty>Loading...</CommandEmpty>
             ) : error ? (
-              <CommandEmpty>{error.message}</CommandEmpty>
-            ) : users?.length === 0 ? (
+              <CommandEmpty>{(error as Error).message}</CommandEmpty>
+            ) : availableUsers.length === 0 ? (
               <CommandEmpty>No users found.</CommandEmpty>
             ) : (
-              users?.map((user: User) => {
-                if (user.email === session?.email) return null
-                if (selectedUsers.some((u) => u.email === user.email))
+              availableUsers.map((user) => {
+                if (selectedUsers.some((sel) => sel.id === user.id)) {
                   return null
+                }
+
                 return (
                   <CommandItem
+                    key={user.id}
+                    value={user.email}
                     className="cursor-pointer"
                     onSelect={() => handleUserSelect(user)}
-                    key={user.email}
-                    value={user.email}
                   >
                     {user.name} ({user.email})
                   </CommandItem>
@@ -169,37 +181,30 @@ export default function Collaborators<T extends FieldValues>({
             </Button>
           </CardAction>
         </CardHeader>
-        <CardContent>
-          {/* <Input
-            // value={searchEmail}
-            onChange={handleInputChange}
-            type="text"
-            placeholder="Find a collaborator..."
-          /> */}
 
-          {filteredUsers.length > 0 ? (
+        <CardContent>
+          {selectedUsers.length > 0 ? (
             <div className="flex flex-col gap-3 mt-4">
-              {filteredUsers.map((user) => (
-                <div key={user.email} className="flex items-center">
+              {selectedUsers.map((user) => (
+                <div key={user.id} className="flex items-center">
                   <Avatar>
                     <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
+
                   <div className="ml-2 flex flex-1 flex-col text-sm">
                     {user.name}
                     <span className="text-muted-foreground text-xs">
                       {user.email}
                     </span>
                   </div>
-                  <span>
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="ml-2"
-                      onClick={() => handleRemoveUser(user.email)}
-                    >
-                      <IconTrash />
-                    </Button>
-                  </span>
+
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => handleRemoveUser(user.id)}
+                  >
+                    <IconTrash />
+                  </Button>
                 </div>
               ))}
             </div>

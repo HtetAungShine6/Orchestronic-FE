@@ -45,7 +45,7 @@ export default function RequestsTable({
   return (
     <DataTable
       prefilterStatus={prefilterStatus}
-      data={data}
+      data={data ?? []}
       columns={columns}
       filterColumn="displayCode"
       pageSize={pageSize}

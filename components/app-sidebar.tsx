@@ -17,8 +17,18 @@ import { NavUser } from "@/components/nav-user"
 import OrchestronicLogo from "./orchestronic-logo"
 import { navData } from "@/lib/nav-config"
 import Link from "next/link"
+import { useQuery } from "@tanstack/react-query"
+import { getUser } from "@/app/api/user/api"
+import { Role } from "@/types/role"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: user } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
+
+  const isAdmin = user?.role === Role.Admin
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -39,6 +49,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={navData.navMain} />
         <NavDocuments items={navData.operations} label="Operations" />
+        {!isAdmin && <NavDocuments items={navData.account} label="Account" />}
+        {isAdmin && <NavDocuments items={navData.users} label="Users" />}
         <NavSecondary items={navData.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

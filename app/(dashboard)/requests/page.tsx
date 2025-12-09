@@ -6,10 +6,12 @@ import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
+  useQuery,
 } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { IconPlus } from "@tabler/icons-react"
+import { RequestButton } from "./components/request-button"
 
 export default async function Page() {
   const queryClient = new QueryClient()
@@ -28,11 +30,12 @@ export default async function Page() {
             Here&apos;s a list of your requests!
           </p>
         </div>
-        <Button asChild>
+        {/* <Button asChild>
           <Link href="/requests/create">
             <IconPlus /> Request
           </Link>
-        </Button>
+        </Button> */}
+        <RequestButton/>
       </div>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <RequestsTable pageSize={10} />
