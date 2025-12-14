@@ -109,13 +109,15 @@ export const columnsResources: ColumnDef<Resource>[] = [
       <DataTableColumnHeader column={column} title="Repository" />
     ),
     cell: ({ row }) => {
-      const repository = row.getValue("repository") as Resource["repository"]
+      const repository = row.getValue("repository") as
+        | Resource["repository"]
+        | null
 
-      return (
-        <div className="flex space-x-2">
-          <span className="">{repository.name}</span>
-        </div>
-      )
+      if (!repository) {
+        return <span className="text-muted-foreground">no repo found</span>
+      }
+
+      return <span>{repository.name}</span>
     },
   },
 ]

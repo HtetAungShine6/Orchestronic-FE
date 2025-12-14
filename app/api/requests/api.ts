@@ -145,3 +145,92 @@ export async function getPriceOfVM(
 
   return response.json()
 }
+
+export interface CreateClusterRequest {
+  resources: {
+    name: string
+    cloudProvider: string
+    region: string
+    resourceConfig: {
+      aks: Array<{
+        clusterName: string
+        nodeCount: number
+        nodeSize: string
+      }>
+    }
+  }
+}
+
+export interface ClusterConfig {
+  clusterName: string
+  nodeCount: number
+  nodeSize: string
+}
+
+export interface CreateClusterResponse {
+  id: string
+  ownerId: string
+  resourceId: string
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
+export async function createCluster(
+  data: CreateClusterRequest
+): Promise<CreateClusterResponse> {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project/azure`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+}
+
+export interface ClusterResource {
+  id: string
+  name: string
+  region: string
+  resourceConfigId: string
+  cloudProvider: "AZURE" | "AWS"
+}
+
+export interface ClusterDetail {
+  id: string
+  clusterName: string
+  nodeCount: number
+  nodeSize: string
+  kubeConfig: string | null
+  clusterFqdn: string | null
+  terraformState: string | null
+  resourceConfigId: string
+  createdAt: string
+  updatedAt: string
+}
+
+export async function getUserClusters(): Promise<ClusterResource[]> {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project/me/cluster`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+}
+
+export async function getClusterResources(
+  clusterId: string
+): Promise<ClusterDetail[]> {
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/project/resource-config/${clusterId}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+}
