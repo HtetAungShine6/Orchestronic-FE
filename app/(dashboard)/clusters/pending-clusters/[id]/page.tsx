@@ -1,10 +1,10 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { IconArrowLeft } from "@tabler/icons-react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -27,29 +27,94 @@ import {
 } from "lucide-react"
 import { format } from "date-fns"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { buttonVariants } from "@/components/ui/button"
+import {
   ClusterDetail,
   ClusterResource,
   getClusterResources,
-  getUserClusters,
+  getPendingClusters,
+  getApprovedClusters,
+  updateClusterStatus,
 } from "@/app/api/requests/api"
 
-export default function ClusterDetailPage() {
+export default function PendingClusterDetailPage() {
   const params = useParams()
+  const router = useRouter()
+  const queryClient = useQueryClient()
   const id = params.id as string
 
-  const { data: clusters, isLoading: isLoadingClusters } = useQuery({
-    queryKey: ["clusters"],
-    queryFn: getUserClusters,
+  // Fetch both pending and approved clusters
+  const { data: pendingClusters, isLoading: isLoadingPending } = useQuery({
+    queryKey: ["pending-clusters"],
+    queryFn: getPendingClusters,
+  })
+
+  const { data: approvedClusters, isLoading: isLoadingApproved } = useQuery({
+    queryKey: ["approved-clusters"],
+    queryFn: getApprovedClusters,
   })
 
   const { data: resources, isLoading: isLoadingResources } = useQuery({
     queryKey: ["cluster-resources", id],
     queryFn: () => getClusterResources(id),
+    enabled: !!id,
   })
 
-  const cluster = clusters?.find((c) => c.id === id)
+  const approveMutation = useMutation({
+    mutationFn: (clusterRequestId: string) =>
+      updateClusterStatus({
+        clusterRequestId,
+        status: "Approved",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pending-clusters"] })
+      queryClient.invalidateQueries({ queryKey: ["approved-clusters"] })
+      queryClient.invalidateQueries({ queryKey: ["clusters"] })
+      router.push("/requests")
+    },
+    onError: (error: any) => {
+      console.error("Error approving cluster:", error)
+      alert("Failed to approve cluster. Please try again.")
+    },
+  })
 
-  if (isLoadingClusters || isLoadingResources) {
+  const rejectMutation = useMutation({
+    mutationFn: (clusterRequestId: string) =>
+      updateClusterStatus({
+        clusterRequestId,
+        status: "Rejected",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pending-clusters"] })
+      queryClient.invalidateQueries({ queryKey: ["approved-clusters"] })
+      queryClient.invalidateQueries({ queryKey: ["clusters"] })
+      router.push("/requests")
+    },
+    onError: (error: any) => {
+      console.error("Error rejecting cluster:", error)
+      alert("Failed to reject cluster. Please try again.")
+    },
+  })
+
+  // Combine both pending and approved clusters to find the right one
+  const allClusters = [...(pendingClusters || []), ...(approvedClusters || [])]
+
+  const cluster = allClusters.find((c) => c.id === id)
+  const isPending = pendingClusters?.some((c) => c.id === id)
+
+  const isLoading = isLoadingPending || isLoadingApproved || isLoadingResources
+
+  if (isLoading) {
     return (
       <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
         <div className="animate-pulse space-y-4">
@@ -78,13 +143,28 @@ export default function ClusterDetailPage() {
               Cluster not found
             </h2>
             <p className="text-muted-foreground">
-              The cluster you&apos;re looking for doesn&apos;t exist.
+              The cluster you&apos;re looking for doesn&apos;t exist or has
+              already been processed.
             </p>
           </div>
         </div>
       </div>
     )
   }
+
+  const handleApprove = () => {
+    if (cluster && cluster.clusterRequestId) {
+      approveMutation.mutate(cluster.clusterRequestId)
+    }
+  }
+
+  const handleReject = () => {
+    if (cluster && cluster.clusterRequestId) {
+      rejectMutation.mutate(cluster.clusterRequestId)
+    }
+  }
+
+  const isProcessing = approveMutation.isPending || rejectMutation.isPending
 
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-6 md:flex">
@@ -94,6 +174,12 @@ export default function ClusterDetailPage() {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink href="/requests">Requests</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/requests">
+                  {isPending ? "Pending" : "Approved"} Clusters
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -112,8 +198,79 @@ export default function ClusterDetailPage() {
             >
               {cluster.cloudProvider}
             </Badge>
+            {!isPending && (
+              <Badge
+                variant="outline"
+                className="bg-green-50 text-green-700 border-green-200"
+              >
+                Approved
+              </Badge>
+            )}
           </div>
         </div>
+        {/* Only show approve/reject buttons for pending clusters */}
+        {isPending && (
+          <div className="flex gap-4 ml-auto">
+            <AlertDialog>
+              <AlertDialogTrigger
+                className={buttonVariants({ variant: "destructive" })}
+                disabled={isProcessing}
+              >
+                {rejectMutation.isPending ? "Rejecting..." : "Reject"}
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action will reject the cluster request and notify the
+                    requester.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={isProcessing}>
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className={buttonVariants({ variant: "destructive" })}
+                    onClick={handleReject}
+                    disabled={isProcessing}
+                  >
+                    {rejectMutation.isPending ? "Rejecting..." : "Reject"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog>
+              <AlertDialogTrigger
+                className={buttonVariants({ variant: "default" })}
+                disabled={isProcessing}
+              >
+                {approveMutation.isPending ? "Approving..." : "Approve"}
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action will approve the cluster request and start the
+                    provisioning process.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={isProcessing}>
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleApprove}
+                    disabled={isProcessing}
+                  >
+                    {approveMutation.isPending ? "Approving..." : "Continue"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-8">
@@ -121,12 +278,8 @@ export default function ClusterDetailPage() {
           {/* Left side - Resource details */}
           <div className="lg:col-span-2 space-y-6">
             {resources && resources.length > 0 ? (
-              resources.map((resource, index) => (
-                <ClusterResourceCard
-                  key={resource.id}
-                  resource={resource}
-                  index={index}
-                />
+              resources.map((resource) => (
+                <ClusterResourceCard key={resource.id} resource={resource} />
               ))
             ) : (
               <div className="text-center p-8 border rounded-lg">
@@ -148,13 +301,7 @@ export default function ClusterDetailPage() {
 }
 
 // Inline Components
-function ClusterResourceCard({
-  resource,
-  index,
-}: {
-  resource: ClusterDetail
-  index: number
-}) {
+function ClusterResourceCard({ resource }: { resource: ClusterDetail }) {
   const isConfigured = resource.kubeConfig !== null
 
   return (
