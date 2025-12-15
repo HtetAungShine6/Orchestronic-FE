@@ -89,6 +89,14 @@ export async function getPolicyVMAzure() {
   )
 }
 
+export async function getPolicyClusterAzure() {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/azure/policy/cluster`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+}
+
 export async function getPolicyDBAzure(): Promise<DatabaseAzurePolicyDto> {
   return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/azure/policy/database`, {
     method: "GET",
@@ -147,4 +155,40 @@ export async function fetchVmSizes(
   const response = await getVmSizes(params)
 
   return response.data
+}
+
+export async function fetchClusterSizes(
+  value: string,
+  page: number,
+  limit: number,
+  usePolicyFilter: boolean
+): Promise<VmSizeDto[]> {
+  if (usePolicyFilter) {
+    const policyCluster = await getPolicyClusterAzure()
+
+    const params = new URLSearchParams({
+      page: "1",
+      limit: "50",
+      search: policyCluster.name, 
+    })
+
+    const response = await getVmSizes(params)
+    console.log("✅ Cluster policy search for:", policyCluster.name)
+    console.log(
+      "Results:",
+      response.data?.map((vm: VmSizeDto) => vm.name)
+    )
+
+    return response.data || []
+  }
+
+  // Normal search without policy filter
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+    search: value,
+  })
+
+  const response = await getVmSizes(params)
+  return response.data || []
 }

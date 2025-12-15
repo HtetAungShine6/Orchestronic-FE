@@ -189,7 +189,54 @@ export async function createCluster(
   })
 }
 
+// export interface ClusterResource {
+//   id: string
+//   name: string
+//   region: string
+//   resourceConfigId: string
+//   cloudProvider: "AZURE" | "AWS"
+// }
+
+// export interface ClusterDetail {
+//   id: string
+//   clusterName: string
+//   nodeCount: number
+//   nodeSize: string
+//   kubeConfig: string | null
+//   clusterFqdn: string | null
+//   terraformState: string | null
+//   resourceConfigId: string
+//   createdAt: string
+//   updatedAt: string
+// }
+
+// export async function getUserClusters(): Promise<ClusterResource[]> {
+//   return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project/me/cluster`, {
+//     method: "GET",
+//     credentials: "include",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   })
+// }
+
+// export async function getClusterResources(
+//   clusterId: string
+// ): Promise<ClusterDetail[]> {
+//   return fetcher(
+//     `${process.env.NEXT_PUBLIC_API_URL}/project/resource-config/${clusterId}`,
+//     {
+//       method: "GET",
+//       credentials: "include",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     }
+//   )
+// }
+
 export interface ClusterResource {
+  clusterRequestId?: string
   id: string
   name: string
   region: string
@@ -225,6 +272,92 @@ export async function getClusterResources(
 ): Promise<ClusterDetail[]> {
   return fetcher(
     `${process.env.NEXT_PUBLIC_API_URL}/project/resource-config/${clusterId}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+}
+
+export async function getClusterById(
+  clusterId: string
+): Promise<ClusterResource | null> {
+  try {
+    const clusters = await getUserClusters()
+    return clusters.find((c) => c.id === clusterId) || null
+  } catch (error) {
+    console.error("Error fetching cluster:", error)
+    return null
+  }
+}
+
+export async function getPendingClusters(): Promise<ClusterResource[]> {
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/project/pending-clusters`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+}
+
+export async function getApprovedClusters(): Promise<ClusterResource[]> {
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/project/approved-clusters`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+}
+
+export interface UpdateClusterStatusRequest {
+  clusterRequestId: string
+  status: "Pending" | "Approved" | "Rejected"
+}
+
+export async function updateClusterStatus(
+  data: UpdateClusterStatusRequest
+): Promise<any> {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project/azure`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+}
+
+export async function getClustersByStatus(
+  status: Status
+): Promise<ClusterResource[]> {
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/project/clusters/${status}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+}
+
+export async function getUserClustersByStatus(
+  status: Status
+): Promise<ClusterResource[]> {
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/project/me/cluster/${status}`,
     {
       method: "GET",
       credentials: "include",

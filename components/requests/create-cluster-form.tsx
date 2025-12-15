@@ -28,11 +28,10 @@ import { Loader2, CheckCircle2, XCircle, Trash2 } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, Controller, useFieldArray } from "react-hook-form"
 import z from "zod"
-
-import { AzureVMSizeCombobox } from "@/components/requests/azure-resource-group-accordion/azure-resource-group-accordion-vm"
 import { VmSizeDto } from "@/types/request"
 import { CloudProvider, cloudProviders, regions } from "@/types/resource"
 import { createCluster } from "@/app/api/requests/api"
+import { AzureClusterSizeCombobox } from "./azure-resource-group-accordion/azure-resource-group-accordion-cluster"
 
 interface ResourceGroup {
   id: string
@@ -50,7 +49,7 @@ const clusterConfigSchema = z.object({
   clusterName: z.string().min(3, "Cluster name must be at least 3 characters"),
   nodes: z.coerce.number().min(1, "Must be at least 1 node"),
   sizeId: z.string().min(1, "Cluster size is required"),
-  vmSize: z.any().optional(), // Store the VmSizeDto object
+  vmSize: z.any().optional(),
 })
 
 const clusterFormSchema = z.object({
@@ -201,7 +200,7 @@ export default function ClientClusterForm() {
 
       const response = await createCluster(requestData)
 
-      console.log("Cluster(s) created successfully:", response)
+      console.log("Cluster(s) request created successfully:", response)
       setSubmitSuccess(true)
 
       // Optional: Reset form or redirect
@@ -252,8 +251,8 @@ export default function ClientClusterForm() {
               <CheckCircle2 className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-800">
                 {numberOfClusters === 1
-                  ? "Cluster created successfully! Your cluster is being provisioned."
-                  : `${numberOfClusters} clusters created successfully! Your clusters are being provisioned.`}
+                  ? "Cluster creation request submitted successfully! Please wait for the admin to approve your request."
+                  : `${numberOfClusters} clusters request created successfully! Please wait for the admin to approve your request.`}
               </AlertDescription>
             </Alert>
           )}
@@ -626,22 +625,21 @@ export default function ClientClusterForm() {
                   control={control}
                   render={({ field }) => (
                     <>
-                      <AzureVMSizeCombobox
+                      <AzureClusterSizeCombobox
                         selectedValue={watch(`clusters.${index}.vmSize`)}
                         setSelectedValue={(vmSize) => {
                           update(index, {
                             ...watch(`clusters.${index}`),
                             vmSize: vmSize,
-                            sizeId: vmSize?.id || "",
+                            sizeId: vmSize?.name || "",
                           })
                         }}
-                        usePolicyFilter={false}
+                        usePolicyFilter={true} 
                         handleSelect={(vmSize) => {
-                          field.onChange(vmSize.id)
                           update(index, {
                             ...watch(`clusters.${index}`),
-                            vmSize: vmSize,
-                            sizeId: vmSize.id,
+                            vmSize: vmSize.name,
+                            sizeId: vmSize.name,
                           })
                         }}
                       />

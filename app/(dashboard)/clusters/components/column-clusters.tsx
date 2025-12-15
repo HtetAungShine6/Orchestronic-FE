@@ -1,51 +1,19 @@
-// "use client"
-
-// import { ColumnDef } from "@tanstack/react-table"
-// import { Badge } from "@/components/ui/badge"
-// import { ClusterResource } from "@/app/api/requests/api"
-
-// export const getColumnsClusters = (): ColumnDef<ClusterResource>[] => [
-//   {
-//     accessorKey: "name",
-//     header: "Cluster Name",
-//     cell: ({ row }) => {
-//       return <div className="font-medium">{row.getValue("name")}</div>
-//     },
-//   },
-//   {
-//     accessorKey: "cloudProvider",
-//     header: "Provider",
-//     cell: ({ row }) => {
-//       const provider = row.getValue("cloudProvider") as string
-//       return (
-//         <Badge variant={provider === "AZURE" ? "default" : "secondary"}>
-//           {provider}
-//         </Badge>
-//       )
-//     },
-//   },
-//   {
-//     accessorKey: "region",
-//     header: "Region",
-//     cell: ({ row }) => {
-//       return <div>{row.getValue("region")}</div>
-//     },
-//   },
-// ]
-
 "use client"
 import { ColumnDef } from "@tanstack/react-table"
 import { ClusterResource } from "@/app/api/requests/api"
-import { Cloud, MapPin } from "lucide-react"
+import { Cloud, MapPin, CheckCircle2, Clock, XCircle } from "lucide-react"
+import { Status } from "@/types/api"
 
 export const getColumnsClusters = (): ColumnDef<ClusterResource>[] => [
   {
     accessorKey: "name",
     header: "Cluster Name",
     cell: ({ row }) => {
+      const name = row.getValue("name") as string
+      console.log("Rendering name:", name, "Full row:", row.original)
       return (
         <div className="flex items-center gap-2">
-          <span className="font-medium">{row.getValue("name")}</span>
+          <span className="font-medium">{name || "N/A"}</span>
         </div>
       )
     },
@@ -55,7 +23,8 @@ export const getColumnsClusters = (): ColumnDef<ClusterResource>[] => [
     header: "Provider",
     cell: ({ row }) => {
       const provider = row.getValue("cloudProvider") as string
-
+      console.log("Rendering provider:", provider)
+      
       const providerConfig = {
         AZURE: {
           gradient: "from-blue-500 to-cyan-500",
@@ -85,7 +54,7 @@ export const getColumnsClusters = (): ColumnDef<ClusterResource>[] => [
             <Cloud className="h-3 w-3 text-white" />
           </div>
           <span className={`text-sm font-semibold ${config.textColor}`}>
-            {provider}
+            {provider || "N/A"}
           </span>
         </div>
       )
@@ -95,10 +64,48 @@ export const getColumnsClusters = (): ColumnDef<ClusterResource>[] => [
     accessorKey: "region",
     header: "Region",
     cell: ({ row }) => {
+      const region = row.getValue("region") as string
+      console.log("Rendering region:", region)
       return (
         <div className="flex items-center gap-2 text-muted-foreground">
           <MapPin className="h-4 w-4" />
-          <span>{row.getValue("region")}</span>
+          <span>{region || "N/A"}</span>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as Status
+      console.log("Rendering status:", status)
+      
+      const config = {
+        Approved: {
+          icon: <CheckCircle2 className="h-4 w-4 text-green-600" />,
+          text: "text-green-700",
+        },
+        Pending: {
+          icon: <Clock className="h-4 w-4 text-yellow-600" />,
+          text: "text-yellow-700",
+        },
+        Rejected: {
+          icon: <XCircle className="h-4 w-4 text-red-600" />,
+          text: "text-red-700",
+        },
+        Deleted: {
+          icon: <XCircle className="h-4 w-4 text-gray-600" />,
+          text: "text-gray-700",
+        },
+      }[status]
+
+      if (!config) return <span>N/A</span>
+
+      return (
+        <div className={`flex items-center gap-2 font-medium ${config.text}`}>
+          {config.icon}
+          {status}
         </div>
       )
     },
