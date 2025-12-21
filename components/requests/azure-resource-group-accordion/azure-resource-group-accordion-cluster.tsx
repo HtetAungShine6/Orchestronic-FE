@@ -200,7 +200,7 @@ const VMAccordionItem = React.forwardRef<HTMLDivElement, VMAccordionItemProps>(
                         <FormLabel>VM Size</FormLabel>
                         <FormControl>
                           <AzureClusterSizeCombobox
-                            usePolicyFilter={true}
+                            usePolicyFilter={false}
                             selectedValue={selectedVmSize}
                             setSelectedValue={setSelectedVmSize}
                             handleSelect={(vmSize) => {
@@ -296,15 +296,6 @@ const VMAccordionItem = React.forwardRef<HTMLDivElement, VMAccordionItemProps>(
   }
 )
 VMAccordionItem.displayName = "VMAccordionItem"
-
-interface AzureVMSizeComboboxProps {
-  selectedValue: VmSizeDto | undefined
-  setSelectedValue: (val: VmSizeDto | undefined) => void
-  portal?: boolean
-  handleSelect?: (vmSize: VmSizeDto) => void
-  defaultValue?: string
-  usePolicyFilter?: boolean
-}
 
 interface AzureClusterSizeComboboxProps {
   selectedValue: VmSizeDto | undefined

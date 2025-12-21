@@ -3,7 +3,7 @@
 import { fetchAwsVmSizes } from "@/app/api/policy/aws/api"
 import { AwsVmSizeDto } from "@/types/request"
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { ChevronsUpDown } from "lucide-react"
 import { Button } from "../ui/button"
@@ -37,31 +37,56 @@ export function AwsVMSizeCombobox({
   const [open, setOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
 
-  // const vmSizes: AwsVmSizeDto[] = [
-  //   // {
-  //   //   id: "d2ddf565-1e8d-480d-9018-731e6f4d5405",
-  //   //   name: "t2.micro",
-  //   //   raw: "t2.micro",
-  //   //   numberOfCores: 1,
-  //   //   memoryInMB: 1024,
-  //   // },
-  //   {
-  //     id: "683a5a81-03fa-4597-b1f0-b06259e201bc",
-  //     name: "t3.micro",
-  //     raw: "t3.micro",
-  //     numberOfCores: 2,
-  //     memoryInMB: 1024,
-  //   },
-  // ]
-
   const {
     data: vmSizes,
     isLoading,
     error,
+    isFetching,
+    refetch,
   } = useQuery<AwsVmSizeDto[]>({
-    queryKey: ["aws-vm-sizes", searchValue],
-    queryFn: () => fetchAwsVmSizes(searchValue, 1, 20, usePolicyFilter),
+    queryKey: ["aws-vm-sizes", searchValue, usePolicyFilter],
+    queryFn: async () => {
+      console.log("🔥 queryFn CALLED", { searchValue, usePolicyFilter })
+      try {
+        const result = await fetchAwsVmSizes(
+          searchValue,
+          1,
+          100,
+          usePolicyFilter
+        )
+        console.log("🔥 queryFn SUCCESS", result)
+        return result
+      } catch (err) {
+        console.error("🔥 queryFn ERROR", err)
+        throw err
+      }
+    },
+    enabled: true,
+    staleTime: 0,
+    gcTime: 0, // Previously cacheTime - ensures no caching
+    retry: 1,
   })
+
+  // Force refetch when component mounts or when usePolicyFilter changes
+  useEffect(() => {
+    console.log("🔄 Refetching due to mount or policy change")
+    refetch()
+  }, [usePolicyFilter, refetch])
+
+  // Debug logging
+  useEffect(() => {
+    console.group("🔍 AWS VM Sizes Debug")
+    console.log("Search Value:", searchValue)
+    console.log("Use Policy Filter:", usePolicyFilter)
+    console.log("Is Loading:", isLoading)
+    console.log("Is Fetching:", isFetching)
+    console.log("Error:", error)
+    console.log("VM Sizes Count:", vmSizes?.length ?? 0)
+    if (vmSizes && vmSizes.length > 0) {
+      console.log("First 5 VM Sizes:", vmSizes.slice(0, 5))
+    }
+    console.groupEnd()
+  }, [vmSizes, isLoading, isFetching, error, searchValue, usePolicyFilter])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -80,7 +105,7 @@ export function AwsVMSizeCombobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent portal={portal} className="w-[400px] p-0 z-50">
-        <Command>
+        <Command shouldFilter={false}>
           <CommandInput
             placeholder="Search VM sizes..."
             className="h-9"
@@ -88,11 +113,20 @@ export function AwsVMSizeCombobox({
             onValueChange={setSearchValue}
           />
           <CommandList className="max-h-[300px]">
-            {isLoading && <CommandEmpty>Loading VM sizes...</CommandEmpty>}
-            {error && <CommandEmpty>Error loading VM sizes.</CommandEmpty>}
-            {!isLoading && !error && (!vmSizes || vmSizes.length === 0) && (
-              <CommandEmpty>No VM Size found.</CommandEmpty>
+            {(isLoading || isFetching) && (
+              <CommandEmpty>Loading VM sizes...</CommandEmpty>
             )}
+            {error && (
+              <CommandEmpty>
+                Error loading VM sizes: {error.message || "Unknown error"}
+              </CommandEmpty>
+            )}
+            {!isLoading &&
+              !isFetching &&
+              !error &&
+              (!vmSizes || vmSizes.length === 0) && (
+                <CommandEmpty>No VM Size found.</CommandEmpty>
+              )}
             <CommandGroup>
               {vmSizes?.map((vmSize) => (
                 <CommandItem

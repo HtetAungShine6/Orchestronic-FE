@@ -222,10 +222,11 @@ const VMAccordionItem = React.forwardRef<HTMLDivElement, VMAccordionItemProps>(
                         <FormLabel>EC2 Instance Type</FormLabel>
                         <FormControl>
                           <AwsVMSizeCombobox
-                            usePolicyFilter={true}
+                            usePolicyFilter={false}
                             selectedValue={selectedVmSize}
                             setSelectedValue={setSelectedVmSize}
                             handleSelect={(vmSize) => {
+                              console.log("✅ VM Selected:", vmSize)
                               setSelectedVmSize(vmSize)
                               field.onChange(vmSize.id)
                             }}
