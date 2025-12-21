@@ -200,7 +200,7 @@ const VMAccordionItem = React.forwardRef<HTMLDivElement, VMAccordionItemProps>(
                         <FormLabel>VM Size</FormLabel>
                         <FormControl>
                           <AzureVMSizeCombobox
-                            usePolicyFilter={true}
+                            usePolicyFilter={false}
                             selectedValue={selectedVmSize}
                             setSelectedValue={setSelectedVmSize}
                             handleSelect={(vmSize) => {

@@ -85,7 +85,8 @@ export interface AzureRetailPriceResponse {
 export interface AwsVmSizeDto {
   id: string
   name: string
-  raw: string
+  // raw: string
+  raw: unknown
   numberOfCores: number
   memoryInMB: number
 }

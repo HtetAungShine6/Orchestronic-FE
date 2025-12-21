@@ -28,10 +28,11 @@ import { Loader2, CheckCircle2, XCircle, Trash2 } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, Controller, useFieldArray } from "react-hook-form"
 import z from "zod"
-import { VmSizeDto } from "@/types/request"
+import { VmSizeDto, AwsVmSizeDto } from "@/types/request"
 import { CloudProvider, cloudProviders, regions } from "@/types/resource"
 import { createCluster } from "@/app/api/requests/api"
 import { AzureClusterSizeCombobox } from "./azure-resource-group-accordion/azure-resource-group-accordion-cluster"
+import { AwsVMSizeCombobox } from "./aws-combobox"
 
 interface ResourceGroup {
   id: string
@@ -617,32 +618,61 @@ export default function ClientClusterForm() {
                 />
               </div>
 
-              {/* Cluster Size */}
+              {/* Node Size - Conditionally render based on cloud provider */}
               <div className="space-y-1">
-                <Label>Cluster Size *</Label>
+                <Label>
+                  {cloudProvider === CloudProvider.AWS
+                    ? "EC2 Instance Type *"
+                    : "Node Size *"}
+                </Label>
                 <Controller
                   name={`clusters.${index}.sizeId`}
                   control={control}
                   render={({ field }) => (
                     <>
-                      <AzureClusterSizeCombobox
-                        selectedValue={watch(`clusters.${index}.vmSize`)}
-                        setSelectedValue={(vmSize) => {
-                          update(index, {
-                            ...watch(`clusters.${index}`),
-                            vmSize: vmSize,
-                            sizeId: vmSize?.name || "",
-                          })
-                        }}
-                        usePolicyFilter={true} 
-                        handleSelect={(vmSize) => {
-                          update(index, {
-                            ...watch(`clusters.${index}`),
-                            vmSize: vmSize.name,
-                            sizeId: vmSize.name,
-                          })
-                        }}
-                      />
+                      {cloudProvider === CloudProvider.AZURE ? (
+                        <AzureClusterSizeCombobox
+                          selectedValue={
+                            watch(`clusters.${index}.vmSize`) as VmSizeDto
+                          }
+                          setSelectedValue={(vmSize) => {
+                            update(index, {
+                              ...watch(`clusters.${index}`),
+                              vmSize: vmSize,
+                              sizeId: vmSize?.name || "",
+                            })
+                          }}
+                          usePolicyFilter={true}
+                          handleSelect={(vmSize) => {
+                            update(index, {
+                              ...watch(`clusters.${index}`),
+                              vmSize: vmSize.name,
+                              sizeId: vmSize.name,
+                            })
+                          }}
+                        />
+                      ) : (
+                        <AwsVMSizeCombobox
+                          selectedValue={
+                            watch(`clusters.${index}.vmSize`) as AwsVmSizeDto
+                          }
+                          setSelectedValue={(vmSize) => {
+                            update(index, {
+                              ...watch(`clusters.${index}`),
+                              vmSize: vmSize,
+                              sizeId: vmSize?.name || "",
+                            })
+                          }}
+                          usePolicyFilter={false}
+                          handleSelect={(vmSize) => {
+                            update(index, {
+                              ...watch(`clusters.${index}`),
+                              vmSize: vmSize.name,
+                              sizeId: vmSize.name,
+                            })
+                          }}
+                        />
+                      )}
                       {errors.clusters?.[index]?.sizeId && (
                         <p className="text-sm text-red-500">
                           {errors.clusters[index]?.sizeId?.message}

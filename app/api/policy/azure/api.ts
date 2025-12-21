@@ -157,38 +157,67 @@ export async function fetchVmSizes(
   return response.data
 }
 
+// export async function fetchClusterSizes(
+//   value: string,
+//   page: number,
+//   limit: number,
+//   usePolicyFilter: boolean
+// ): Promise<VmSizeDto[]> {
+//   if (usePolicyFilter) {
+//     const policyCluster = await getPolicyClusterAzure()
+
+//     const params = new URLSearchParams({
+//       page: "1",
+//       limit: "50",
+//       search: policyCluster.name,
+//     })
+
+//     const response = await getVmSizes(params)
+//     console.log("✅ Cluster policy search for:", policyCluster.name)
+//     console.log(
+//       "Results:",
+//       response.data?.map((vm: VmSizeDto) => vm.name)
+//     )
+
+//     return response.data || []
+//   }
+
+//   // Normal search without policy filter
+//   const params = new URLSearchParams({
+//     page: page.toString(),
+//     limit: limit.toString(),
+//     search: value,
+//   })
+
+//   const response = await getVmSizes(params)
+//   return response.data || []
+// }
+
 export async function fetchClusterSizes(
   value: string,
   page: number,
   limit: number,
   usePolicyFilter: boolean
 ): Promise<VmSizeDto[]> {
+  let maxCores = ""
+  let maxMemory = ""
+
   if (usePolicyFilter) {
-    const policyCluster = await getPolicyClusterAzure()
-
-    const params = new URLSearchParams({
-      page: "1",
-      limit: "50",
-      search: policyCluster.name, 
-    })
-
-    const response = await getVmSizes(params)
-    console.log("✅ Cluster policy search for:", policyCluster.name)
-    console.log(
-      "Results:",
-      response.data?.map((vm: VmSizeDto) => vm.name)
-    )
-
-    return response.data || []
+    const policyVM = await getPolicyClusterAzure()
+    maxCores = policyVM.numberOfCores.toString()
+    maxMemory = policyVM.memoryInMB.toString()
   }
 
-  // Normal search without policy filter
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
     search: value,
   })
 
+  if (maxCores) params.append("maxCores", maxCores)
+  if (maxMemory) params.append("maxMemory", maxMemory)
+
   const response = await getVmSizes(params)
-  return response.data || []
+
+  return response.data
 }
