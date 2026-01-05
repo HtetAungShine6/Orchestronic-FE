@@ -4,7 +4,7 @@ import { DataTable } from "@/components/data-table/components/data-table"
 import { columnsRepositories } from "./columns-repositories"
 import { getRepositories } from "@/app/api/repository/api"
 import { useQuery } from "@tanstack/react-query"
-import { getUser } from "@/app/api/user/api"
+import { extractGitlabUsername, getUser } from "@/app/api/user/api"
 import { RepositoryStatus } from "@/types/repo"
 import { useRouter } from "next/navigation"
 import DataTableSkeleton from "../../requests/components/data-table-skeleton"
@@ -31,6 +31,7 @@ export default function RepositoriesTable({
   if (error) return <p>Error loading table</p>
 
   const columns = columnsRepositories(session?.role)
+  const gitlabUsername = extractGitlabUsername(session?.gitlabUrl ?? null)
 
   return (
     <DataTable
@@ -40,8 +41,9 @@ export default function RepositoriesTable({
       pageSize={pageSize}
       onRowClick={(row) => {
         if (row.status === RepositoryStatus.Created) {
+          const username = gitlabUsername || "root"
           return window.open(
-            `${process.env.NEXT_PUBLIC_GITLAB_URL}/root/${row.name}`,
+            `${process.env.NEXT_PUBLIC_GITLAB_DIR}/${username}/${row.name}`,
             "_blank",
             "noopener,noreferrer"
           )

@@ -192,3 +192,14 @@ export interface AwsRequestDetail {
     role: Role
   }
 }
+
+export interface DeploymentDto {
+  clusterId: string
+  provider: CloudProvider
+  repositoryId: string
+  port: number
+  usePrivateRegistry: boolean
+  vmEnv?: string
+  storageEnv?: string
+  dbEnv?: string
+}
