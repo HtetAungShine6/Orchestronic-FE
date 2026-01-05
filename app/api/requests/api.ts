@@ -4,7 +4,7 @@ import { awsRequestFormSchema } from "@/components/requests/form-schema/aws"
 import { azureRequestFormSchema } from "@/components/requests/form-schema/azure"
 import { fetcher } from "@/lib/fetcher"
 import { Status } from "@/types/api"
-import { AzureRetailPriceResponse } from "@/types/request"
+import { AzureRetailPriceResponse, DeploymentDto } from "@/types/request"
 import z from "zod"
 
 export async function getRequests() {
@@ -146,13 +146,15 @@ export async function getPriceOfVM(
   return response.json()
 }
 
+// This is for cluster APIs
+
 export interface CreateClusterRequest {
   resources: {
     name: string
     cloudProvider: string
     region: string
     resourceConfig: {
-      aks: Array<{
+      cluster: Array<{
         clusterName: string
         nodeCount: number
         nodeSize: string
@@ -320,6 +322,19 @@ export async function getApprovedClusters(): Promise<ClusterResource[]> {
   )
 }
 
+export async function getUserAllApprovedClusters(): Promise<ClusterResource[]> {
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/project/me/approved-clusters`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+}
+
 export interface UpdateClusterStatusRequest {
   clusterRequestId: string
   status: "Pending" | "Approved" | "Rejected"
@@ -328,7 +343,7 @@ export interface UpdateClusterStatusRequest {
 export async function updateClusterStatus(
   data: UpdateClusterStatusRequest
 ): Promise<any> {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project/azure`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project`, {
     method: "PATCH",
     credentials: "include",
     headers: {
@@ -366,4 +381,41 @@ export async function getUserClustersByStatus(
       },
     }
   )
+}
+
+export async function deploy(deploymentDto: DeploymentDto): Promise<any> {
+  console.log("Sending deploy request with body:", deploymentDto)
+  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project/deploy`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(deploymentDto),
+  })
+}
+
+export async function getAddressOfRepository(
+  repositoryId: string
+): Promise<ProjectDeploymentResponse> {
+  return fetcher(
+    `${process.env.NEXT_PUBLIC_API_URL}/project/deployments/${repositoryId}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+}
+
+export interface ProjectDeploymentResponse {
+  id: string
+  repositoryId: string
+  AwsK8sClusterId?: string
+  AzureK8sClusterId?: string
+  imageUrl: string
+  hostedUrl: string
+  DeploymentStatus: "Pending" | "Deployed"
 }

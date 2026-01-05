@@ -190,7 +190,7 @@ export default function ClientClusterForm() {
           cloudProvider: values.cloudProvider,
           region: values.region,
           resourceConfig: {
-            aks: values.clusters.map((cluster) => ({
+            cluster: values.clusters.map((cluster) => ({
               clusterName: cluster.clusterName,
               nodeCount: cluster.nodes,
               nodeSize: cluster.sizeId,

@@ -3,7 +3,10 @@
 import {
   changeRequestStatus,
   deleteRequest,
+  deploy,
+  getAddressOfRepository,
   getRequestBySlug,
+  getUserAllApprovedClusters,
   RequestStatusResponse,
   updateRequestFeedback,
 } from "@/app/api/requests/api"
@@ -42,8 +45,21 @@ import {
 } from "@/components/ui/breadcrumb"
 import FeedbackCard from "./feedback-card"
 import { Textarea } from "@/components/ui/textarea"
-import { MessageSquareText } from "lucide-react"
+import {
+  MessageSquareText,
+  Rocket,
+  Cloud,
+  Server,
+  Database,
+  HardDrive,
+  Settings,
+  ExternalLink,
+  CheckCircle2,
+  AlertCircle,
+  Copy,
+} from "lucide-react"
 import { Label } from "@/components/ui/label"
+import { Badge } from "@/components/ui/badge"
 import { RequestPageSkeleton } from "./request-page-skeleton"
 import { getUser } from "@/app/api/user/api"
 import {
@@ -51,8 +67,26 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Switch } from "@/components/ui/switch"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 // import { RepositoryStatus } from "@/types/repo"
 import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
+import { CloudProvider } from "@/types/resource"
 
 // const AirflowLogs = lazy(() => import("./airflow-logs"))
 
@@ -62,6 +96,30 @@ export default function RequestDetail({ slug }: { slug: string }) {
   const [showRejectPopup, setShowRejectPopup] = useState(false)
   const [feedback, setFeedback] = useState<string>("")
 
+  const [deploymentOpen, setDeploymentOpen] = useState(false)
+  const [selectedClusterId, setSelectedClusterId] = useState<string>("")
+  const [deploymentProvider, setDeploymentProvider] = useState<CloudProvider>(
+    CloudProvider.AZURE
+  )
+  const [deploymentPort, setDeploymentPort] = useState<string>("80")
+  const [repoPrivate, setRepoPrivate] = useState(false)
+  const [vmEnv, setVmEnv] = useState<string>("")
+  const [storageEnv, setStorageEnv] = useState<string>("")
+  const [dbEnv, setDbEnv] = useState<string>("")
+  const [deployResult, setDeployResult] = useState<
+    { type: "success" | "error"; message: string } | undefined
+  >(undefined)
+  const [hostedUrl, setHostedUrl] = useState<string | undefined>(undefined)
+  const [deploymentInfo, setDeploymentInfo] = useState<{
+    clusterId: string
+    provider: CloudProvider
+  } | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  const portNumber = Number.parseInt(deploymentPort, 10)
+  const isPortValid =
+    Number.isInteger(portNumber) && portNumber > 0 && portNumber <= 65535
+
   const { data, isLoading, error } = useQuery<
     AzureRequestDetail | AwsRequestDetail
   >({
@@ -69,6 +127,39 @@ export default function RequestDetail({ slug }: { slug: string }) {
     queryFn: () => getRequestBySlug(slug),
     refetchInterval: () => 30000,
     refetchIntervalInBackground: true,
+    staleTime: 0,
+    gcTime: 0,
+  })
+
+  // Fetch hosted URL when request data is available
+  useQuery({
+    queryKey: ["hostedUrl", data?.repositoryId],
+    queryFn: async () => {
+      if (!data?.repositoryId) return null
+      try {
+        const response = await getAddressOfRepository(data.repositoryId)
+        setHostedUrl(response.hostedUrl)
+
+        // Store deployment info for pre-filling form
+        const clusterId = response.AwsK8sClusterId || response.AzureK8sClusterId
+        if (clusterId) {
+          const provider = response.AwsK8sClusterId
+            ? CloudProvider.AWS
+            : CloudProvider.AZURE
+          setDeploymentInfo({ clusterId, provider })
+        }
+
+        return response
+      } catch (error) {
+        console.log("No hosted URL available yet")
+        return null
+      }
+    },
+    enabled: !!data?.repositoryId && data?.status === Status.Approved,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   })
 
   const updateFeedback = useMutation({
@@ -83,6 +174,63 @@ export default function RequestDetail({ slug }: { slug: string }) {
       queryClient.invalidateQueries({
         queryKey: ["request", slug],
       })
+    },
+  })
+
+  const { data: approvedClusters } = useQuery({
+    queryKey: ["clusters", Status.Approved],
+    queryFn: () => getUserAllApprovedClusters(),
+    enabled: deploymentOpen,
+  })
+
+  // Filter clusters by selected deployment provider
+  const filteredClusters =
+    approvedClusters?.filter(
+      (cluster) => cluster.cloudProvider === deploymentProvider
+    ) ?? []
+
+  const deployMutation = useMutation({
+    mutationFn: deploy,
+    onSuccess: async (response) => {
+      console.log("Deployment successful:", response)
+      setDeployResult({
+        type: "success",
+        message: "Deployment request submitted.",
+      })
+
+      // Invalidate and refetch hosted URL
+      queryClient.invalidateQueries({
+        queryKey: ["hostedUrl", data?.repositoryId],
+      })
+
+      // Fetch hosted URL after deployment
+      if (data?.repositoryId) {
+        try {
+          const addressResponse = await getAddressOfRepository(
+            data.repositoryId
+          )
+          setHostedUrl(addressResponse.hostedUrl)
+          console.log("Hosted URL:", addressResponse.hostedUrl)
+
+          // Store deployment info
+          const clusterId =
+            addressResponse.AwsK8sClusterId || addressResponse.AzureK8sClusterId
+          if (clusterId) {
+            const provider = addressResponse.AwsK8sClusterId
+              ? CloudProvider.AWS
+              : CloudProvider.AZURE
+            setDeploymentInfo({ clusterId, provider })
+          }
+        } catch (error) {
+          console.log("Hosted URL not available yet")
+        }
+      }
+    },
+    onError: (e) => {
+      console.error("Deployment failed:", e)
+      const message =
+        e instanceof Error ? e.message : "Failed to submit deployment request."
+      setDeployResult({ type: "error", message })
     },
   })
 
@@ -278,10 +426,333 @@ export default function RequestDetail({ slug }: { slug: string }) {
             <OrganizationCard data={data} />
             <DescriptionCard data={data} />
           </div>
-          {/* Feedback card */}
-          {data?.status === Status.Approved && data?.feedback !== "" && (
-            <div className="col-span-3">
-              <FeedbackCard data={data} />
+          {/* Feedback + Deployment */}
+          {data?.status === Status.Approved && (
+            <div className="col-span-3 space-y-6">
+              {data?.feedback !== "" && <FeedbackCard data={data} />}
+
+              <Card>
+                <CardContent className="space-y-4">
+                  {hostedUrl && (
+                    <div className="relative rounded-lg border-2 border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 p-5 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="p-1.5 bg-green-600 rounded-full">
+                          <Rocket className="h-4 w-4 text-white" />
+                        </div>
+                        <Label className="text-base font-semibold text-green-900 dark:text-green-100">
+                          Application Deployed
+                        </Label>
+                        <Badge
+                          variant="outline"
+                          className="ml-auto border-green-600 text-green-700 dark:text-green-400"
+                        >
+                          Live
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={hostedUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group flex items-center gap-2 text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium break-all transition-colors flex-1"
+                        >
+                          <ExternalLink className="h-4 w-4 shrink-0 group-hover:scale-110 transition-transform" />
+                          <span className="underline-offset-2 group-hover:underline">
+                            {hostedUrl}
+                          </span>
+                        </a>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="shrink-0 h-8 w-8"
+                          onClick={() => {
+                            navigator.clipboard.writeText(hostedUrl)
+                            setCopied(true)
+                            setTimeout(() => setCopied(false), 2000)
+                          }}
+                        >
+                          {copied ? (
+                            <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  <Accordion
+                    type="single"
+                    collapsible
+                    value={deploymentOpen ? "deployment" : ""}
+                    onValueChange={(value) => {
+                      const isOpen = value === "deployment"
+                      setDeploymentOpen(isOpen)
+                      setDeployResult(undefined)
+
+                      if (isOpen) {
+                        // Pre-fill form if deployment info exists
+                        if (deploymentInfo) {
+                          setDeploymentProvider(deploymentInfo.provider)
+                          setSelectedClusterId(deploymentInfo.clusterId)
+                          setDeploymentPort("3000")
+                        } else if (data) {
+                          setDeploymentProvider(data.resources.cloudProvider)
+                        }
+                      }
+                    }}
+                  >
+                    <AccordionItem value="deployment" className="border-none">
+                      <AccordionTrigger className="text-xl font-bold tracking-tight hover:no-underline">
+                        <div className="flex items-center gap-2">
+                          <Settings className="h-5 w-5" />
+                          <span>Deployment Configuration</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-6 pt-2">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground pb-3 border-b">
+                            <Cloud className="h-4 w-4" />
+                            <span className="font-medium">
+                              Infrastructure Settings
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid gap-2">
+                              <Label className="flex items-center gap-1.5">
+                                <Cloud className="h-3.5 w-3.5" />
+                                Provider
+                              </Label>
+                              <Select
+                                value={deploymentProvider}
+                                onValueChange={(v) =>
+                                  setDeploymentProvider(v as CloudProvider)
+                                }
+                                disabled={!!hostedUrl}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select provider" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value={CloudProvider.AZURE}>
+                                    Azure
+                                  </SelectItem>
+                                  <SelectItem value={CloudProvider.AWS}>
+                                    AWS
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="grid gap-2">
+                              <Label
+                                htmlFor="deployment-port"
+                                className="flex items-center gap-1.5"
+                              >
+                                <Server className="h-3.5 w-3.5" />
+                                Port
+                              </Label>
+                              <Input
+                                id="deployment-port"
+                                type="number"
+                                inputMode="numeric"
+                                min={1}
+                                max={65535}
+                                placeholder="80"
+                                value={deploymentPort}
+                                onChange={(e) =>
+                                  setDeploymentPort(e.target.value)
+                                }
+                                disabled={!!hostedUrl}
+                              />
+                            </div>
+
+                            <div className="grid gap-2">
+                              <Label
+                                htmlFor="repo-private"
+                                className="flex items-center gap-1.5"
+                              >
+                                Private repository
+                              </Label>
+                              <div className="flex items-center justify-between rounded-md border px-3 h-10">
+                                <span className="text-sm text-muted-foreground">
+                                  Private repository
+                                </span>
+                                <Switch
+                                  id="repo-private"
+                                  checked={repoPrivate}
+                                  onCheckedChange={(checked) =>
+                                    setRepoPrivate(checked)
+                                  }
+                                  disabled={!!hostedUrl}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="grid gap-2">
+                            <Label className="flex items-center gap-1.5">
+                              <Server className="h-3.5 w-3.5" />
+                              Target Cluster
+                            </Label>
+                            <Select
+                              value={selectedClusterId}
+                              onValueChange={setSelectedClusterId}
+                              disabled={!!hostedUrl}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select cluster" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {filteredClusters.map((cluster) => (
+                                  <SelectItem
+                                    key={cluster.id}
+                                    value={cluster.id}
+                                  >
+                                    {cluster.name} ({cluster.region})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground pb-3 border-b">
+                            <Settings className="h-4 w-4" />
+                            <span className="font-medium">
+                              Environment Variables
+                            </span>
+                            <Badge variant="secondary" className="text-xs">
+                              Optional
+                            </Badge>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid gap-2">
+                              <Label
+                                htmlFor="vm-env"
+                                className="flex items-center gap-1.5"
+                              >
+                                <Server className="h-3.5 w-3.5" />
+                                VM Environment
+                              </Label>
+                              <Input
+                                id="vm-env"
+                                placeholder="e.g. KEY=value"
+                                value={vmEnv}
+                                onChange={(e) => setVmEnv(e.target.value)}
+                                disabled={!!hostedUrl}
+                              />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label
+                                htmlFor="storage-env"
+                                className="flex items-center gap-1.5"
+                              >
+                                <HardDrive className="h-3.5 w-3.5" />
+                                Storage Environment
+                              </Label>
+                              <Input
+                                id="storage-env"
+                                placeholder="e.g. KEY=value"
+                                value={storageEnv}
+                                onChange={(e) => setStorageEnv(e.target.value)}
+                                disabled={!!hostedUrl}
+                              />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label
+                                htmlFor="db-env"
+                                className="flex items-center gap-1.5"
+                              >
+                                <Database className="h-3.5 w-3.5" />
+                                Database Environment
+                              </Label>
+                              <Input
+                                id="db-env"
+                                placeholder="e.g. KEY=value"
+                                value={dbEnv}
+                                onChange={(e) => setDbEnv(e.target.value)}
+                                disabled={!!hostedUrl}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3 pt-4 border-t">
+                            <Button
+                              size="lg"
+                              className="gap-2"
+                              onClick={() => {
+                                if (!data) return
+                                setDeployResult(undefined)
+
+                                if (!isPortValid) {
+                                  setDeployResult({
+                                    type: "error",
+                                    message:
+                                      "Please enter a valid port (1-65535).",
+                                  })
+                                  return
+                                }
+
+                                const deploymentPayload = {
+                                  clusterId: selectedClusterId,
+                                  provider: deploymentProvider,
+                                  repositoryId: data.repositoryId,
+                                  port: portNumber,
+                                  usePrivateRegistry: repoPrivate,
+                                  vmEnv: vmEnv.trim() || undefined,
+                                  storageEnv: storageEnv.trim() || undefined,
+                                  dbEnv: dbEnv.trim() || undefined,
+                                }
+
+                                console.log(
+                                  "Deploying with payload:",
+                                  deploymentPayload
+                                )
+
+                                deployMutation.mutate(deploymentPayload)
+                              }}
+                              disabled={
+                                !selectedClusterId ||
+                                deployMutation.isPending ||
+                                !isPortValid
+                              }
+                            >
+                              {deployMutation.isPending ? (
+                                <>
+                                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                                  Deploying...
+                                </>
+                              ) : (
+                                <>
+                                  <Rocket className="h-4 w-4" />
+                                  Deploy Application
+                                </>
+                              )}
+                            </Button>
+                            {deployResult && (
+                              <div
+                                className={
+                                  deployResult.type === "success"
+                                    ? "flex items-center gap-2 text-sm text-green-700 dark:text-green-400 font-medium"
+                                    : "flex items-center gap-2 text-sm text-destructive font-medium"
+                                }
+                              >
+                                {deployResult.type === "success" ? (
+                                  <CheckCircle2 className="h-4 w-4" />
+                                ) : (
+                                  <AlertCircle className="h-4 w-4" />
+                                )}
+                                {deployResult.message}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
+              </Card>
             </div>
           )}
           {data?.status === Status.Pending &&

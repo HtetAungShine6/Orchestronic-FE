@@ -15,15 +15,25 @@ import Link from "next/link"
 import { RepositoryStatus } from "@/types/repo"
 import { AwsRequestDetail, AzureRequestDetail } from "@/types/request"
 import { Spinner } from "@/components/ui/spinner"
+import { extractGitlabUsername, getUser } from "@/app/api/user/api"
+import { useQuery } from "@tanstack/react-query"
 
 export default function OrganizationCard({
   data,
 }: {
   data?: AwsRequestDetail | AzureRequestDetail
 }) {
+  const { data: session } = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  })
+
+  const gitlabUsername = extractGitlabUsername(session?.gitlabUrl ?? null)
+  const username = gitlabUsername || "root"
+
   const repoUrl =
     data?.repository?.status === RepositoryStatus.Created
-      ? `${process.env.NEXT_PUBLIC_GITLAB_URL}/root/${data?.repository?.name}`
+      ? `${process.env.NEXT_PUBLIC_GITLAB_DIR}/${username}/${data?.repository?.name}`
       : `/repositories-not-created`
 
   const isExternal = data?.repository?.status === RepositoryStatus.Created
