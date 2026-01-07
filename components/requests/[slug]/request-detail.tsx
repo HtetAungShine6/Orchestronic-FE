@@ -5,6 +5,7 @@ import {
   deleteRequest,
   deploy,
   getAddressOfRepository,
+  getApprovedClusters,
   getRequestBySlug,
   getUserAllApprovedClusters,
   RequestStatusResponse,
@@ -99,7 +100,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
   const [deploymentOpen, setDeploymentOpen] = useState(false)
   const [selectedClusterId, setSelectedClusterId] = useState<string>("")
   const [deploymentProvider, setDeploymentProvider] = useState<CloudProvider>(
-    CloudProvider.AZURE
+    CloudProvider.AWS
   )
   const [deploymentPort, setDeploymentPort] = useState<string>("80")
   const [repoPrivate, setRepoPrivate] = useState(false)
@@ -183,10 +184,10 @@ export default function RequestDetail({ slug }: { slug: string }) {
     enabled: deploymentOpen,
   })
 
-  // Filter clusters by selected deployment provider
+  // Filter clusters to show only AWS clusters
   const filteredClusters =
     approvedClusters?.filter(
-      (cluster) => cluster.cloudProvider === deploymentProvider
+      (cluster) => cluster.cloudProvider === CloudProvider.AWS
     ) ?? []
 
   const deployMutation = useMutation({
@@ -523,25 +524,15 @@ export default function RequestDetail({ slug }: { slug: string }) {
                                 <Cloud className="h-3.5 w-3.5" />
                                 Provider
                               </Label>
-                              <Select
-                                value={deploymentProvider}
-                                onValueChange={(v) =>
-                                  setDeploymentProvider(v as CloudProvider)
-                                }
-                                disabled={!!hostedUrl}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Select provider" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value={CloudProvider.AZURE}>
-                                    Azure
-                                  </SelectItem>
-                                  <SelectItem value={CloudProvider.AWS}>
-                                    AWS
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <div className="flex items-center gap-2 h-10 px-3 py-2 border rounded-md bg-white">
+                                <img
+                                  src="/icon/aws.svg"
+                                  width={16}
+                                  height={16}
+                                  alt="AWS Icon"
+                                />
+                                <span className="text-sm">AWS</span>
+                              </div>
                             </div>
 
                             <div className="grid gap-2">
@@ -564,6 +555,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
                                   setDeploymentPort(e.target.value)
                                 }
                                 disabled={!!hostedUrl}
+                                className="h-10"
                               />
                             </div>
 
@@ -600,7 +592,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
                               onValueChange={setSelectedClusterId}
                               disabled={!!hostedUrl}
                             >
-                              <SelectTrigger className="w-full">
+                              <SelectTrigger className="w-full h-10">
                                 <SelectValue placeholder="Select cluster" />
                               </SelectTrigger>
                               <SelectContent>
@@ -641,6 +633,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
                                 value={vmEnv}
                                 onChange={(e) => setVmEnv(e.target.value)}
                                 disabled={!!hostedUrl}
+                                className="h-10"
                               />
                             </div>
                             <div className="grid gap-2">
@@ -657,6 +650,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
                                 value={storageEnv}
                                 onChange={(e) => setStorageEnv(e.target.value)}
                                 disabled={!!hostedUrl}
+                                className="h-10"
                               />
                             </div>
                             <div className="grid gap-2">
@@ -673,6 +667,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
                                 value={dbEnv}
                                 onChange={(e) => setDbEnv(e.target.value)}
                                 disabled={!!hostedUrl}
+                                className="h-10"
                               />
                             </div>
                           </div>
@@ -696,7 +691,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
 
                                 const deploymentPayload = {
                                   clusterId: selectedClusterId,
-                                  provider: deploymentProvider,
+                                  provider: CloudProvider.AWS,
                                   repositoryId: data.repositoryId,
                                   port: portNumber,
                                   usePrivateRegistry: repoPrivate,

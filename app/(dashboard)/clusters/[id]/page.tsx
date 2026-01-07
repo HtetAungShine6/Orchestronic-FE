@@ -30,16 +30,29 @@ import {
   ClusterDetail,
   ClusterResource,
   getClusterResources,
-  getUserClusters,
+  getUserClustersByStatus,
 } from "@/app/api/requests/api"
+import { Status } from "@/types/api"
 
 export default function ClusterDetailPage() {
   const params = useParams()
   const id = params.id as string
 
-  const { data: clusters, isLoading: isLoadingClusters } = useQuery({
-    queryKey: ["clusters"],
-    queryFn: getUserClusters,
+  // Fetch both approved and pending clusters to support viewing either
+  const { data: approvedClusters, isLoading: isLoadingApproved } = useQuery({
+    queryKey: ["clusters", Status.Approved],
+    queryFn: () => getUserClustersByStatus(Status.Approved),
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  })
+
+  const { data: pendingClusters, isLoading: isLoadingPending } = useQuery({
+    queryKey: ["clusters", Status.Pending],
+    queryFn: () => getUserClustersByStatus(Status.Pending),
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   })
 
   const { data: resources, isLoading: isLoadingResources } = useQuery({
@@ -47,7 +60,9 @@ export default function ClusterDetailPage() {
     queryFn: () => getClusterResources(id),
   })
 
-  const cluster = clusters?.find((c) => c.id === id)
+  const isLoadingClusters = isLoadingApproved || isLoadingPending
+  const clusters = [...(approvedClusters || []), ...(pendingClusters || [])]
+  const cluster = clusters.find((c) => c.id === id)
 
   if (isLoadingClusters || isLoadingResources) {
     return (
