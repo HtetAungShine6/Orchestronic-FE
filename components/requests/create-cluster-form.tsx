@@ -68,7 +68,7 @@ type ClusterFormType = z.infer<typeof clusterFormSchema>
 
 export default function ClientClusterForm() {
   const [cloudProvider, setCloudProvider] = useState<CloudProvider>(
-    CloudProvider.AZURE
+    CloudProvider.AWS
   )
   const [selectedResourceGroup, setSelectedResourceGroup] = useState<string>("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -94,8 +94,8 @@ export default function ClientClusterForm() {
     resolver: zodResolver(clusterFormSchema),
     defaultValues: {
       resourceGroup: "",
-      cloudProvider: CloudProvider.AZURE,
-      region: regions[CloudProvider.AZURE][0].value,
+      cloudProvider: CloudProvider.AWS,
+      region: regions[CloudProvider.AWS][0].value,
       numberOfClusters: 1,
       clusters: [
         {
@@ -423,46 +423,15 @@ export default function ClientClusterForm() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>Cloud Provider *</Label>
-              <Controller
-                name="cloudProvider"
-                control={control}
-                render={({ field }) => (
-                  <>
-                    <Select
-                      value={cloudProvider}
-                      onValueChange={(value: CloudProvider) => {
-                        field.onChange(value)
-                        setCloudProvider(value)
-                        setValue("region", regions[value][0].value)
-                      }}
-                    >
-                      <SelectTrigger className="w-full h-9">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {cloudProviders.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            <span className="flex items-center gap-2">
-                              <Image
-                                src={option.icon}
-                                width={16}
-                                height={16}
-                                alt={`${option.label} Icon`}
-                              />
-                              {option.label}
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.cloudProvider && (
-                      <p className="text-sm text-red-500">
-                        {errors.cloudProvider.message}
-                      </p>
-                    )}
-                  </>
-                )}
-              />
+              <div className="flex items-center gap-2 h-9 px-3 py-2 border rounded-md bg-white">
+                <Image
+                  src="/icon/aws.svg"
+                  width={16}
+                  height={16}
+                  alt="AWS Icon"
+                />
+                <span className="text-sm">AWS</span>
+              </div>
             </div>
 
             <div className="space-y-1">
