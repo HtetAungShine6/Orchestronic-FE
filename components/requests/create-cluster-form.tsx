@@ -29,7 +29,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, Controller, useFieldArray } from "react-hook-form"
 import z from "zod"
 import { VmSizeDto, AwsVmSizeDto } from "@/types/request"
-import { CloudProvider, cloudProviders, regions } from "@/types/resource"
+import { CloudProvider, regions } from "@/types/resource"
 import { createCluster } from "@/app/api/requests/api"
 import { AzureClusterSizeCombobox } from "./azure-resource-group-accordion/azure-resource-group-accordion-cluster"
 import { AwsVMSizeCombobox } from "./aws-combobox"
@@ -67,9 +67,7 @@ const clusterFormSchema = z.object({
 type ClusterFormType = z.infer<typeof clusterFormSchema>
 
 export default function ClientClusterForm() {
-  const [cloudProvider, setCloudProvider] = useState<CloudProvider>(
-    CloudProvider.AWS
-  )
+  const [cloudProvider] = useState<CloudProvider>(CloudProvider.AWS)
   const [selectedResourceGroup, setSelectedResourceGroup] = useState<string>("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [newRgName, setNewRgName] = useState("")
@@ -274,7 +272,7 @@ export default function ClientClusterForm() {
             <Controller
               name="resourceGroup"
               control={control}
-              render={({ field }) => (
+              render={() => (
                 <>
                   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
@@ -597,7 +595,7 @@ export default function ClientClusterForm() {
                 <Controller
                   name={`clusters.${index}.sizeId`}
                   control={control}
-                  render={({ field }) => (
+                  render={() => (
                     <>
                       {cloudProvider === CloudProvider.AZURE ? (
                         <AzureClusterSizeCombobox
