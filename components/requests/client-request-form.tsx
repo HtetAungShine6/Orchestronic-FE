@@ -48,10 +48,11 @@ interface ClientRequestFormProps {
   session?: User
 }
 
-export default function ClientRequestForm({
-  // suggestedName,
-  session,
-}: Readonly<ClientRequestFormProps>) {
+export default function ClientRequestForm(
+  {
+    // suggestedName,
+  }: Readonly<ClientRequestFormProps>
+) {
   const repoName = useSelector((state: RootState) => state.repoName.value)
   const dispatch = useDispatch()
   const router = useRouter()
@@ -142,7 +143,7 @@ export default function ClientRequestForm({
     awsRequestForm.clearErrors()
     azureRequestForm.clearErrors()
     dispatch(setRepoName(""))
-  }, [cloudProvider])
+  }, [cloudProvider, awsRequestForm, azureRequestForm, dispatch])
 
   async function onSubmitAzure(values: z.infer<typeof azureRequestFormSchema>) {
     azureMutation.mutate(values)

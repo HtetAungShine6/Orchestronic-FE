@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import {
   changeRequestStatus,
   deleteRequest,
@@ -7,7 +8,6 @@ import {
   getAddressOfRepository,
   getApprovedClusters,
   getRequestBySlug,
-  getUserAllApprovedClusters,
   RequestStatusResponse,
   updateRequestFeedback,
 } from "@/app/api/requests/api"
@@ -99,9 +99,6 @@ export default function RequestDetail({ slug }: { slug: string }) {
 
   const [deploymentOpen, setDeploymentOpen] = useState(false)
   const [selectedClusterId, setSelectedClusterId] = useState<string>("")
-  const [deploymentProvider, setDeploymentProvider] = useState<CloudProvider>(
-    CloudProvider.AWS
-  )
   const [deploymentPort, setDeploymentPort] = useState<string>("80")
   const [repoPrivate, setRepoPrivate] = useState(false)
   const [vmEnv, setVmEnv] = useState<string>("")
@@ -151,7 +148,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
         }
 
         return response
-      } catch (error) {
+      } catch {
         console.log("No hosted URL available yet")
         return null
       }
@@ -180,7 +177,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
 
   const { data: approvedClusters } = useQuery({
     queryKey: ["clusters", Status.Approved],
-    queryFn: () => getUserAllApprovedClusters(),
+    queryFn: () => getApprovedClusters(),
     enabled: deploymentOpen,
   })
 
@@ -222,7 +219,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
               : CloudProvider.AZURE
             setDeploymentInfo({ clusterId, provider })
           }
-        } catch (error) {
+        } catch {
           console.log("Hosted URL not available yet")
         }
       }
@@ -494,11 +491,8 @@ export default function RequestDetail({ slug }: { slug: string }) {
                       if (isOpen) {
                         // Pre-fill form if deployment info exists
                         if (deploymentInfo) {
-                          setDeploymentProvider(deploymentInfo.provider)
                           setSelectedClusterId(deploymentInfo.clusterId)
                           setDeploymentPort("3000")
-                        } else if (data) {
-                          setDeploymentProvider(data.resources.cloudProvider)
                         }
                       }
                     }}
@@ -525,7 +519,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
                                 Provider
                               </Label>
                               <div className="flex items-center gap-2 h-10 px-3 py-2 border rounded-md bg-white">
-                                <img
+                                <Image
                                   src="/icon/aws.svg"
                                   width={16}
                                   height={16}
