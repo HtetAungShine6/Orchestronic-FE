@@ -4,6 +4,8 @@ import * as React from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
+  FilterFn,
+  Row,
   SortingState,
   VisibilityState,
   flexRender,
@@ -38,11 +40,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   filterColumn: keyof TData
-  globalFilterFn?: (
-    row: TData,
-    columnId: string,
-    filterValue: string
-  ) => boolean
+  globalFilterFn?: FilterFn<TData>
   pageSize?: number
   onRowClick?: (row: TData) => void
 }
@@ -96,7 +94,7 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: globalFilterFn as any,
+    globalFilterFn: globalFilterFn,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

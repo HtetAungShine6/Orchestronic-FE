@@ -6,7 +6,6 @@ import {
   deleteRequest,
   deploy,
   getAddressOfRepository,
-  getApprovedClusters,
   getRequestBySlug,
   getUserAllApprovedClusters,
   RequestStatusResponse,
