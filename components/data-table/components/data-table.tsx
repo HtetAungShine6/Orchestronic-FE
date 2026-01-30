@@ -38,6 +38,11 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   filterColumn: keyof TData
+  globalFilterFn?: (
+    row: TData,
+    columnId: string,
+    filterValue: string
+  ) => boolean
   pageSize?: number
   onRowClick?: (row: TData) => void
 }
@@ -47,6 +52,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   filterColumn,
+  globalFilterFn,
   pageSize = 5,
   onRowClick,
 }: Readonly<DataTableProps<TData, TValue>>) {
@@ -57,6 +63,7 @@ export function DataTable<TData, TValue>({
     []
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
+  const [globalFilter, setGlobalFilter] = React.useState("")
 
   React.useEffect(() => {
     const hasStatusCol =
@@ -76,6 +83,7 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      globalFilter,
     },
     initialState: {
       pagination: {
@@ -87,6 +95,8 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: globalFilterFn as any,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -97,7 +107,12 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} filterColumn={filterColumn as string} />
+      <DataTableToolbar
+        table={table}
+        filterColumn={filterColumn as string}
+        globalFilter={globalFilter}
+        setGlobalFilter={setGlobalFilter}
+      />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

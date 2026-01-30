@@ -104,11 +104,7 @@ export default function ClustersTable({ pageSize = 10 }: ClustersTableProps) {
         filterColumn="name"
         pageSize={pageSize}
         onRowClick={(row) => {
-          if (isAdminOrIT) {
-            router.push(`/clusters/pending-clusters/${row.id}`)
-          } else {
-            router.push(`/clusters/${row.id}`)
-          }
+          router.push(`/clusters/${row.id}`)
         }}
       />
     </div>

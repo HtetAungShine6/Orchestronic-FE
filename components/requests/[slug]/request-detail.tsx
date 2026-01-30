@@ -8,6 +8,7 @@ import {
   getAddressOfRepository,
   getApprovedClusters,
   getRequestBySlug,
+  getUserAllApprovedClusters,
   RequestStatusResponse,
   updateRequestFeedback,
 } from "@/app/api/requests/api"
@@ -24,6 +25,7 @@ import DescriptionCard from "./description-card"
 import { haveAdminOrIT, showDestroyButtonAfterCreation } from "@/lib/utils"
 import {
   AlertDialog,
+
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -177,7 +179,7 @@ export default function RequestDetail({ slug }: { slug: string }) {
 
   const { data: approvedClusters } = useQuery({
     queryKey: ["clusters", Status.Approved],
-    queryFn: () => getApprovedClusters(),
+    queryFn: () => getUserAllApprovedClusters(),
     enabled: deploymentOpen,
   })
 
