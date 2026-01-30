@@ -3,11 +3,17 @@ import { JSX, useEffect } from "react"
 
 export function ReactScan(): JSX.Element {
   useEffect(() => {
-    import("react-scan").then(({ scan }) => {
-      scan({
-        enabled: true,
-      })
-    })
+    if (process.env.NODE_ENV !== "production") {
+      import("react-scan")
+        .then(({ scan }) => {
+          scan({
+            enabled: true,
+          })
+        })
+        .catch((err) => {
+          console.warn("Failed to load react-scan:", err)
+        })
+    }
   }, [])
 
   return <></>
