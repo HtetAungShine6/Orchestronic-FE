@@ -8,6 +8,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { ReactScan } from "@/components/react-scan-component"
 
 function makeQueryClient() {
   return new QueryClient({
@@ -50,6 +51,7 @@ export default function ReactQueryProvider({
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ReactScan />
       {children}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

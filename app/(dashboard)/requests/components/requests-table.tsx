@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query"
 import { getUser } from "@/app/api/user/api"
 import { Role } from "@/types/role"
 import DataTableSkeleton from "./data-table-skeleton"
+import { Request } from "../data/schema-request"
 
 interface RequestsTableProps {
   prefilterStatus?: boolean
@@ -42,12 +43,33 @@ export default function RequestsTable({
 
   const columns = getColumnsRequests(session?.role as Role)
 
+  // Custom global filter function to search across multiple fields
+  const globalFilterFn = (
+    row: Request,
+    _columnId: string,
+    filterValue: string
+  ) => {
+    const searchValue = filterValue.toLowerCase()
+    const displayCode = row.displayCode?.toLowerCase() || ""
+    const repositoryName = row.repository?.name?.toLowerCase() || ""
+    const resourceName = row.resources?.name?.toLowerCase() || ""
+    const ownerName = row.owner?.name?.toLowerCase() || ""
+
+    return (
+      displayCode.includes(searchValue) ||
+      repositoryName.includes(searchValue) ||
+      resourceName.includes(searchValue) ||
+      ownerName.includes(searchValue)
+    )
+  }
+
   return (
     <DataTable
       prefilterStatus={prefilterStatus}
       data={data ?? []}
       columns={columns}
       filterColumn="displayCode"
+      globalFilterFn={globalFilterFn}
       pageSize={pageSize}
       onRowClick={(row) => router.push(`/requests/${row.displayCode}`)}
     />

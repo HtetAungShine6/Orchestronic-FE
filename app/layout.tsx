@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
-import { ReactScan } from "@/components/react-scan-component"
 
 import "./globals.css"
 import ReactQueryProvider from "@/components/provider/react-query-provider"
@@ -30,7 +29,6 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ReactScan />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
