@@ -111,5 +111,6 @@ export const config = {
     "/accountSettings/:path*",
     "/users/:path*",
     "/clusters/:path*",
+    "/((?!auth/callback|api|_next/static|_next/image|favicon.ico).*)",
   ],
 }
