@@ -45,15 +45,15 @@ export default function RequestsTable({
 
   // Custom global filter function to search across multiple fields
   const globalFilterFn = (
-    row: Request,
+    row: { original: Request },
     _columnId: string,
     filterValue: string
   ) => {
     const searchValue = filterValue.toLowerCase()
-    const displayCode = row.displayCode?.toLowerCase() || ""
-    const repositoryName = row.repository?.name?.toLowerCase() || ""
-    const resourceName = row.resources?.name?.toLowerCase() || ""
-    const ownerName = row.owner?.name?.toLowerCase() || ""
+    const displayCode = row.original.displayCode?.toLowerCase() || ""
+    const repositoryName = row.original.repository?.name?.toLowerCase() || ""
+    const resourceName = row.original.resources?.name?.toLowerCase() || ""
+    const ownerName = row.original.owner?.name?.toLowerCase() || ""
 
     return (
       displayCode.includes(searchValue) ||
