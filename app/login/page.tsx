@@ -11,12 +11,23 @@ export default function Page() {
     setError(null)
     setLoading(true)
     const apiUrl = process.env.NEXT_PUBLIC_API_URL
+
+    console.log("API URL:", apiUrl) // Debug log
+
     if (!apiUrl) {
-      setError("API URL is not configured.")
+      setError("API URL is not configured. Please contact support.")
       setLoading(false)
       return
     }
-    window.location.href = `${apiUrl}/auth/azure`
+
+    try {
+      const loginUrl = `${apiUrl}/auth/azure`
+      console.log("Redirecting to:", loginUrl) // Debug log
+      window.location.href = loginUrl
+    } catch (err) {
+      setError(`Failed to redirect: ${err}`)
+      setLoading(false)
+    }
   }
 
   return (
@@ -41,14 +52,10 @@ export default function Page() {
         <p className="text-xs text-gray-400 pt-4">
           © {new Date().getFullYear()} Orchestronic. All rights reserved.
         </p>
-
       </div>
     </div>
   )
 }
-
-
-
 
 // "use client"
 // import { useState } from "react"
