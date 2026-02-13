@@ -28,6 +28,7 @@ export async function GET(req: NextRequest) {
     response.cookies.set("refresh_token", refreshToken, {
       httpOnly: true,
       secure: true,
+      
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 days
