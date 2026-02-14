@@ -74,6 +74,7 @@ export function extractGitlabUsername(url: string | null): string | null {
 export async function getGitlabUsers(): Promise<GitlabUser[]> {
   const res = await fetch(`${API_BASE}/gitlab/users`, {
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     cache: "no-store",
   })
 
@@ -88,6 +89,7 @@ export async function approveGitlabUser(id: number) {
   const res = await fetch(`${API_BASE}/gitlab/users/${id}/approve`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
   })
 
   if (!res.ok) {
@@ -102,6 +104,7 @@ export async function rejectGitlabUser(id: number) {
   const res = await fetch(`${API_BASE}/gitlab/users/${id}/reject`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
   })
 
   if (!res.ok) {
