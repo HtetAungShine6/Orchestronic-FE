@@ -1,5 +1,7 @@
 import type { NextConfig } from "next"
 
+const backendApiOrigin = process.env.BACKEND_API_ORIGIN?.replace(/\/$/, "")
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -7,12 +9,16 @@ const nextConfig: NextConfig = {
       new URL("https://flagsapi.com/**"),
     ],
   },
-  // rewrites: async () => [
-  //   {
-  //     source: "/api/:path*",
-  //     destination: "https://13fbad8cad05.ngrok-free.app/:path*",
-  //   },
-  // ],
+  async rewrites() {
+    if (!backendApiOrigin) return []
+
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${backendApiOrigin}/api/:path*`,
+      },
+    ]
+  },
 }
 
 export default nextConfig
