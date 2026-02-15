@@ -3,7 +3,7 @@ let refreshPromise: Promise<void> | null = null
 
 async function refreshAccessToken(): Promise<void> {
   if (!refreshPromise) {
-    refreshPromise = fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
+    refreshPromise = fetch(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
       method: "POST",
       credentials: "include", // send refresh_token cookie
     })

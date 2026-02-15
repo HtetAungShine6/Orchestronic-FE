@@ -36,7 +36,7 @@ export async function getDBInstanceClasses({
   if (search) params.append("search", search)
 
   const response = await fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/cloud-providers/aws-db?${params.toString()}`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/cloud-providers/aws-db?${params.toString()}`,
     {
       method: "GET",
       credentials: "include",

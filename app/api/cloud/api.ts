@@ -6,7 +6,7 @@ export async function updateCloudConfig(
   values: z.infer<typeof awsFormSchema>,
   id: string
 ) {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/cloud/${id}`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/cloud/${id}`, {
     method: "PATCH",
     credentials: "include",
     headers: {
@@ -17,7 +17,7 @@ export async function updateCloudConfig(
 }
 
 export async function createCloudConfig(values: z.infer<typeof awsFormSchema>) {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/cloud/secret`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/cloud/secret`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -41,7 +41,7 @@ export async function getCloudConfig(
   cloudProvider: "AZURE" | "AWS"
 ): Promise<CloudProviderSecret> {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/cloud?cloudProvider=${cloudProvider}`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/cloud?cloudProvider=${cloudProvider}`,
     {
       method: "GET",
       credentials: "include",

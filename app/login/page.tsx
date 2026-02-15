@@ -10,7 +10,7 @@ export default function Page() {
   // const loginWithAzure = () => {
   //   setError(null)
   //   setLoading(true)
-  //   const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  //   const apiUrl = process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL
 
   //   console.log("API URL:", apiUrl) // Debug log
 
@@ -33,7 +33,7 @@ export default function Page() {
   const loginWithAzure = () => {
     setError(null)
     setLoading(true)
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL
+    const apiUrl = process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL
     if (!apiUrl) {
       setError("API URL is not configured.")
       setLoading(false)
@@ -80,7 +80,7 @@ export default function Page() {
 //   const loginWithAzure = () => {
 //     setError(null)
 //     setLoading(true)
-//     const apiUrl = process.env.NEXT_PUBLIC_API_URL
+//     const apiUrl = process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL
 //     if (!apiUrl) {
 //       setError("API URL is not configured.")
 //       setLoading(false)

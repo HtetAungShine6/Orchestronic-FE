@@ -8,7 +8,7 @@ import { AzureRetailPriceResponse, DeploymentDto } from "@/types/request"
 import z from "zod"
 
 export async function getRequests() {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/request`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/request`, {
     credentials: "include",
     headers: { "Content-Type": "application/json" },
   })
@@ -16,7 +16,7 @@ export async function getRequests() {
 
 export async function getRequestsStatus(status: Status) {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/request/status?status=${status as string}`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/request/status?status=${status as string}`,
     {
       credentials: "include",
       headers: {
@@ -29,7 +29,7 @@ export async function getRequestsStatus(status: Status) {
 export async function createRequestAzure(
   data: z.infer<typeof azureRequestFormSchema>
 ) {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/request/azure`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/request/azure`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -42,7 +42,7 @@ export async function createRequestAzure(
 export async function createRequestAws(
   data: z.infer<typeof awsRequestFormSchema>
 ) {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/request/aws`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/request/aws`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -54,7 +54,7 @@ export async function createRequestAws(
 
 export async function getRequestBySlug(slug: string) {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/request/displayCode?displayCode=${slug}`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/request/displayCode?displayCode=${slug}`,
     {
       method: "GET",
       credentials: "include",
@@ -82,7 +82,7 @@ export async function changeRequestStatus(
   status: Status
 ): Promise<RequestStatusResponse> {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/request/${requestId}/status`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/request/${requestId}/status`,
     {
       method: "PATCH",
       credentials: "include",
@@ -97,7 +97,7 @@ export async function changeRequestStatus(
 export async function deleteRequest(requestId: string) {
   console.log("Deleting request with ID:", requestId)
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/infrastructure/${requestId}/infra-destroy`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/infrastructure/${requestId}/infra-destroy`,
     {
       method: "DELETE",
       credentials: "include",
@@ -113,7 +113,7 @@ export async function updateRequestFeedback(
   feedback: string
 ) {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/request/${requestId}/feedback`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/request/${requestId}/feedback`,
     {
       method: "PATCH",
       credentials: "include",
@@ -130,7 +130,7 @@ export async function getPriceOfVM(
   region: string
 ): Promise<AzureRetailPriceResponse> {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/resource/vm-price?vmSize=${vmSize}&region=${region}`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/resource/vm-price?vmSize=${vmSize}&region=${region}`,
     {
       method: "GET",
       headers: {
@@ -181,7 +181,7 @@ export interface CreateClusterResponse {
 export async function createCluster(
   data: CreateClusterRequest
 ): Promise<CreateClusterResponse> {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project/azure`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/azure`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -213,7 +213,7 @@ export async function createCluster(
 // }
 
 // export async function getUserClusters(): Promise<ClusterResource[]> {
-//   return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project/me/cluster`, {
+//   return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/me/cluster`, {
 //     method: "GET",
 //     credentials: "include",
 //     headers: {
@@ -226,7 +226,7 @@ export async function createCluster(
 //   clusterId: string
 // ): Promise<ClusterDetail[]> {
 //   return fetcher(
-//     `${process.env.NEXT_PUBLIC_API_URL}/project/resource-config/${clusterId}`,
+//     `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/resource-config/${clusterId}`,
 //     {
 //       method: "GET",
 //       credentials: "include",
@@ -260,7 +260,7 @@ export interface ClusterDetail {
 }
 
 export async function getUserClusters(): Promise<ClusterResource[]> {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project/me/cluster`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/me/cluster`, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -273,7 +273,7 @@ export async function getClusterResources(
   clusterId: string
 ): Promise<ClusterDetail[]> {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/project/resource-config/${clusterId}`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/resource-config/${clusterId}`,
     {
       method: "GET",
       credentials: "include",
@@ -298,7 +298,7 @@ export async function getClusterById(
 
 export async function getPendingClusters(): Promise<ClusterResource[]> {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/project/pending-clusters`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/pending-clusters`,
     {
       method: "GET",
       credentials: "include",
@@ -311,7 +311,7 @@ export async function getPendingClusters(): Promise<ClusterResource[]> {
 
 export async function getApprovedClusters(): Promise<ClusterResource[]> {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/project/approved-clusters`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/approved-clusters`,
     {
       method: "GET",
       credentials: "include",
@@ -324,7 +324,7 @@ export async function getApprovedClusters(): Promise<ClusterResource[]> {
 
 export async function getUserAllApprovedClusters(): Promise<ClusterResource[]> {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/project/me/approved-clusters`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/me/approved-clusters`,
     {
       method: "GET",
       credentials: "include",
@@ -343,7 +343,7 @@ export interface UpdateClusterStatusRequest {
 export async function updateClusterStatus(
   data: UpdateClusterStatusRequest
 ): Promise<void> {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project`, {
     method: "PATCH",
     credentials: "include",
     headers: {
@@ -357,7 +357,7 @@ export async function getClustersByStatus(
   status: Status
 ): Promise<ClusterResource[]> {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/project/clusters/${status}`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/clusters/${status}`,
     {
       method: "GET",
       credentials: "include",
@@ -372,7 +372,7 @@ export async function getUserClustersByStatus(
   status: Status
 ): Promise<ClusterResource[]> {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/project/me/cluster/${status}`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/me/cluster/${status}`,
     {
       method: "GET",
       credentials: "include",
@@ -385,7 +385,7 @@ export async function getUserClustersByStatus(
 
 export async function deploy(deploymentDto: DeploymentDto): Promise<void> {
   console.log("Sending deploy request with body:", deploymentDto)
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/project/deploy`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/deploy`, {
     method: "PATCH",
     credentials: "include",
     headers: {
@@ -399,7 +399,7 @@ export async function getAddressOfRepository(
   repositoryId: string
 ): Promise<ProjectDeploymentResponse> {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/project/deployments/${repositoryId}`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/project/deployments/${repositoryId}`,
     {
       method: "GET",
       credentials: "include",

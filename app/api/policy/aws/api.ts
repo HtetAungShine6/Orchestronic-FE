@@ -7,7 +7,7 @@
 
 // export async function createPolicyAws() {
 //   return fetcher(
-//     `${process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
+//     `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
 //     {
 //       method: "POST",
 //       credentials: "include",
@@ -21,7 +21,7 @@
 
 // // export async function getPolicyVMAws() {
 // //   return fetcher(
-// //     `${process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
+// //     `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
 // //     {
 // //       headers: {
 // //         "Content-Type": "application/json",
@@ -32,7 +32,7 @@
 
 // export async function getPolicyVMAws() {
 //   return fetcher(
-//     `${process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
+//     `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
 //     {
 //       method: "GET",
 //       credentials: "include",
@@ -44,7 +44,7 @@
 // }
 
 // export async function getPolicyDBAws(): Promise<DatabaseAwsPolicyDto> {
-//   return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/aws/policy/database`, {
+//   return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/database`, {
 //     method: "GET",
 //     credentials: "include",
 //     headers: {
@@ -54,7 +54,7 @@
 // }
 
 // export async function getPolicySTAws(): Promise<StorageAwsPolicyDto> {
-//   return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/aws/policy/storage`, {
+//   return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/storage`, {
 //     method: "GET",
 //     credentials: "include",
 //     headers: {
@@ -69,7 +69,7 @@
 //   memoryInMB,
 // }: updatePolicyVMAws) {
 //   return fetcher(
-//     `${process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
+//     `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
 //     {
 //       method: "PATCH",
 //       credentials: "include",
@@ -110,7 +110,7 @@
 // //   if (maxMemory) params.append("maxMemory", maxMemory)
 
 // //   const response = await fetcher(
-// //     `${process.env.NEXT_PUBLIC_API_URL}/cloud-providers/aws?${params.toString()}`,
+// //     `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/cloud-providers/aws?${params.toString()}`,
 // //     {
 // //       method: "GET",
 // //       credentials: "include",
@@ -149,7 +149,7 @@
 //   if (maxMemory) params.append("maxMemory", maxMemory)
 
 //   const response = await fetcher(
-//     `${process.env.NEXT_PUBLIC_API_URL}/cloud-providers/aws?${params.toString()}`,
+//     `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/cloud-providers/aws?${params.toString()}`,
 //     {
 //       method: "GET",
 //       credentials: "include",
@@ -163,7 +163,7 @@
 // }
 
 // // export async function fetchAwsVmSizes() {
-// //   return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/azure/policy/cluster`, {
+// //   return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/azure/policy/cluster`, {
 // //     headers: {
 // //       "Content-Type": "application/json",
 // //     },
@@ -171,7 +171,7 @@
 // // }
 
 // export async function updatePolicyDBAws({ maxStorage }: updatePolicyDBAws) {
-//   return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/aws/policy/database`, {
+//   return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/database`, {
 //     method: "PATCH",
 //     credentials: "include",
 //     headers: {
@@ -182,7 +182,7 @@
 // }
 
 // export async function updatePolicySTAws({ maxStorage }: updatePolicySTAws) {
-//   return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/aws/policy/storage`, {
+//   return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/storage`, {
 //     method: "PATCH",
 //     credentials: "include",
 //     headers: {
@@ -216,7 +216,7 @@ import {
 export async function getPolicyVMAws() {
   try {
     return await fetcher(
-      `${process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
+      `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
       {
         method: "GET",
         credentials: "include",
@@ -277,7 +277,7 @@ export async function fetchAwsVmSizes(
   if (maxCores) params.append("maxCores", maxCores)
   if (maxMemory) params.append("maxMemory", maxMemory)
 
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/cloud-providers/aws?${params.toString()}`
+  const url = `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/cloud-providers/aws?${params.toString()}`
   console.log("🔵 Fetching from URL:", url)
 
   try {
@@ -308,7 +308,7 @@ export async function fetchAwsVmSizes(
 }
 
 export async function getPolicyDBAws(): Promise<DatabaseAwsPolicyDto> {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/aws/policy/database`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/database`, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -318,7 +318,7 @@ export async function getPolicyDBAws(): Promise<DatabaseAwsPolicyDto> {
 }
 
 export async function getPolicySTAws(): Promise<StorageAwsPolicyDto> {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/aws/policy/storage`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/storage`, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -329,7 +329,7 @@ export async function getPolicySTAws(): Promise<StorageAwsPolicyDto> {
 
 export async function createPolicyAws() {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
     {
       method: "POST",
       credentials: "include",
@@ -347,7 +347,7 @@ export async function updatePolicyVMAws({
   memoryInMB,
 }: updatePolicyVMAws) {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/virtual_machine`,
     {
       method: "PATCH",
       credentials: "include",
@@ -364,7 +364,7 @@ export async function updatePolicyVMAws({
 }
 
 export async function updatePolicyDBAws({ maxStorage }: updatePolicyDBAws) {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/aws/policy/database`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/database`, {
     method: "PATCH",
     credentials: "include",
     headers: {
@@ -375,7 +375,7 @@ export async function updatePolicyDBAws({ maxStorage }: updatePolicyDBAws) {
 }
 
 export async function updatePolicySTAws({ maxStorage }: updatePolicySTAws) {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/aws/policy/storage`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/aws/policy/storage`, {
     method: "PATCH",
     credentials: "include",
     headers: {

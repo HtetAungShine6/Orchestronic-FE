@@ -26,7 +26,7 @@ export async function updatePolicyVMAzure({
   memoryInMB,
 }: updatePolicyVM) {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/azure/policy/virtual_machine`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/azure/policy/virtual_machine`,
     {
       method: "PATCH",
       credentials: "include",
@@ -43,7 +43,7 @@ export async function updatePolicyVMAzure({
 }
 
 export async function updatePolicyDBAzure({ maxStorage }: updatePolicyDB) {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/azure/policy/database`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/azure/policy/database`, {
     method: "PATCH",
     credentials: "include",
     headers: {
@@ -54,7 +54,7 @@ export async function updatePolicyDBAzure({ maxStorage }: updatePolicyDB) {
 }
 
 export async function updatePolicySTAzure({ maxStorage }: updatePolicyST) {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/azure/policy/storage`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/azure/policy/storage`, {
     method: "PATCH",
     credentials: "include",
     headers: {
@@ -66,7 +66,7 @@ export async function updatePolicySTAzure({ maxStorage }: updatePolicyST) {
 
 export async function createPolicyAzure() {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/azure/policy/virtual_machine`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/azure/policy/virtual_machine`,
     {
       method: "POST",
       credentials: "include",
@@ -80,7 +80,7 @@ export async function createPolicyAzure() {
 
 export async function getPolicyVMAzure() {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/azure/policy/virtual_machine`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/azure/policy/virtual_machine`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -90,7 +90,7 @@ export async function getPolicyVMAzure() {
 }
 
 export async function getPolicyClusterAzure() {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/azure/policy/cluster`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/azure/policy/cluster`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -98,7 +98,7 @@ export async function getPolicyClusterAzure() {
 }
 
 export async function getPolicyDBAzure(): Promise<DatabaseAzurePolicyDto> {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/azure/policy/database`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/azure/policy/database`, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -108,7 +108,7 @@ export async function getPolicyDBAzure(): Promise<DatabaseAzurePolicyDto> {
 }
 
 export async function getPolicySTAzure(): Promise<StorageAzurePolicyDto> {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/azure/policy/storage`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/azure/policy/storage`, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -119,7 +119,7 @@ export async function getPolicySTAzure(): Promise<StorageAzurePolicyDto> {
 
 export async function getVmSizes(params: URLSearchParams) {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/cloud-providers/azure?${params.toString()}`,
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/cloud-providers/azure?${params.toString()}`,
     {
       headers: {
         "Content-Type": "application/json",

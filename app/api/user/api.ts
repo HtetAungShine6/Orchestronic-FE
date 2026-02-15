@@ -4,32 +4,32 @@ import { fetcher } from "@/lib/fetcher"
 import { GitlabUser, User } from "@/types/api"
 import { Role } from "@/types/role"
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL
+const API_BASE = process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL
 
 export async function getUserByEmail(email: string): Promise<User> {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/by-email?email=${encodeURIComponent(email)}`
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/user/by-email?email=${encodeURIComponent(email)}`
   )
 }
 
 export async function fuzzyFindUsersByEmail(email: string): Promise<User[]> {
   return fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/fuzzy-find-by-email?email=${encodeURIComponent(email)}`
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/user/fuzzy-find-by-email?email=${encodeURIComponent(email)}`
   )
 }
 
 // export async function getAllUsers(): Promise<GitlabUser[]> {
-//   return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/gitlab/users`, {
+//   return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/gitlab/users`, {
 //     headers: { "Content-Type": "application/json" },
 //   })
 // }
 
 export async function getAllUsers(): Promise<GitlabUser[]> {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/gitlab/users`)
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/gitlab/users`)
 }
 
 export async function createUser(user: User) {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/user`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -41,13 +41,13 @@ export async function createUser(user: User) {
 }
 
 export async function getUser(): Promise<User | undefined> {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/user/me`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/user/me`, {
     headers: { "Content-Type": "application/json" },
   })
 }
 
 export async function updateGitLabUrl(gitlabUrl: string): Promise<User> {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_URL}/user/me/gitlab-url`, {
+  return fetcher(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/user/me/gitlab-url`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ gitlabUrl }),
@@ -56,7 +56,7 @@ export async function updateGitLabUrl(gitlabUrl: string): Promise<User> {
 
 export async function getGitLabUrl(): Promise<string | null> {
   const res = await fetcher(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/me/gitlab-url`
+    `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/user/me/gitlab-url`
   )
   return res.gitlabUrl ?? null
 }

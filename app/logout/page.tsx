@@ -5,7 +5,7 @@
 // export default function Page() {
 //   useEffect(() => {
 //     const logout = async () => {
-//       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+//       await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
 //         method: "POST",
 //         credentials: "include", // important to include cookies
 //       })
@@ -26,7 +26,7 @@ export default function Page() {
   useEffect(() => {
     const logout = async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
+        `${process.env.NEXT_PUBLIC_FRONTEND_API_URL || process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
         {
           method: "POST",
           credentials: "include",
